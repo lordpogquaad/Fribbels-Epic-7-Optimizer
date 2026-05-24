@@ -1,0 +1,56 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+@import '~@fortawesome/fontawesome-free/css/all.css';
+
+body {
+    position: relative;
+    height: 100vh;
+    font-family:
+        Arial,
+        Helvetica,
+        Helvetica Neue,
+        serif;
+    overflow-y: auto;
+}
+
+h2 {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: bold;
+    letter-spacing: -0.025em;
+    color: #fff;
+}
+
+li {
+    list-style: none;
+}
+
+a {
+    color: white;
+    opacity: 0.75;
+    text-decoration: none;
+}
+
+a:hover {
+    opacity: 1;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.gearPanelButtonRow {
+    display: flex !important;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.gearPanelButtonRow .gearPreviewButton {
+    flex: 1 !important;
+    min-width: 80px;
+    width: auto !important;
+    margin: 0 !important;
+}
+
+#settingsTab h2 {
+    font-size: 1.2rem;
+}

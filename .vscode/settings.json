@@ -1,0 +1,22 @@
+{
+    "codeQL.createQuery.qlPackLocation": "f:\\Epic Seven Screenshots Only\\New folder",
+    "json.schemas": [
+        {
+            "fileMatch": ["nodemon.json", ".nodemonrc", ".nodemonrc.json"],
+            "url": "https://json.schemastore.org/nodemon.json"
+        }
+    ],
+    "chat.restoreLastPanelSession": true,
+    "chat.viewProgressBadge.enabled": true,
+    "chat.agentSessionProjection.enabled": true,
+    "chat.agent.thinking.terminalTools": true,
+    "chat.planAgent.defaultModel": "Claude Sonnet 4.6 (copilot)",
+    "chat.checkpoints.showFileChanges": true,
+    "chat.editor.wordWrap": "on",
+    "chat.agentsControl.enabled": "badge",
+    "chat.agent.maxRequests": 10000,
+    "chat.tools.terminal.idlePollInterval": 10000,
+    "inlineChat.defaultModel": "Claude Sonnet 4.6 (copilot)",
+    "chat.tools.terminal.idleSilenceTimeoutMs": 1800000,
+    "chat.tools.terminal.preventShellHistory": false
+}

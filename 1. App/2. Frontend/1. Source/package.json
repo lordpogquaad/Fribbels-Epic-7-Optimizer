@@ -1,0 +1,53 @@
+{
+    "name": "poge7optimizer",
+    "productName": "Pog E7 Optimizer",
+    "author": {
+        "name": "RexQian",
+        "url": "https://github.com/RexQian/Fribbels-Epic-7-Optimizer"
+    },
+    "version": "1.12.0",
+    "description": "Epic 7 Gear Optimizer",
+    "main": "./main.prod.js",
+    "scripts": {
+        "electron-rebuild": "node -r ../../4. Both/2. Build/scripts/BabelRegister.js ../../4. Both/2. Build/scripts/ElectronRebuild.js",
+        "postinstall": "yarn electron-rebuild"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "@ag-grid-community/client-side-row-model": "32.3.9",
+        "@ag-grid-community/core": "32.3.9",
+        "@ag-grid-community/infinite-row-model": "32.3.9",
+        "@electron/remote": "^2.1.3",
+        "@fontsource/fira-sans-condensed": "^5.2.7",
+        "@fortawesome/fontawesome-free": "^7.2.0",
+        "ag-grid-community": "35.3.0",
+        "animate.css": "^4.1.1",
+        "awesome-notifications": "^3.1.3",
+        "axios": "^1.16.1",
+        "echarts": "latest",
+        "express": "^5.2.1",
+        "i18next": "^26.2.0",
+        "i18next-browser-languagedetector": "^8.2.1",
+        "i18next-chained-backend": "^5.0.4",
+        "i18next-http-backend": "^4.0.0",
+        "i18next-localstorage-backend": "^4.3.1",
+        "jimp": "latest",
+        "jquery": "^4.0.0",
+        "kill-port": "^2.0.1",
+        "kill-port-process": "^4.0.2",
+        "multiple-select": "^2.3.1",
+        "node-fetch": "^3.3.2",
+        "pretty-checkbox": "^3.0.3",
+        "rangeslider-js": "^3.2.5",
+        "server": "latest",
+        "sortablejs": "latest",
+        "string-similarity": "latest",
+        "sweetalert2": "^11.26.25",
+        "tinygradient": "^2.0.1",
+        "tippy": "^0.0.0",
+        "tippy.js": "^6.3.7",
+        "tree-kill": "latest",
+        "update-electron-app": "^3.2.0",
+        "uuid": "latest"
+    }
+}
