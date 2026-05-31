@@ -42,6 +42,5 @@ The original Fribbels project was abandoned. This fork:
 
 - Upgrades all npm dependencies to current (React 19, Electron 42, Webpack 5, TypeScript 6)
 - Adds the full GAS archetype scoring engine (ported from personal Google Sheets project)
-- Adds C.Power / A.Power aggregate columns with modification-aware scoring
 - Adds in-gear-tab archetype filter (dropdown + min score + quick buttons)
 - Deduplicates and centralizes all game constants into `reforgeConstants.js`

@@ -1,6 +1,6 @@
 ---
-description: 'Guidelines for building safe, governed AI agent systems. Apply when writing code that uses agent frameworks, tool-calling LLMs, or multi-agent orchestration to ensure proper safety boundaries, policy enforcement, and auditability.'
-applyTo: '**'
+description: "Guidelines for building safe, governed AI agent systems. Apply when writing code that uses agent frameworks, tool-calling LLMs, or multi-agent orchestration to ensure proper safety boundaries, policy enforcement, and auditability."
+applyTo: "**"
 ---
 
 # Agent Safety & Governance
@@ -32,7 +32,7 @@ applyTo: '**'
 
 - Each agent in a multi-agent system should have its own governance policy
 - When agents delegate to other agents, compose policies by: (1) intersecting allowed_tools, (2) unioning blocked_patterns, (3) taking min(max_calls_per_request), (4) unioning required-approval tools
-- Track trust scores for agent delegates using a concrete formula: initial trust = 1.0; on governance violation, trust *= 0.5; on successful call, trust = min(1.0, trust + 0.05); block delegation when trust < 0.3
+- Track trust scores for agent delegates using a concrete formula: initial trust = 1.0; on governance violation, trust \*= 0.5; on successful call, trust = min(1.0, trust + 0.05); block delegation when trust < 0.3
 - Never allow an inner agent to have broader permissions than the outer agent that called it
 
 ## Audit & Observability
@@ -46,6 +46,7 @@ applyTo: '**'
 ## Code Patterns
 
 When writing agent tool functions:
+
 ```python
 # Good: Governed tool with explicit policy
 @govern(policy)
@@ -58,6 +59,7 @@ async def search(query: str) -> str:
 ```
 
 When defining policies:
+
 ```yaml
 # Good: Explicit allowlist, content filters, rate limit
 name: my-agent
@@ -71,6 +73,7 @@ allowed_tools: ["*"]
 ```
 
 When composing multi-agent policies:
+
 ```python
 # Good: Most-restrictive-wins composition
 final_policy = compose_policies(org_policy, team_policy, agent_policy)
@@ -92,6 +95,6 @@ final_policy = agent_policy
 - Relying only on output guardrails (post-generation) instead of pre-execution governance
 - Hardcoding policy rules instead of loading from configuration
 - Allowing agents to self-modify their own governance policies
-- Forgetting to governance-check tool *arguments*, not just tool *names*
+- Forgetting to governance-check tool _arguments_, not just tool _names_
 - Not decaying trust scores over time — stale trust is dangerous
 - Logging raw prompt content or tool argument values in audit trails — log the matched rule, violation type, and metadata identifiers only; inspecting content for safety checks is required, but raw content must not be persisted to the audit log

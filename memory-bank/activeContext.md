@@ -1,17 +1,44 @@
 # Active Context — Fribbels Epic Seven Gear Optimizer
 
-**Last updated:** May 2026
+**Last updated:** July 2026
 
 ## Current Focus
 
 All code phases (5–9) are complete. The app is ready for **end-to-end integration testing** to validate that all changes work together in the running Electron app.
+
+## Recent Changes
+
+### TASK007 — Object Calisthenics Audit (Java Backend) ✅
+
+- Full 9-rule OC audit complete for Java backend domain classes and handlers
+- IMPORTANT violations: Rules 3, 6, 7, 8 (primitive wrapping, abbreviations, entity size, instance variable count)
+- SUGGESTION violations: Rules 1, 2, 4, 5, 9 (indentation, else keyword, collections, dot chains, getters/setters)
+- All findings documented in `tasks/TASK007-oc-audit.md` and `# Code Citations.md`
+- 4 high-priority advisory items deferred: `GLOSSARY.md` (S effort), Sorter comparator extraction (M), StatContext parameter object (M), StatCalculator split (L)
+- No source code changes made
+
+### TASK005 — Korean README Localization ✅
+
+- `localization/ko-kr/1. App/README.md` created (2026-06-01)
+- Full 428-line README translated to Korean; all code blocks, image URLs, and external links preserved verbatim
+- TOC anchors updated to GitHub-compatible Korean slugs
+
+### TASK003 — A11y Audit Logged ✅
+
+- WCAG 2.2 AA audit completed for `app/app.html` and `app/css/style.css`
+- 16 open items (5 CRITICAL, 9 IMPORTANT, 2 SUGGESTION) recorded in `tasks/Task List and Fixes.md` and `tasks/TASK003-a11y-fixes.md`
+- Fix code snippets written for all items; no fixes applied yet
+
+### TASK004 — Java 25 Advisories Logged ✅
+
+- Java 21→25 audit complete; 2 advisory items in `tasks/TASK004-java25-readiness.md`
+- No mandatory changes on current Java 21 target
 
 ## Recent Changes (Phases 5–9)
 
 ### Phase 9 — Scoring Engine UI Integration ✅
 
 - `archetypeScorer.js` changes compiled with 0 errors
-- `itemsGrid.js` — archetype columns added: `Top Off.`, `Top Arch.`, `Top UOff.`, `Off. C.Power`, `Off. A.Power`, `UOff. C.Pwr`, `UOff. A.Pwr` (hidden by default)
 - Comparison panel updated with `buildComparisonScoreTable`
 - `itemsTab.js` — archetype filter dropdown + min score input + quick-filter buttons added
 
@@ -46,14 +73,6 @@ These items are **UNCHECKED** in MASTERPLAN.md and must be validated:
 ### `constants.js speedRollsToValue` is intentionally different from `reforgeConstants.js`
 
 `constants.js` has an extra `0: 0` key (for "no rolls yet" UI display state). Do NOT merge this into `reforgeConstants.js`. See MASTERPLAN.md §3.
-
-### No personal `UOff. Future` archetype
-
-Future archetype is official-only. `UOff. C.Power` borrows `Off. Future` for its group calculation. Do not add a personal Future unless explicitly requested, and it would require entries in `ARCHETYPE_RULES` for all 6 slots plus new `SCORING_CONFIGS` tiers.
-
-### Java 8 compatibility
-
-Do not use any Java 9+ APIs. The backend must compile with `maven.compiler.source=1.8`.
 
 ## Known Issues / Watch Points
 

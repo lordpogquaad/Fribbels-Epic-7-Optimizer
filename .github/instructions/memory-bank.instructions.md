@@ -1,5 +1,6 @@
 ---
 applyTo: "**"
+description: "Memory bank system for GitHub Copilot — persistent documentation for AI memory continuity across sessions, covering projectbrief, productContext, activeContext, systemPatterns, techContext, progress, and tasks."
 ---
 
 Coding standards, domain knowledge, and preferences that AI should follow.

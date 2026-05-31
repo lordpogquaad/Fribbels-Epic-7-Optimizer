@@ -209,7 +209,7 @@
         "electron-devtools-installer": "^4.0.0",
         "electron-installer-windows": "^3.0.0",
         "electron-packager": "^17.1.2",
-        "electron-rebuild": "latest",
+        "electron-rebuild": "^3.2.9",
         "enzyme": "^3.11.0",
         "enzyme-adapter-react-16": "^1.15.8",
         "enzyme-to-json": "^3.6.2",

@@ -1,6 +1,6 @@
 # Progress — Fribbels Epic Seven Gear Optimizer
 
-**Last updated:** May 2026
+**Last updated:** July 2026
 
 ## What Works ✅
 
@@ -43,6 +43,15 @@
 - `DeleteSourceMaps.js` fixed for rimraf v4+ (uses `glob.sync` before `rimrafSync`)
 - Auto-updater pointing to `RexQian/Fribbels-Epic-7-Optimizer` repo
 
+### Localization
+
+- `localization/ko-kr/1. App/README.md` — Korean translation of the main README (2026-06-01)
+
+### Instruction Audits (advisory — no source code changes)
+
+- **TASK006 — Node.js/Vitest:** 7 advisory findings (NJ1–NJ7) against `nodejs-javascript-vitest.instructions.md`; deferred to future sprints
+- **TASK007 — Object Calisthenics:** 9-rule OC audit of Java backend domain classes; IMPORTANT violations in Rules 3 (primitive wrapping), 6 (abbreviations), 7 (entity size), 8 (instance variable count); SUGGESTION violations in Rules 1, 2, 4, 5, 9; all deferred; `GLOSSARY.md` identified as highest-value zero-risk first step
+
 ## What's Left / Pending ⏳
 
 ### Integration Testing (Critical Path)
@@ -63,6 +72,8 @@ These are the unchecked items from MASTERPLAN pre-bug-testing checklist:
 - Bug fixes discovered during integration testing
 - Translation key additions if any new UI strings were added without locale entries
 - Java JAR rebuild if backend source changes are needed
+- **16 open a11y items** in `tasks/TASK003-a11y-fixes.md` (5 CRITICAL, 9 IMPORTANT, 2 SUGGESTION) — none applied yet; fix code snippets are ready
+- **2 Java 25 advisory items** in `tasks/TASK004-java25-readiness.md` — no action needed until a Java 25 upgrade is planned
 
 ## Known Issues
 

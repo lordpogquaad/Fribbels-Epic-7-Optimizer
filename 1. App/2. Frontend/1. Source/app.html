@@ -151,8 +151,8 @@
                 disabled
                 aria-label="Hero Library"
             />
-            <label
-                for="tab9"
+            <button
+                type="button"
                 class="tabLabelLink"
                 data-t
                 onclick="
@@ -160,7 +160,7 @@
                         'https://fribbels.github.io/e7/hero-library.html',
                     )
                 "
-                >Hero Library ⧉</label
+                >Hero Library &#x29C9;</button
             >
 
             <input
@@ -183,8 +183,8 @@
                 disabled
                 aria-label="Donate"
             />
-            <label
-                for="tab11"
+            <button
+                type="button"
                 class="tabLabelLink"
                 data-t
                 onclick="
@@ -192,7 +192,7 @@
                         'https://www.buymeacoffee.com/fribbels',
                     )
                 "
-                >Donate ⧉</label
+                >Donate &#x29C9;</button
             >
 
             <input
@@ -202,14 +202,14 @@
                 disabled
                 aria-label="Discord"
             />
-            <label
-                for="tab12"
+            <button
+                type="button"
                 class="tabLabelLink"
                 data-t
                 onclick="
                     electron.shell.openExternal('https://discord.gg/rDmB4Un7qg')
                 "
-                >Discord ⧉</label
+                >Discord &#x29C9;</button
             >
             <!-- Tab 10 -->
             <!--   <input type="radio" name="tabset" id="tab10" style="display: none">
@@ -3391,7 +3391,7 @@
                                 &#10005;
                             </button>
                         </div>
-                        <div id="fribbels-status" class="fribbels-status">
+                        <div id="fribbels-status" class="fribbels-status" role="status" aria-live="polite" aria-atomic="false">
                             Select a hero then click the Fribbels Library tab to
                             load community builds.
                         </div>
@@ -6657,54 +6657,54 @@
                     </div>
 
                     <div class="toggleRow">
-                        <div
+                        <a
                             class="switchText languageToggle"
-                            onclick="location.href = 'app.html?lng=en'"
+                            href="app.html?lng=en"
                         >
                             English
-                        </div>
+                        </a>
                         <span class="switchText"> | </span>
-                        <div
+                        <a
                             class="switchText languageToggle"
-                            onclick="location.href = 'app.html?lng=zh'"
+                            href="app.html?lng=zh"
                         >
                             简体中文
-                        </div>
+                        </a>
                         <span class="switchText"> | </span>
-                        <div
+                        <a
                             class="switchText languageToggle"
-                            onclick="location.href = 'app.html?lng=zh-TW'"
+                            href="app.html?lng=zh-TW"
                         >
                             繁體中文
-                        </div>
+                        </a>
                         <span class="switchText"> | </span>
-                        <div
+                        <a
                             class="switchText languageToggle"
-                            onclick="location.href = 'app.html?lng=fr'"
+                            href="app.html?lng=fr"
                         >
                             Français
-                        </div>
+                        </a>
                         <span class="switchText"> | </span>
-                        <div
+                        <a
                             class="switchText languageToggle"
-                            onclick="location.href = 'app.html?lng=ja'"
+                            href="app.html?lng=ja"
                         >
                             日本語
-                        </div>
+                        </a>
                         <span class="switchText"> | </span>
-                        <div
+                        <a
                             class="switchText languageToggle"
-                            onclick="location.href = 'app.html?lng=ko'"
+                            href="app.html?lng=ko"
                         >
                             한국어
-                        </div>
+                        </a>
                         <span class="switchText"> | </span>
-                        <div
+                        <a
                             class="switchText languageToggle"
-                            onclick="location.href = 'app.html?lng=ru'"
+                            href="app.html?lng=ru"
                         >
                             Русский язык
-                        </div>
+                        </a>
                         <br /><br />
                     </div>
 

@@ -1,8 +1,7 @@
 ---
-description: 'Best practices for applying Object-Oriented Programming (OOP) design patterns, including Gang of Four (GoF) patterns and SOLID principles, to ensure clean, maintainable, and scalable code.'
-applyTo: '**/*.py, **/*.java, **/*.ts, **/*.js, **/*.cs'
+description: "Best practices for applying Object-Oriented Programming (OOP) design patterns, including Gang of Four (GoF) patterns and SOLID principles, to ensure clean, maintainable, and scalable code."
+applyTo: "**/*.py, **/*.java, **/*.ts, **/*.js, **/*.cs"
 ---
-
 
 # Design Patterns for Object-Oriented Programming for Clean Code
 
@@ -22,7 +21,7 @@ When generating code that involves object creation or instantiation, apply these
 - **Abstract Factory:** Use when a system must be configured with one of multiple families of related products (e.g., cross-platform UI widgets). Ensure clients only interact with the abstract factory and abstract product interfaces.
 - **Factory Method:** Use when a class cannot anticipate the class of objects it must create. Defer instantiation to subclasses.
 - **Builder:** Use when constructing a complex object requires a step-by-step process, especially when the same construction process can yield different representations.
-- **Singleton:** Use *only* when absolutely necessary to guarantee a single instance of a class and provide a global access point (e.g., a central configuration manager or a hardware interface). Prefer Dependency Injection over strict Singletons where possible.
+- **Singleton:** Use _only_ when absolutely necessary to guarantee a single instance of a class and provide a global access point (e.g., a central configuration manager or a hardware interface). Prefer Dependency Injection over strict Singletons where possible.
 - **Prototype:** Use to avoid building a class hierarchy of factories or when creating an object from scratch is more expensive than cloning an existing one.
 
 ## Structural Patterns Guidelines
@@ -55,7 +54,7 @@ When generating code involving algorithms, control flow, or communication betwee
 ## Code Generation Rules for Copilot
 
 - **Pattern Recognition:** When prompted to solve a problem that maps to a GoF pattern (e.g., "I need a way to undo this action", "I have multiple ways to calculate taxes"), explicitly mention the pattern you are applying in comments.
-- **Interface First:** Generate the interface or abstract base class *before* generating concrete implementations.
+- **Interface First:** Generate the interface or abstract base class _before_ generating concrete implementations.
 - **Immutability & Encapsulation:** Make fields `private` by default. Provide getters/setters only when necessary. Favor immutable objects.
 - **Naming Conventions:** Use pattern names in class names where it aids understanding (e.g., `TaxCalculationStrategy`, `ButtonDecorator`, `WidgetFactory`), but keep names natural to the domain when appropriate.
 - **Avoid God Classes:** Break large, complex classes into smaller, focused classes coordinating via a Mediator or composed of smaller Strategy objects.

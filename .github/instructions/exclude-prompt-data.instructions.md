@@ -1,13 +1,13 @@
 ---
 description: "Write only the resulting content into files. Never echo prompt instructions, rationale, or meta-commentary into documentation, comments, or code being produced from a prompt."
-applyTo: '**'
+applyTo: "**"
 ---
 
 # Exclude Prompt Data
 
 When a prompt contains instructional or contextual data used to guide a change,
 that data must not appear in the file being updated. The output must reflect
-only the *result* of the instruction — not the instruction itself, the
+only the _result_ of the instruction — not the instruction itself, the
 reasoning behind it, or any acknowledgment that it was applied.
 
 ## Core Rule
@@ -25,30 +25,30 @@ than as intended file content:
 - Descriptions of what to add or change (`"add a --verbose flag that..."`)
 - Inline rationale or motivation (`"because the old behavior caused..."`)
 - References to the prompt itself (`"as requested"`, `"per the prompt"`,
- `"the new feature has been added as"`)
+  `"the new feature has been added as"`)
 - Meta-commentary about the update
- (`"This section has been updated to reflect..."`)
+  (`"This section has been updated to reflect..."`)
 - Code comments that narrate a change rather than describe the code
- (`"// Added email validation as requested"`,
- `"// Now validates the input per the new requirement"`)
+  (`"// Added email validation as requested"`,
+  `"// Now validates the input per the new requirement"`)
 - Structural scaffold labels used as section markers or template slots
- (the word `this` in `## this Title` is scaffolding, not heading text)
+  (the word `this` in `## this Title` is scaffolding, not heading text)
 
 ## What Belongs in the Output
 
 The output file should contain only:
 
 - The feature, fix, or content the prompt requested — written as if it always
- belonged there
+  belonged there
 - Documentation or code that a reader would find useful independent of how the
- change was requested
+  change was requested
 - Generic, cliche placeholder data in examples (e.g., `Jane Doe`,
- `jane.doe@example.com`, `Acme Corp`, `example.com`) — never real names,
- emails, domains, or organization identifiers pulled from the prompt or local
- configuration
+  `jane.doe@example.com`, `Acme Corp`, `example.com`) — never real names,
+  emails, domains, or organization identifiers pulled from the prompt or local
+  configuration
 - Language formatting applied to terms in the prompt carries through to the
- output — if the prompt wraps a term in backticks or uses a specific syntax
- convention, follow that same convention in the output
+  output — if the prompt wraps a term in backticks or uses a specific syntax
+  convention, follow that same convention in the output
 
 ## Output Quality
 
@@ -72,7 +72,7 @@ feature in features.md
 
 **Acceptable result — `features.md`**
 
-```text
+````text
 ### --new-opt
 
 Enables extended output. Requires a value argument. Example:
@@ -80,11 +80,11 @@ Enables extended output. Requires a value argument. Example:
     ```bash
     file --new-opt foo
     ```
-```
+````
 
 **Unacceptable result — `features.md`**
 
-```text
+````text
 ### --new-opt
 
 The new feature `--new-opt` requiring an argument has now been added as
@@ -95,7 +95,7 @@ Enables extended output. Requires a value argument. Example:
     ```bash
     file --new-opt foo
     ```
-```
+````
 
 The unacceptable version echoes the prompt's framing
 (`"has now been added as requested"`, `"The feature is documented as such"`).
@@ -117,7 +117,7 @@ Add input validation to the createUser function — email must be a valid format
 function createUser(name, email) {
   // Rejects addresses missing a local part, @ sign, or domain
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    throw new Error('Invalid email address.');
+    throw new Error("Invalid email address.");
   }
   // ...
 }
@@ -130,7 +130,7 @@ function createUser(name, email) {
 function createUser(name, email) {
   // Per the instruction, we now validate that email must be a valid format
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    throw new Error('Invalid email address.');
+    throw new Error("Invalid email address.");
   }
   // ...
 }
@@ -148,15 +148,15 @@ A small number of cases legitimately require prompt content to appear in the
 file. Treat these as exceptions, not loopholes:
 
 - **Verbatim transcription requested.** The user explicitly asks for prompt
- text to be inserted as-is (e.g., "paste this block into the README under
- `## Notice`"). Insert exactly what was requested and nothing more.
-- **The file *is* a prompt or instruction artifact.** When editing prompt
- files, skill definitions, or instruction files, instructional content is the
- intended payload. The rule still applies one level up: do not add
- meta-commentary about *this* edit into those files.
+  text to be inserted as-is (e.g., "paste this block into the README under
+  `## Notice`"). Insert exactly what was requested and nothing more.
+- **The file _is_ a prompt or instruction artifact.** When editing prompt
+  files, skill definitions, or instruction files, instructional content is the
+  intended payload. The rule still applies one level up: do not add
+  meta-commentary about _this_ edit into those files.
 - **Changelog or release-note entries.** A short, factual line describing the
- change is appropriate. Keep it about the change, not about the request
- (`Added --verbose flag` ✓ / `Added --verbose flag as requested by user` ✗).
+  change is appropriate. Keep it about the change, not about the request
+  (`Added --verbose flag` ✓ / `Added --verbose flag as requested by user` ✗).
 
 ## Self-Check Before Saving
 
@@ -164,9 +164,9 @@ Before committing an edit produced from a prompt, scan the diff for any of the
 following and remove what you find:
 
 - [ ] Phrases like "as requested", "per the prompt", "per your instruction",
- "as you asked"
+      "as you asked"
 - [ ] Sentences that announce a change rather than describe the subject
- ("This section now covers...", "Updated to include...")
+      ("This section now covers...", "Updated to include...")
 - [ ] Comments that explain why code was written instead of what it does
 - [ ] Verbatim restatement of the user's request inside the file
 - [ ] Acknowledgments of the prompt's existence at all
@@ -176,12 +176,12 @@ no knowledge of the prompt — would find the content natural and self-contained
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| Output contains "as requested" or "per the prompt" | Remove it |
-| Docs announce a change instead of documenting it | Rewrite directly |
-| Code comments narrate the change | Describe the code's behavior |
-| Prompt scaffold labels appear in output headings | Replace with original |
+| Symptom                                            | Fix                          |
+| -------------------------------------------------- | ---------------------------- |
+| Output contains "as requested" or "per the prompt" | Remove it                    |
+| Docs announce a change instead of documenting it   | Rewrite directly             |
+| Code comments narrate the change                   | Describe the code's behavior |
+| Prompt scaffold labels appear in output headings   | Replace with original        |
 
 ## Summary
 

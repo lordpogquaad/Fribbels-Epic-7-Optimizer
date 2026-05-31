@@ -39,26 +39,20 @@ Fribbels-Epic-7-Optimizer/
 
 ## Backend Stack
 
-| Technology                 | Version                         | Role                                  |
-| -------------------------- | ------------------------------- | ------------------------------------- |
-| Java                       | 8 (`maven.compiler.source=1.8`) | Runtime requirement                   |
-| Maven                      | 3.8.8                           | Build tool                            |
-| Gson                       | 2.8.6                           | JSON serialization                    |
-| Jackson Jr                 | 2.12.0-rc1                      | Lightweight JSON                      |
-| Guava                      | 22.0                            | Collections utilities                 |
-| Apache Commons Collections | 3.2.1                           | Extra collection types                |
-| Apache Commons IO          | 2.7                             | File I/O utilities                    |
-| Apache Commons Lang3       | 3.1                             | String/array utilities                |
-| JUnit Jupiter              | 5.7.0                           | Unit testing                          |
-| JavaCPP                    | 1.5.5                           | JNI bindings                          |
-| Leptonica                  | —                               | Image processing (OCR pre-processing) |
-
-**IMPORTANT: Java 8 compatibility must be maintained.** Do NOT use:
-
-- `List.of()`, `Map.copyOf()`, `Set.of()` (Java 9+)
-- `var` keyword (Java 10+)
-- Text blocks (Java 13+)
-- Records, sealed classes (Java 14+)
+| Technology                  | Version          | Role                                  |
+| --------------------------- | ---------------- | ------------------------------------- |
+| Java                        | 21 (`maven.compiler.release=21`) | Runtime requirement          |
+| Maven                       | 3.8.8            | Build tool                            |
+| Gson                        | 2.14.0           | JSON serialization                    |
+| Jackson Jr                  | 2.21.4           | Lightweight JSON                      |
+| Guava                       | 33.6.0-jre       | Collections utilities                 |
+| Apache Commons Collections4 | 4.5.0            | Extra collection types                |
+| Apache Commons IO           | 2.22.0           | File I/O utilities                    |
+| Apache Commons Lang3        | 3.20.0           | String/array utilities                |
+| JUnit Jupiter               | 6.1.0            | Unit testing                          |
+| Lombok                      | 1.18.46          | Boilerplate reduction (`@Data`, etc.) |
+| aparapi                     | 3.0.2            | GPU/OpenCL acceleration               |
+| aparapi-jni                 | 1.4.3            | JNI bridge for aparapi (see TASK004)  |
 
 ## Build & Testing
 
@@ -81,7 +75,7 @@ yarn test                   # Jest unit tests
 ### Test Frameworks
 
 - **Jest 30** — Frontend unit tests
-- **JUnit Jupiter 5.7** — Java backend tests (in `backend/tst/`)
+- **JUnit Jupiter 6.1** — Java backend tests (in `backend/tst/`)
 - **TestCafe** — E2E tests
 
 ### Key Build Artifacts
