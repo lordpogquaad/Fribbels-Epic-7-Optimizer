@@ -498,6 +498,25 @@ const Constants = {
             },
         },
     },
+
+    // Maps in-game API stat key names to the optimizer's internal stat type
+    // strings. This is the canonical definition — scanner.js (statByIngameStat)
+    // and locator.js previously each declared this map locally. Import Constants
+    // and reference Constants.ingameStatToStatType to avoid future drift.
+    ingameStatToStatType: {
+        att_rate: 'AttackPercent',
+        max_hp_rate: 'HealthPercent',
+        def_rate: 'DefensePercent',
+        att: 'Attack',
+        max_hp: 'Health',
+        def: 'Defense',
+        speed: 'Speed',
+        res: 'EffectResistancePercent',
+        cri: 'CriticalHitChancePercent',
+        cri_dmg: 'CriticalHitDamagePercent',
+        acc: 'EffectivenessPercent',
+        coop: 'DualAttackChancePercent',
+    },
 };
 
 export default Constants;

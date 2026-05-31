@@ -19,13 +19,14 @@ function updateLastRankDisplay() {
 
 const HeroesTab = {
     initialize: () => {
+        console.log('[HeroesTab] initialize');
         setupEventListeners();
         const selector = document.getElementById('addHeroesSelector');
         const allHeroData = HeroData.getAllHeroData();
-        console.log('ALLHERODATA', allHeroData);
+        console.log('[HeroesTab] allHeroData loaded, hero count:', Object.keys(allHeroData).length);
         const names = Object.keys(allHeroData).sort();
 
-        console.log(names);
+        console.log('[HeroesTab] hero names:', names);
 
         names.forEach((name) => {
             const hero = allHeroData[name];
@@ -60,7 +61,7 @@ const HeroesTab = {
         document
             .getElementById('addHeroesSubmit')
             .addEventListener('click', async () => {
-                console.log('addHeroesSubmit');
+                console.log('[HeroesTab] addHeroesSubmit:', selector.value);
                 const id = selector.value;
                 addHero(id);
                 HeroesGrid.redrawPreview();
@@ -72,7 +73,7 @@ const HeroesTab = {
                 useReforgedStats = document.getElementById(
                     'heroesTabUseReforgedStats',
                 ).checked;
-                console.log(`REFORGE CHANGE TO ${useReforgedStats}`);
+                console.log(`[HeroesTab] reforgedStats changed to: ${useReforgedStats}`);
                 await redrawGrid();
                 clearPreview();
                 HeroesGrid.refreshBuilds();
@@ -82,7 +83,7 @@ const HeroesTab = {
         document
             .getElementById('editBuildSubmit')
             .addEventListener('click', async () => {
-                console.log('editBuildSubmit');
+                console.log('[HeroesTab] editBuildSubmit');
                 const row = HeroesGrid.getSelectedRow();
 
                 const existingBuild = HeroesGrid.getSelectedBuildRow();
@@ -94,7 +95,7 @@ const HeroesTab = {
                 const editedBuild = await Dialog.editBuildDialog(
                     existingBuild.name,
                 );
-                console.warn('EDITBUILD', editedBuild, existingBuild);
+                console.log('[HeroesTab] editBuildSubmit result:', editedBuild, existingBuild);
 
                 const { buildName } = editedBuild;
 
@@ -108,11 +109,11 @@ const HeroesTab = {
         document
             .getElementById('removeBuildSubmit')
             .addEventListener('click', async () => {
-                console.log('removeBuildSubmit');
+                console.log('[HeroesTab] removeBuildSubmit');
                 const row = HeroesGrid.getSelectedRow();
                 const existingBuild = HeroesGrid.getSelectedBuildRow();
 
-                console.warn('REMOVEBUILD', row, existingBuild);
+                console.log('[HeroesTab] removeBuildSubmit row/build:', row, existingBuild);
 
                 await Api.removeBuild(row.id, existingBuild);
                 HeroesGrid.refreshBuilds();
@@ -124,12 +125,14 @@ const HeroesTab = {
             .addEventListener('click', async () => {
                 console.log('saveAsBuildSubmit');
                 const row = HeroesGrid.getSelectedRow();
+                if (!row) return;
 
-                row.items = Object.values(row.equipment).map((x) => x.id);
-                console.warn('Save as build', row);
-                console.warn('Save as build', row.items);
-
-                if (row.items.length < 6) {
+                const eq = row.equipment;
+                if (
+                    !eq ||
+                    !eq.Weapon || !eq.Helmet || !eq.Armor ||
+                    !eq.Necklace || !eq.Ring || !eq.Boots
+                ) {
                     Notifier.warn(
                         'Hero needs a 6 item build before it can be saved',
                     );
@@ -137,16 +140,16 @@ const HeroesTab = {
                 }
 
                 row.items = [
-                    row.equipment.Weapon.id,
-                    row.equipment.Helmet.id,
-                    row.equipment.Armor.id,
-                    row.equipment.Necklace.id,
-                    row.equipment.Ring.id,
-                    row.equipment.Boots.id,
+                    eq.Weapon.id,
+                    eq.Helmet.id,
+                    eq.Armor.id,
+                    eq.Necklace.id,
+                    eq.Ring.id,
+                    eq.Boots.id,
                 ];
 
                 await Api.addBuild(row.id, row);
-                HeroesGrid.refreshBuilds();
+                await HeroesGrid.refreshBuilds();
                 Saves.autoSave();
             });
 
@@ -181,13 +184,18 @@ const HeroesTab = {
                 if (!row) return;
                 console.log('addSubstatModsSubmit', row);
 
-                const modStats = await Dialog.editModStatsDialog(row);
-                if (!modStats) return;
+                // Fetch fresh hero data so the dialog always shows the latest
+                // saved settings, not whatever is cached in the grid row.
+                const { hero: freshHero } = await Api.getHeroById(row.id);
+                const modStats = await Dialog.editModStatsDialog(freshHero || row);
 
-                // mods
-
-                await Api.setModStats(modStats, row.id).then(HeroesTab.redraw);
-                Notifier.success('Saved mod stats');
+                // mods — if OK was clicked, do a final save with the latest state;
+                // always redraw & autosave so in-dialog saves are reflected in the grid.
+                if (modStats) {
+                    await Api.setModStats(modStats, row.id);
+                    Notifier.success('Saved mod stats');
+                }
+                await HeroesTab.redraw();
                 Saves.autoSave();
             });
 
@@ -231,12 +239,12 @@ const HeroesTab = {
         document
             .getElementById('removeHeroesSubmit')
             .addEventListener('click', async () => {
-                console.log('removeHeroesSubmit');
+                console.log('[HeroesTab] removeHeroesSubmit');
                 const row = HeroesGrid.getSelectedRow();
                 if (!row) return;
 
                 const removeResponse = await Api.removeHeroById(row.id);
-                console.log('RESPONSE', removeResponse);
+                console.log('[HeroesTab] removeHero response:', removeResponse);
                 HeroesTab.redrawHeroInputSelector();
                 await redrawGrid();
                 HeroesGrid.redrawPreview();
@@ -313,7 +321,7 @@ const HeroesTab = {
 
         Api.getAllHeroes(useReforgedStats)
             .then((response) => {
-                console.log('Heroes response', response);
+                console.log('[HeroesTab] getAllHeroes response:', response);
 
                 if (!response || !response.heroes) return null;
                 if (response.heroes.length === 0) {

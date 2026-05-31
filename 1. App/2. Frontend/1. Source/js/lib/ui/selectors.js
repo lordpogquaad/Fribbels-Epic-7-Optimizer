@@ -19,7 +19,7 @@ const Selectors = {
             showClear: true,
             // hideOptgroupCheckboxes: true,
             minimumCountSelected: 99,
-            displayTitle: true,
+            displayTitle: false,
             displayValues: true,
             selectAll: false,
             textTemplate(el) {
@@ -260,19 +260,19 @@ const Selectors = {
     setGearMainAndSetsFromRequest: (request, index) => {
         $(`#inputSet1${index}`).multipleSelect(
             'setSelects',
-            request.inputSetsOne.map((x) => x.replace('Set', '')) || []
+            (request.inputSetsOne || []).map((x) => x.replace('Set', ''))
         );
         $(`#inputSet2${index}`).multipleSelect(
             'setSelects',
-            request.inputSetsTwo.map((x) => x.replace('Set', '')) || []
+            (request.inputSetsTwo || []).map((x) => x.replace('Set', ''))
         );
         $(`#inputSet3${index}`).multipleSelect(
             'setSelects',
-            request.inputSetsThree.map((x) => x.replace('Set', '')) || []
+            (request.inputSetsThree || []).map((x) => x.replace('Set', ''))
         );
         $(`#inputExcludeSet${index}`).multipleSelect(
             'setSelects',
-            request.inputExcludeSet.map((x) => x.replace('Set', '')) || []
+            (request.inputExcludeSet || []).map((x) => x.replace('Set', ''))
         );
         $(`#inputNecklaceStat${index}`).multipleSelect(
             'setSelects',

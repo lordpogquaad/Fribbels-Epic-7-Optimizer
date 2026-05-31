@@ -1,4 +1,4 @@
-/* global Files, Settings, Api, Dialog, Notifier, ItemAugmenter, HeroData, OptimizerTab, HeroesTab, $ */
+/* global Files, Settings, Api, Dialog, Notifier, ItemAugmenter, ModificationFilter, HeroData, OptimizerTab, HeroesTab, $ */
 const remote = require('@electron/remote');
 
 const { dialog } = remote;
@@ -133,7 +133,7 @@ const euglmomorainData = {
             overrideAdditionalCd: 0,
             overrideAdditionalSpd: 0,
             overrideAdditionalEff: 0,
-            overrideAdditionalRes: -3,
+            overrideAdditionalRes: 0,
         },
     },
 };
@@ -228,14 +228,19 @@ const Saves = {
                     return;
                 }
 
-                const data = await Files.readFileSync(filenames[0]);
-                const parsedData = JSON.parse(data);
-                await Saves.loadSavedData(parsedData);
+                try {
+                    const data = await Files.readFileSync(filenames[0]);
+                    const parsedData = JSON.parse(data);
+                    await Saves.loadSavedData(parsedData);
 
-                $('#loadDataSubmitOutputText').text(
-                    `Loaded ${parsedData.heroes.length} heroes and ${parsedData.items.length} items from ${filenames[0]}`
-                );
-                Saves.autoSave();
+                    $('#loadDataSubmitOutputText').text(
+                        `Loaded ${parsedData.heroes.length} heroes and ${parsedData.items.length} items from ${filenames[0]}`
+                    );
+                    Saves.autoSave();
+                } catch (e) {
+                    console.error('Failed to load save file', e);
+                    Dialog.error(`Failed to load save file: ${e.message}`);
+                }
             });
     },
 
@@ -280,6 +285,27 @@ const Saves = {
 
         ItemAugmenter.augment(data.items);
 
+        // Rebuild the mod-variant cache so that saved mod builds can be
+        // equipped/previewed after import without re-running the optimizer.
+        const itemsById = Object.fromEntries(
+            data.items.map((item) => [item.id, item]),
+        );
+        data.heroes.forEach((hero) => {
+            if (!hero.builds) return;
+            hero.builds.forEach((build) => {
+                if (!build.modIds || !build.mods || !build.items) return;
+                build.modIds.forEach((modId, i) => {
+                    const mod = build.mods[i];
+                    const baseItemId = build.items[i];
+                    if (!modId || !mod || !baseItemId) return;
+                    if (modId === baseItemId) return; // not a mod variant
+                    const baseItem = itemsById[baseItemId];
+                    if (!baseItem) return;
+                    ModificationFilter.seedCache(modId, baseItem);
+                });
+            });
+        });
+
         if (
             data.heroes &&
             data.heroes.filter((x) => x.name === 'Euglmomorain').length > 0
@@ -306,10 +332,14 @@ const Saves = {
         }
 
         await Api.setItems(data.items);
+        ItemsTab.redraw();
         await Api.setHeroes(data.heroes);
 
         const heroData = HeroData.getAllHeroData();
         const heroNames = Object.keys(heroData);
+        // Clean up the temporary Euglmomorain injection so it doesn’t persist
+        // across subsequent save loads (BF9 — avoid permanently mutating shared heroData).
+        delete HeroData.getAllHeroData().Euglmomorain;
 
         // Remove bad overrides
         await Promise.all(

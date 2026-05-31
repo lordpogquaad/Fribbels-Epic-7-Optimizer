@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -19,8 +20,11 @@ public class ModStatsRequest extends Request {
     private String keepStatOptions;
     private Float rollQuality;
     private Integer limitRolls;
+    private Integer maxModPieces;
     private List<StatType> keepStats;
     private List<StatType> ignoreStats;
     private List<StatType> discardStats;
+    private List<String> modSlots;
+    private Map<String, Object> slotModConfig;
     private String heroId;
 }

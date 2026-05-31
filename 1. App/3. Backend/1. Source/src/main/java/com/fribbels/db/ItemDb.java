@@ -60,6 +60,7 @@ public class ItemDb {
 
     public Item calculateWss(final Item item) {
         final AugmentedStats stats = item.getAugmentedStats();
+        if (stats == null) return item;
         final AugmentedStats reforgedStats = item.getReforgedStats() == null ? stats : item.getReforgedStats();
 
         final double atkValue = 3.46 / 39;
@@ -190,7 +191,10 @@ public class ItemDb {
 
         final String previousOwner = item.getEquippedById();
         if (previousOwner != null && !StringUtils.equals(previousOwner, heroId)) {
-            heroDb.getHeroById(previousOwner).getEquipment().remove(item.getGear());
+            final Hero previousHero = heroDb.getHeroById(previousOwner);
+            if (previousHero != null) {
+                previousHero.getEquipment().remove(item.getGear());
+            }
         }
 
         final Item previousItem = hero.switchItem(item);

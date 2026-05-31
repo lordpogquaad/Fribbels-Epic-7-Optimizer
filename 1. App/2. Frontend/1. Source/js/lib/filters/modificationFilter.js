@@ -2,7 +2,49 @@ import { v4 as uuidv4 } from 'uuid';
 
 /* global Dialog, Reforge, Constants */
 
-let moddedItems = {};
+// ---------------------------------------------------------------------------
+// Least-Recently-Used map — O(1) get/set/evict using Map insertion order.
+// When size reaches `maxSize` the least-recently-accessed entry is evicted.
+// ---------------------------------------------------------------------------
+const LRU_MAX_SIZE = 5000;
+
+class LruMap {
+    constructor(maxSize) {
+        this._max = maxSize;
+        this._map = new Map();
+    }
+
+    get(key) {
+        if (!this._map.has(key)) return undefined;
+        // Promote to most-recently-used by moving to end of Map
+        const val = this._map.get(key);
+        this._map.delete(key);
+        this._map.set(key, val);
+        return val;
+    }
+
+    set(key, val) {
+        if (this._map.has(key)) {
+            this._map.delete(key);
+        } else if (this._map.size >= this._max) {
+            // Evict least-recently-used (first entry in Map)
+            this._map.delete(this._map.keys().next().value);
+        }
+        this._map.set(key, val);
+    }
+
+    clear() {
+        this._map.clear();
+    }
+
+    get size() {
+        return this._map.size;
+    }
+}
+
+// Main single-optimizer mod cache (bounded LRU, never re-assigned).
+const moddedItems = new LruMap(LRU_MAX_SIZE);
+// Per-slot multi-optimizer caches (each slot holds an LruMap or null).
 const multiModdedItems = [];
 
 function createMultiOptimizerSlotIfNotExistsAndReturnsMultiOrNot(index) {
@@ -14,9 +56,38 @@ function createMultiOptimizerSlotIfNotExistsAndReturnsMultiOrNot(index) {
         multiModdedItems[index] === undefined ||
         multiModdedItems[index] === null
     ) {
-        multiModdedItems[index] = {};
+        multiModdedItems[index] = new LruMap(LRU_MAX_SIZE);
     }
     return true;
+}
+
+/**
+ * Returns the effective mod config for a specific item based on per-slot rules,
+ * or null if no matching slot rule exists (caller should fall back to global hero config).
+ */
+function getEffectiveConfig(hero, item) {
+    if (!hero.slotModConfig) return null;
+    const slotCfg = hero.slotModConfig[item.gear];
+    if (!slotCfg) return null;
+    const rules = slotCfg.rules;
+    if (!rules || rules.length === 0) return null;
+    for (const rule of rules) {
+        if (!rule.enabled) continue;
+        const mainOk = !rule.mainStat || rule.mainStat === item.main.type;
+        const setOk = !rule.set || rule.set === item.set;
+        if (mainOk && setOk) {
+            return {
+                keepStats:       rule.keepStats      || [],
+                ignoreStats:     rule.ignoreStats    || [],
+                discardStats:    rule.discardStats   || [],
+                limitRolls:      slotCfg.limitRolls  != null ? slotCfg.limitRolls  : hero.limitRolls,
+                rollQuality:     slotCfg.rollQuality != null ? slotCfg.rollQuality : hero.rollQuality,
+                modGrade:        slotCfg.modGrade    || hero.modGrade,
+                keepStatOptions: slotCfg.keepStatOptions || hero.keepStatOptions,
+            };
+        }
+    }
+    return null;
 }
 
 const ModificationFilter = {
@@ -33,7 +104,7 @@ const ModificationFilter = {
 
         const result = [];
         Array.from({ length: mods.length }).forEach((_, i) => {
-            const jsonString = JSON.stringify(modCollection[gearIds[i]]);
+            const jsonString = JSON.stringify(modCollection.get(gearIds[i]));
             if (!jsonString) {
                 result.push(undefined);
                 return;
@@ -85,9 +156,9 @@ const ModificationFilter = {
             items.forEach((item) => {
                 item.modId = item.id;
                 if (isMulti) {
-                    multiModdedItems[index][item.id] = item;
+                    multiModdedItems[index].set(item.id, item);
                 } else {
-                    moddedItems[item.id] = item;
+                    moddedItems.set(item.id, item);
                 }
             });
             return items;
@@ -95,22 +166,23 @@ const ModificationFilter = {
 
         const newModdedItems = {};
 
-        const keepList = hero.keepStats || [];
-        const ignoreList = hero.ignoreStats || [];
-        const discardList = hero.discardStats || [];
-
-        const { limitRolls } = hero;
-        const rollQuality = hero.rollQuality / 100;
-        const grade = hero.modGrade;
-        const { keepStatOptions } = hero;
-
         const newItems = [];
 
         items.forEach((item) => {
             item.modId = item.id;
-            newModdedItems[item.id] = item;
+            newModdedItems[item.id] = item; // plain object — transferred into LruMap below
             item.upgradeable = 0;
             newItems.push(item);
+
+            // Per-item effective config: use slot rule override when one matches, else global hero config
+            const _cfg = getEffectiveConfig(hero, item);
+            const keepList    = (_cfg ? _cfg.keepStats    : hero.keepStats)    || [];
+            const ignoreList  = (_cfg ? _cfg.ignoreStats  : hero.ignoreStats)  || [];
+            const discardList = (_cfg ? _cfg.discardStats : hero.discardStats) || [];
+            const limitRolls  = _cfg?.limitRolls  != null ? _cfg.limitRolls  : hero.limitRolls;
+            const rollQuality = (_cfg?.rollQuality != null ? _cfg.rollQuality : hero.rollQuality) / 100;
+            const grade       = _cfg?.modGrade    || hero.modGrade;
+            const keepStatOptions = _cfg?.keepStatOptions || hero.keepStatOptions;
 
             if (item.disableMods) {
                 return;
@@ -119,6 +191,14 @@ const ModificationFilter = {
             const existingSubstats = item.substats.map((x) => x.type);
 
             if (item.enhance !== 15) {
+                return;
+            }
+
+            if (
+                hero.modSlots &&
+                hero.modSlots.length > 0 &&
+                !hero.modSlots.includes(item.gear)
+            ) {
                 return;
             }
 
@@ -203,7 +283,7 @@ const ModificationFilter = {
                         return;
                     }
 
-                    const itemCopy = JSON.parse(JSON.stringify(item));
+                    const itemCopy = structuredClone(item);
                     const substatCopy = itemCopy.substats[i];
 
                     substatCopy.originalType = substatCopy.type;
@@ -258,13 +338,39 @@ const ModificationFilter = {
             });
         });
 
+        // Transfer newModdedItems into the bounded LruMap (replaces previous contents).
         if (isMulti) {
-            multiModdedItems[index] = newModdedItems;
+            multiModdedItems[index].clear();
+            Object.entries(newModdedItems).forEach(([k, v]) => multiModdedItems[index].set(k, v));
         } else {
-            moddedItems = newModdedItems;
+            moddedItems.clear();
+            Object.entries(newModdedItems).forEach(([k, v]) => moddedItems.set(k, v));
         }
 
         return newItems;
+    },
+
+    clear: (index) => {
+        if (index === null || index === undefined) {
+            moddedItems.clear();
+        } else {
+            // Set to null so the create-helper re-initialises with a fresh LruMap
+            multiModdedItems[index] = null;
+        }
+    },
+
+    // Seed an item into the mod cache under the given modId.  Used when
+    // restoring saved builds on import so that equip/preview works without
+    // needing to re-run the optimizer first.
+    seedCache: (modId, item, index) => {
+        if (!modId || !item) return;
+        const isMulti =
+            createMultiOptimizerSlotIfNotExistsAndReturnsMultiOrNot(index);
+        if (isMulti) {
+            multiModdedItems[index].set(modId, item);
+        } else {
+            moddedItems.set(modId, item);
+        }
     },
 };
 

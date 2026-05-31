@@ -2,6 +2,7 @@ package com.fribbels.core;
 
 import com.fribbels.enums.StatType;
 import com.fribbels.model.*;
+import com.fribbels.request.OptimizationRequest;
 
 import java.util.Map;
 import java.util.Objects;
@@ -10,9 +11,9 @@ import static com.fribbels.handler.OptimizationRequestHandler.SET_COUNT;
 
 public class StatCalculator {
 
-    public static boolean SETTING_RAGE_SET = true;
-    public static boolean SETTING_PEN_SET = true;
-    public static int SETTING_PEN_DEFENSE = 1500;
+    public static volatile boolean SETTING_RAGE_SET = true;
+    public static volatile boolean SETTING_PEN_SET = true;
+    public static volatile int SETTING_PEN_DEFENSE = 1500;
 
     private float atkSetBonus;
     private float hpSetBonus;
@@ -30,6 +31,15 @@ public class StatCalculator {
     private float bonusMaxDef;
 
     private float penSetDmgBonus;
+
+    private int priorityAtk;
+    private int priorityHp;
+    private int priorityDef;
+    private int prioritySpd;
+    private int priorityCr;
+    private int priorityCd;
+    private int priorityEff;
+    private int priorityRes;
 
     public StatCalculator() {
 
@@ -61,6 +71,17 @@ public class StatCalculator {
         }
 
         penSetDmgBonus = (SETTING_PEN_DEFENSE / 300f + 1) / (0.00283333f * SETTING_PEN_DEFENSE + 1);
+    }
+
+    public void setPriorityWeights(final OptimizationRequest request) {
+        priorityAtk = request.getInputAtkPriority() != null ? request.getInputAtkPriority() : 0;
+        priorityHp = request.getInputHpPriority() != null ? request.getInputHpPriority() : 0;
+        priorityDef = request.getInputDefPriority() != null ? request.getInputDefPriority() : 0;
+        prioritySpd = request.getInputSpdPriority() != null ? request.getInputSpdPriority() : 0;
+        priorityCr = request.getInputCrPriority() != null ? request.getInputCrPriority() : 0;
+        priorityCd = request.getInputCdPriority() != null ? request.getInputCdPriority() : 0;
+        priorityEff = request.getInputEffPriority() != null ? request.getInputEffPriority() : 0;
+        priorityRes = request.getInputResPriority() != null ? request.getInputResPriority() : 0;
     }
 
     public float[] getNewStatAccumulatorArr(final HeroStats base,
@@ -168,6 +189,14 @@ public class StatCalculator {
         final int mcdmgps = (int) ((float) mcdmg * spdDiv1000);
         final int dmgh = (int) ((critDamage * hp) / 10 * penMultiplier * pctDmgMultiplier);
         final int dmgd = (int) ((critDamage * def) * penMultiplier * pctDmgMultiplier);
+        final int hmcdmgs = (int) ((float) dmgh * spdDiv1000);
+        final int dmcdmgs = (int) ((float) dmgd * spdDiv1000);
+        final int hdmg = (int) (((critRate * hp / 10f * critDamage) + (1 - critRate) * hp / 10f) * penMultiplier
+                * pctDmgMultiplier);
+        final int hdmgs = (int) ((float) hdmg * spdDiv1000);
+        final int ddmg = (int) (((critRate * def * critDamage) + (1 - critRate) * def) * penMultiplier
+                * pctDmgMultiplier);
+        final int ddmgs = (int) ((float) ddmg * spdDiv1000);
         /*
          * 
          * (increase dmg) * [(atk + bonus atk) * (pow * multi) * (cdmg)]
@@ -232,11 +261,21 @@ public class StatCalculator {
         // res: (row.efr - base.efr*100 - bonusSetRes),
         // spd: (row.spd - base.spd - bonusSetSpeed - bonusSetRevenge),
 
-        final int bs = (int) (bsHp + bsAtk + bsDef + bsCr * 1.6f + bsCd * 1.14f + bsEff + bsRes + bsSpd * 2);
+        final int bs = (int) (bsHp + bsAtk + bsDef + bsCr * 1.5f + bsCd * 1.125f + bsEff + bsRes + bsSpd * 2);
+
+        final int customScore = (int) (bsAtk / 9f * priorityAtk +
+                bsHp / 9f * priorityHp +
+                bsDef / 9f * priorityDef +
+                bsCr / 6f * priorityCr +
+                bsCd / 8f * priorityCd +
+                bsEff / 9f * priorityEff +
+                bsRes / 9f * priorityRes +
+                bsSpd / 4.5f * prioritySpd);
 
         return new HeroStats((int) atk, (int) hp, (int) def, (int) cr, cd, eff, res, 0, spd, cp, ehp, hpps, ehpps,
-                dmg, dmgps, mcdmg, mcdmgps, dmgh, dmgd, s1, s2, s3, upgrades, conversions, alreadyEquipped, score, bs,
-                priority,
+                dmg, dmgps, mcdmg, mcdmgps, dmgh, dmgd, hmcdmgs, dmcdmgs, hdmg, hdmgs, ddmg, ddmgs, s1, s2, s3,
+                upgrades, conversions, alreadyEquipped, score, bs,
+                priority, customScore,
                 base.bonusStats, null, null, null, null, null, null, null);
     }
 
@@ -249,8 +288,9 @@ public class StatCalculator {
             final float critDamage,
             final float pctDmgMultiplier,
             final float penSetOn) {
+        if (m == null) return 0;
         final Integer[] targetsArr = m.getTargets();
-        if (Objects.equals(targetsArr[s], null)) {
+        if (targetsArr == null || Objects.equals(targetsArr[s], null)) {
             return 0;
         }
 

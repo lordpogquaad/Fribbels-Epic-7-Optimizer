@@ -68,17 +68,17 @@ const Dialog = {
         };
 
         optimizerStatToDisplayStat = {
-            AttackPercent: 'Attack %',
-            HealthPercent: 'Health %',
-            DefensePercent: 'Defense %',
-            Attack: 'Attack',
-            Health: 'Health',
-            Defense: 'Defense',
-            Speed: 'Speed',
-            EffectResistancePercent: 'Effect Resistance',
-            CriticalHitChancePercent: 'Crit Chance',
-            CriticalHitDamagePercent: 'Crit Damage',
-            EffectivenessPercent: 'Effectiveness',
+            AttackPercent: 'ATK%',
+            HealthPercent: 'HP%',
+            DefensePercent: 'DEF%',
+            Attack: 'ATK',
+            Health: 'HP',
+            Defense: 'DEF',
+            Speed: 'SPD',
+            EffectResistancePercent: 'ER%',
+            CriticalHitChancePercent: 'CC%',
+            CriticalHitDamagePercent: 'CD%',
+            EffectivenessPercent: 'EFF%',
             DualAttackChancePercent: 'DualAttackChancePercent',
         };
     },
@@ -874,48 +874,56 @@ const Dialog = {
                                   'Atk'
                               )}</div>
                               <input type="number" id="inputMaxAtkLimit${index}" class="optimizer-number-input stat-number-input"><br>
+                              <input type="number" id="inputAtkTarget${index}" class="optimizer-number-input stat-number-input" style="margin-left:90px" placeholder="↑T"><br>
 
                               <input type="number" id="inputMinDefLimit${index}" class="optimizer-number-input stat-number-input">
                               <div class="inputStatLabel" data-t>${i18next.t(
                                   'Def'
                               )}</div>
                               <input type="number" id="inputMaxDefLimit${index}" class="optimizer-number-input stat-number-input"><br>
+                              <input type="number" id="inputDefTarget${index}" class="optimizer-number-input stat-number-input" style="margin-left:90px" placeholder="↑T"><br>
 
                               <input type="number" id="inputMinHpLimit${index}" class="optimizer-number-input stat-number-input">
                               <div class="inputStatLabel" data-t>${i18next.t(
                                   'Hp'
                               )}</div>
                               <input type="number" id="inputMaxHpLimit${index}" class="optimizer-number-input stat-number-input"><br>
+                              <input type="number" id="inputHpTarget${index}" class="optimizer-number-input stat-number-input" style="margin-left:90px" placeholder="↑T"><br>
 
                               <input type="number" id="inputMinSpdLimit${index}" class="optimizer-number-input stat-number-input">
                               <div class="inputStatLabel" data-t>${i18next.t(
                                   'Spd'
                               )}</div>
                               <input type="number" id="inputMaxSpdLimit${index}" class="optimizer-number-input stat-number-input"><br>
+                              <input type="number" id="inputSpdTarget${index}" class="optimizer-number-input stat-number-input" style="margin-left:90px" placeholder="↑T"><br>
 
                               <input type="number" id="inputMinCrLimit${index}" class="optimizer-number-input stat-number-input">
                               <div class="inputStatLabel" data-t>${i18next.t(
                                   'CRate'
                               )}</div>
                               <input type="number" id="inputMaxCrLimit${index}" class="optimizer-number-input stat-number-input"><br>
+                              <input type="number" id="inputCrTarget${index}" class="optimizer-number-input stat-number-input" style="margin-left:90px" placeholder="↑T"><br>
 
                               <input type="number" id="inputMinCdLimit${index}" class="optimizer-number-input stat-number-input">
                               <div class="inputStatLabel" data-t>${i18next.t(
                                   'CDmg'
                               )}</div>
                               <input type="number" id="inputMaxCdLimit${index}" class="optimizer-number-input stat-number-input"><br>
+                              <input type="number" id="inputCdTarget${index}" class="optimizer-number-input stat-number-input" style="margin-left:90px" placeholder="↑T"><br>
 
                               <input type="number" id="inputMinEffLimit${index}" class="optimizer-number-input stat-number-input">
                               <div class="inputStatLabel" data-t>${i18next.t(
                                   'Eff'
                               )}</div>
                               <input type="number" id="inputMaxEffLimit${index}" class="optimizer-number-input stat-number-input"><br>
+                              <input type="number" id="inputEffTarget${index}" class="optimizer-number-input stat-number-input" style="margin-left:90px" placeholder="↑T"><br>
 
                               <input type="number" id="inputMinResLimit${index}" class="optimizer-number-input stat-number-input">
                               <div class="inputStatLabel" data-t>${i18next.t(
                                   'Res'
                               )}</div>
                               <input type="number" id="inputMaxResLimit${index}" class="optimizer-number-input stat-number-input"><br>
+                              <input type="number" id="inputResTarget${index}" class="optimizer-number-input stat-number-input" style="margin-left:90px" placeholder="↑T"><br>
                             </div>
 
                             <div id="placeholder-panel" class="constraints-panel-col-small">
@@ -1131,12 +1139,39 @@ const Dialog = {
                               <div class="horizontalSpace" ></div>
 
                               <div class="sliderRow">
-                                <div class="sliderLabel" data-t>${i18next.t(
-                                    'Top %'
-                                )}</div>
-                                <input class="sliderInput" id="filterSlider${index}Input" type="number" value="100" readonly>
-                                <div class="sliderContainer"><input class="slider" id="filterSlider${index}" type="range" min="10" max="100" value="100" step="1"></div><!--
-                                <div class="sliderContainer"><input class="slider" id="filterSlider${index}" type="range" min="0" max="100" value="100" step="5"></div> -->
+                                <div class="sliderLabel" data-t>${i18next.t('Wpn %')}</div>
+                                <input class="sliderInput" id="weaponFilterSlider${index}Input" type="number" value="100" readonly>
+                                <div class="sliderContainer"><input class="slider" id="weaponFilterSlider${index}" type="range" min="10" max="100" value="100" step="1"></div>
+                              </div>
+                              <div class="horizontalSpace" ></div>
+                              <div class="sliderRow">
+                                <div class="sliderLabel" data-t>${i18next.t('Hlm %')}</div>
+                                <input class="sliderInput" id="helmetFilterSlider${index}Input" type="number" value="100" readonly>
+                                <div class="sliderContainer"><input class="slider" id="helmetFilterSlider${index}" type="range" min="10" max="100" value="100" step="1"></div>
+                              </div>
+                              <div class="horizontalSpace" ></div>
+                              <div class="sliderRow">
+                                <div class="sliderLabel" data-t>${i18next.t('Arm %')}</div>
+                                <input class="sliderInput" id="armorFilterSlider${index}Input" type="number" value="100" readonly>
+                                <div class="sliderContainer"><input class="slider" id="armorFilterSlider${index}" type="range" min="10" max="100" value="100" step="1"></div>
+                              </div>
+                              <div class="horizontalSpace" ></div>
+                              <div class="sliderRow">
+                                <div class="sliderLabel" data-t>${i18next.t('Nkl %')}</div>
+                                <input class="sliderInput" id="necklaceFilterSlider${index}Input" type="number" value="100" readonly>
+                                <div class="sliderContainer"><input class="slider" id="necklaceFilterSlider${index}" type="range" min="10" max="100" value="100" step="1"></div>
+                              </div>
+                              <div class="horizontalSpace" ></div>
+                              <div class="sliderRow">
+                                <div class="sliderLabel" data-t>${i18next.t('Rng %')}</div>
+                                <input class="sliderInput" id="ringFilterSlider${index}Input" type="number" value="100" readonly>
+                                <div class="sliderContainer"><input class="slider" id="ringFilterSlider${index}" type="range" min="10" max="100" value="100" step="1"></div>
+                              </div>
+                              <div class="horizontalSpace" ></div>
+                              <div class="sliderRow">
+                                <div class="sliderLabel" data-t>${i18next.t('Bts %')}</div>
+                                <input class="sliderInput" id="bootsFilterSlider${index}Input" type="number" value="100" readonly>
+                                <div class="sliderContainer"><input class="slider" id="bootsFilterSlider${index}" type="range" min="10" max="100" value="100" step="1"></div>
                               </div>
                             </div>
                             <div class="vertical"></div>
@@ -1436,6 +1471,7 @@ const Dialog = {
                                   )}</option>
                                 </optgroup>
                               </select><br>
+                              <button id="openSlotSubstatFilter${index}" class="optimizer-btn" style="margin-top:6px;width:100%" type="button">Substat Filter</button>
                             </div>
                         </div>
                     </div>
@@ -1449,7 +1485,12 @@ const Dialog = {
                 OptimizerTab.buildSlider(`#cdSlider${index}`);
                 OptimizerTab.buildSlider(`#effSlider${index}`);
                 OptimizerTab.buildSlider(`#resSlider${index}`);
-                OptimizerTab.buildTopSlider(`#filterSlider${index}`);
+                OptimizerTab.buildTopSlider(`#weaponFilterSlider${index}`);
+                OptimizerTab.buildTopSlider(`#helmetFilterSlider${index}`);
+                OptimizerTab.buildTopSlider(`#armorFilterSlider${index}`);
+                OptimizerTab.buildTopSlider(`#necklaceFilterSlider${index}`);
+                OptimizerTab.buildTopSlider(`#ringFilterSlider${index}`);
+                OptimizerTab.buildTopSlider(`#bootsFilterSlider${index}`);
 
                 const assetsBySet = Assets.getAssetsBySet();
 
@@ -1607,6 +1648,16 @@ const Dialog = {
                     false,
                     'multiOptimizer'
                 );
+
+                document.getElementById(`openSlotSubstatFilter${index}`).addEventListener('click', async () => {
+                    const result = await Dialog.slotSubstatFilterDialog(
+                        OptimizerTab.getSlotSubstatFilters(index),
+                        index
+                    );
+                    if (result) {
+                        OptimizerTab.setSlotSubstatFilters(index, result.slotFilters);
+                    }
+                });
             },
             focusConfirm: false,
             showCancelButton: true,
@@ -1643,9 +1694,153 @@ const Dialog = {
 
         const heroInfo = heroData[hero.name];
 
+        const SLOTS = ['Weapon', 'Helmet', 'Armor', 'Necklace', 'Ring', 'Boots'];
+
+        const rollQualityOptions = [
+            { value: 0, label: 'Min' },
+            { value: 10, label: '10%' },
+            { value: 20, label: '20%' },
+            { value: 30, label: '30%' },
+            { value: 40, label: '40%' },
+            { value: 50, label: '50%' },
+            { value: 60, label: '60%' },
+            { value: 70, label: '70%' },
+            { value: 80, label: '80%' },
+            { value: 90, label: '90%' },
+            { value: 100, label: 'Max' },
+        ];
+
+        function slotOptionSelectHtml(id, currentVal, options) {
+            const isNull = currentVal === null || currentVal === undefined;
+            return `<select class="editGearStatSelect slotOptionSelect" id="${id}">
+                <option value="">← global</option>
+                ${options
+                    .map(
+                        (o) =>
+                            `<option value="${o.value}" ${
+                                !isNull &&
+                                String(currentVal) === String(o.value)
+                                    ? 'selected'
+                                    : ''
+                            }>${o.label}</option>`
+                    )
+                    .join('')}
+            </select>`;
+        }
+
+        const slotTabPanelsHtml = SLOTS.map((slot) => {
+            const existingCfg =
+                hero.slotModConfig && hero.slotModConfig[slot];
+            const hasOverride = !!existingCfg;
+
+            const limitRollsSelect = slotOptionSelectHtml(
+                `slotLimitRolls_${slot}`,
+                existingCfg?.limitRolls ?? null,
+                [1, 2, 3, 4, 5, 6].map((n) => ({ value: n, label: String(n) }))
+            );
+            const modGradeSelect = slotOptionSelectHtml(
+                `slotModGrade_${slot}`,
+                existingCfg?.modGrade ?? null,
+                [
+                    { value: 'lesser', label: i18next.t('Lesser') },
+                    { value: 'greater', label: i18next.t('Greater') },
+                ]
+            );
+            const rollQualitySelect = slotOptionSelectHtml(
+                `slotRollQuality_${slot}`,
+                existingCfg?.rollQuality ?? null,
+                rollQualityOptions
+            );
+            const keepStatOptionsSelect = slotOptionSelectHtml(
+                `slotKeepStatOptions_${slot}`,
+                existingCfg?.keepStatOptions ?? null,
+                [
+                    {
+                        value: 'neverReplace',
+                        label: i18next.t('Never replace wanted stats'),
+                    },
+                    {
+                        value: 'replace',
+                        label: i18next.t('Allow replacing wanted with wanted'),
+                    },
+                ]
+            );
+
+            return `
+                <div class="modTabPanel modTabPanelHidden" id="modTabPanel_${slot}">
+                    <div class="slotOverrideRow">
+                        <label class="slotOverrideLabel">
+                            <input type="checkbox" id="slotOverride_${slot}" class="slotOverrideCheckbox" data-slot="${slot}" ${
+                hasOverride ? 'checked' : ''
+            }>
+                            <span data-t>${i18next.t(
+                                'Custom config for this slot'
+                            )}</span>
+                        </label>
+                    </div>
+                    <div class="slotOptionsSection${
+                        !hasOverride ? ' slotSectionDimmed' : ''
+                    }" id="slotOptionsSection_${slot}">
+                        <p class="slotOptionsSectionLabel" data-t>${i18next.t(
+                            'Options (blank = inherit from Global)'
+                        )}</p>
+                        <div class="editGearFormRow">
+                            <div class="editGearStatLabel" data-t>${i18next.t(
+                                'Limit Rolls'
+                            )}</div>
+                            ${limitRollsSelect}
+                        </div>
+                        <div class="editGearFormRow">
+                            <div class="editGearStatLabel" data-t>${i18next.t(
+                                'Mod Grade'
+                            )}</div>
+                            ${modGradeSelect}
+                        </div>
+                        <div class="editGearFormRow">
+                            <div class="editGearStatLabel" data-t>${i18next.t(
+                                'Roll Quality'
+                            )}</div>
+                            ${rollQualitySelect}
+                        </div>
+                        <div class="editGearFormRow">
+                            <div class="editGearStatLabel" data-t>${i18next.t(
+                                'Wanted Stats'
+                            )}</div>
+                            ${keepStatOptionsSelect}
+                        </div>
+                    </div>
+                    <div class="slotRuleSection${
+                        !hasOverride ? ' slotSectionDimmed' : ''
+                    }" id="slotRuleSection_${slot}">
+                        <p class="slotRuleSectionLabel" data-t>${i18next.t(
+                            'Rules (first matching rule applies)'
+                        )}</p>
+                        <div class="ruleList" id="ruleList_${slot}"></div>
+                        <div class="ruleListButtons">
+                            <button class="addRuleBtn modListBtn" data-slot="${slot}" type="button">+ ${i18next.t(
+                'Add rule'
+            )}</button>
+                            <button class="generateRulesBtn modListBtn" data-slot="${slot}" type="button">⚙ ${i18next.t(
+                'Generate from config'
+            )}</button>
+                            <button class="copySlotBtn modListBtn" data-slot="${slot}" type="button">📋 ${i18next.t(
+                'Copy to...'
+            )}</button>
+                        </div>
+                        <div class="copySlotPicker" id="copySlotPicker_${slot}" style="display:none">
+                            <span class="copySlotPickerLabel">${i18next.t('Copy all rules & options to:')}</span>
+                            ${SLOTS.filter((s) => s !== slot).map((targetSlot) =>
+                                `<button class="copySlotTarget modListBtn" data-from="${slot}" data-to="${targetSlot}" type="button">${i18next.t(targetSlot)}</button>`
+                            ).join('')}
+                            <button class="copySlotCancel modListBtn" data-slot="${slot}" type="button">✕</button>
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+
         const { value: formValues } = await Swal.fire({
             title: '',
-            width: 1000,
+            width: 1350,
             html: `
                     <div class="editGearForm">
                         <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/themes@4.0.1/minimal/minimal.min.css" rel="stylesheet">
@@ -1654,7 +1849,37 @@ const Dialog = {
                             'Substat modification priority'
                         )}</p>
 
-                        <div class="editGearFormRow">
+                        <div class="modTopButtonsRow">
+                            <button type="button" id="toggleAllSlotsBtn" class="modListBtn" data-t>${i18next.t(
+                                'Toggle All Slots'
+                            )}</button>
+                            <button type="button" id="generateAllSlotsBtn" class="modListBtn" data-t>⚙ ${i18next.t(
+                                'Generate All from Config'
+                            )}</button>
+                            <button type="button" id="modResetBtn" class="modListBtn modResetBtn" data-t>↺ ${i18next.t(
+                                'Reset'
+                            )}</button>
+                            <button type="button" id="modSaveBtn" class="modListBtn modSaveBtn" data-t>💾 ${i18next.t(
+                                'Save'
+                            )}</button>
+                        </div>
+
+                        <div class="modSlotTabBar">
+                            <div class="modSlotTab modSlotTabActive" id="modTab_Global" data-tab="Global">${i18next.t(
+                                'Global'
+                            )}</div>
+                            ${SLOTS.map(
+                                (slot) =>
+                                    `<div class="modSlotTab" id="modTab_${slot}" data-tab="${slot}">${i18next.t(
+                                        slot
+                                    )}</div>`
+                            ).join('')}
+                        </div>
+
+                        <div class="modTabsContentRow">
+
+                            <div class="modTabsLeft">
+                                <div class="modTabPanel" id="modTabPanel_Global">
 
                             <div class="editGearFormHalf">
                                 <p style="color: var(--font-color)" data-t>${i18next.t(
@@ -1751,7 +1976,7 @@ const Dialog = {
                                         }>40%</option>
                                         <option value=50 ${
                                             hero.rollQuality === 50 ||
-                                            hero.rollQuality === undefined
+                                            hero.rollQuality == null
                                                 ? 'selected'
                                                 : ''
                                         }>50%</option>
@@ -1790,7 +2015,7 @@ const Dialog = {
                                     <select id="keepStatOptions" class="editGearStatSelect">
                                         <option value="neverReplace" ${
                                             hero.keepStatOptions ===
-                                                'noReplace' ||
+                                                'neverReplace' ||
                                             !hero.keepStatOptions
                                                 ? 'selected'
                                                 : ''
@@ -1806,18 +2031,80 @@ const Dialog = {
             )}</option>
                                     </select>
                                 </div>
+
+                                <div class="editGearFormRow">
+                                    <div class="editGearStatLabel" id="maxModPiecesLabel" data-t>${i18next.t(
+                                        'Max Mod Pieces'
+                                    )}</div>
+                                    <select id="maxModPieces" class="editGearStatSelect">
+                                        <option value=6 ${
+                                            !hero.maxModPieces || hero.maxModPieces >= 6
+                                                ? 'selected'
+                                                : ''
+                                        }>${i18next.t('No limit')}</option>
+                                        ${[1, 2, 3, 4, 5]
+                                            .map(
+                                                (n) =>
+                                                    `<option value=${n} ${
+                                                        hero.maxModPieces === n
+                                                            ? 'selected'
+                                                            : ''
+                                                    }>${n}</option>`
+                                            )
+                                            .join('')}
+                                    </select>
+                                </div>
+
+                                <div class="editGearFormRow modSlotToggleRow" id="modSlotToggleRow">
+                                    <div class="editGearStatLabel" id="modSlotsLabel" data-t>${i18next.t(
+                                        'Mod Slots'
+                                    )}</div>
+                                    <div class="modSlotCheckboxes">
+                                        ${['Weapon','Helmet','Armor','Necklace','Ring','Boots'].map((slot) => {
+                                            const checked = hero.modSlots == null || hero.modSlots.length === 0 || hero.modSlots.includes(slot);
+                                            return `<label class="modSlotLabel">
+                                                <input type="checkbox" class="modSlotCheckbox" id="modSlot_${slot}" value="${slot}" ${checked ? 'checked' : ''}>
+                                                <span>${i18next.t(slot)}</span>
+                                            </label>`;
+                                        }).join('')}
+                                    </div>
+                                </div>
+
+                                <div id="modEstimateDisplay" class="modEstimateDisplay"></div>
+
+                                <!-- ── Presets ───────────────────────────────────────── -->
+                                <div class="presetSection" id="presetSection">
+                                    <p class="presetSectionTitle" data-t>${i18next.t('Presets')}</p>
+                                    <div class="presetRow">
+                                        <input type="text" id="modDialogPresetNameInput" class="presetNameInput" placeholder="${i18next.t('Preset name...')}" />
+                                        <button type="button" id="presetSaveBtn" class="modListBtn">💾 ${i18next.t('Save')}</button>
+                                        <button type="button" id="presetDeleteBtn" class="modListBtn presetDeleteBtn">✕</button>
+                                    </div>
+                                    <div class="presetRow">
+                                        <select id="presetSelect" class="presetSelectEl"><option value="">${i18next.t('\u2014 select preset \u2014')}</option></select>
+                                        <button type="button" id="presetLoadBtn" class="modListBtn">↩ ${i18next.t('Load')}</button>
+                                    </div>
+                                    <div class="presetRow">
+                                        <span class="presetApplyLabel" data-t>${i18next.t('Apply to set:')}</span>
+                                        <select id="presetApplySetSelect" class="presetSelectEl"></select>
+                                        <button type="button" id="presetApplyBtn" class="modListBtn presetApplyBtn">▶ ${i18next.t('Apply to Rules')}</button>
+                                    </div>
+                                </div>
                             </div>
+
+                                </div><!-- /modTabPanel_Global -->
+                                ${slotTabPanelsHtml}
+                            </div><!-- /modTabsLeft -->
 
                             <div class="editGearFormVertical"></div>
 
-                            <div class="editGearFormHalf">
-                                <div>
-                                    <p style="color: var(--font-color)" data-t>${i18next.t(
-                                        'Substat selections'
-                                    )}</p>
-                                </div>
+                            <div class="modTabsRight">
+                                <div id="globalDragPanel">
+                                <p style="color: var(--font-color)" data-t>${i18next.t(
+                                    'Substat selections'
+                                )}</p>
 
-                                <div class="groupContainer editGearFormHalf">
+                                <div class="groupContainer">
                                     <div class="groupColumn">
                                         <div id="keepGroup" class="dragOrderList">
                                             <div class="draggableColumnLabel" style="color: var(--font-color)" id="keepColumnLabel" data-t>${i18next.t(
@@ -1859,10 +2146,47 @@ const Dialog = {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                                </div><!-- /globalDragPanel -->
+
+                                <div id="slotDragPanel" style="display:none;">
+                                    <div class="ruleRightHeader" id="ruleRightHeader" data-t>${i18next.t(
+                                        'Select a rule to edit its substats'
+                                    )}</div>
+                                    <div class="groupContainer">
+                                        <div class="groupColumn">
+                                            <div id="slotKeepGroup" class="dragOrderList">
+                                                <div class="draggableColumnLabel" style="color: var(--font-color)" data-t>${i18next.t(
+                                                    'Wanted substats'
+                                                )}</div>
+                                                <div id="slotKeepContainer" class="draggableMovableContainer"></div>
+                                            </div>
+                                        </div>
+                                        <div class="groupColumn">
+                                            <div id="slotIgnoreGroup" class="dragOrderList">
+                                                <div class="draggableColumnLabel" style="color: var(--font-color)" data-t>${i18next.t(
+                                                    "Don't change"
+                                                )}</div>
+                                                <div id="slotIgnoreContainer" class="draggableMovableContainer"></div>
+                                            </div>
+                                        </div>
+                                        <div class="groupColumn">
+                                            <div id="slotModifyGroup" class="dragOrderList">
+                                                <div class="draggableColumnLabel" style="color: var(--font-color)" data-t>${i18next.t(
+                                                    'Unwanted substats'
+                                                )}</div>
+                                                <div id="slotModifyContainer" class="draggableMovableContainer"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- /slotDragPanel -->
+                            </div><!-- /modTabsRight -->
+                        </div><!-- /modTabsContentRow -->
                     </div>
                 `,
             didOpen: async () => {
+                // Placeholder — replaced with real implementation once modEstimateItems is fetched.
+                let updateModEstimate = () => {};
+
                 global.keepGroup = Sortable.create(
                     document.getElementById('keepContainer'),
                     {
@@ -1870,6 +2194,7 @@ const Dialog = {
                         filter: '.draggableColumnLabel',
                         animation: 100,
                         fallbackOnBody: true,
+                        onEnd: () => updateModEstimate(),
                     }
                 );
                 global.ignoreGroup = Sortable.create(
@@ -1879,6 +2204,7 @@ const Dialog = {
                         filter: '.draggableColumnLabel',
                         animation: 100,
                         fallbackOnBody: true,
+                        onEnd: () => updateModEstimate(),
                     }
                 );
                 global.modifyGroup = Sortable.create(
@@ -1888,8 +2214,1031 @@ const Dialog = {
                         filter: '.draggableColumnLabel',
                         animation: 100,
                         fallbackOnBody: true,
+                        onEnd: () => updateModEstimate(),
                     }
                 );
+
+                // ── Slot tab sortables (shared right panel for rules) ─────────
+                global.slotKeepGroup = Sortable.create(
+                    document.getElementById('slotKeepContainer'),
+                    {
+                        group: 'slotNested',
+                        filter: '.draggableColumnLabel',
+                        animation: 100,
+                        fallbackOnBody: true,
+                    }
+                );
+                global.slotIgnoreGroup = Sortable.create(
+                    document.getElementById('slotIgnoreContainer'),
+                    {
+                        group: 'slotNested',
+                        filter: '.draggableColumnLabel',
+                        animation: 100,
+                        fallbackOnBody: true,
+                    }
+                );
+                global.slotModifyGroup = Sortable.create(
+                    document.getElementById('slotModifyContainer'),
+                    {
+                        group: 'slotNested',
+                        filter: '.draggableColumnLabel',
+                        animation: 100,
+                        fallbackOnBody: true,
+                    }
+                );
+
+                // ── Slot state init ───────────────────────────────────────────
+                const modSlotState = {};
+                SLOTS.forEach((slot) => {
+                    const existingCfg =
+                        hero.slotModConfig && hero.slotModConfig[slot];
+                    modSlotState[slot] = {
+                        override: !!existingCfg,
+                        limitRolls: existingCfg?.limitRolls ?? null,
+                        modGrade: existingCfg?.modGrade ?? null,
+                        rollQuality: existingCfg?.rollQuality ?? null,
+                        keepStatOptions: existingCfg?.keepStatOptions ?? null,
+                        rules: (existingCfg?.rules || []).map((r) => ({
+                            ...r,
+                            keepStats: [...(r.keepStats || [])],
+                            ignoreStats: [...(r.ignoreStats || [])],
+                            discardStats: [...(r.discardStats || [])],
+                        })),
+                    };
+                });
+                global.modSlotState = modSlotState;
+                global.modDialogActiveSlot = null;
+                global.modDialogActiveRuleIdx = -1;
+                global.modDialogRuleListSortables = {};
+
+                // ── Stat item divs builder ────────────────────────────────────
+                // slot: optional — when provided, only shows the constraint badge
+                // for that slot (hides irrelevant cross-slot badges).
+                function buildStatDivs(statList, slot) {
+                    const SLOT_BADGE_FILTER = {
+                        Weapon: '✗Weap',
+                        Armor: '✗Arm',
+                    };
+                    const relevantBadge = slot
+                        ? SLOT_BADGE_FILTER[slot]
+                        : null;
+                    return statList
+                        .map((s) => {
+                            const badge = modConstraintBadge(s);
+                            // In slot panels suppress badges for other slots
+                            const showBadge =
+                                !relevantBadge ||
+                                badge.includes(relevantBadge)
+                                    ? badge
+                                    : '';
+                            return `<div class="list-group-item" data-id="${s}"><span class="modStatLabel">${i18next.t(
+                                optimizerStatToDisplayStat[s] || s
+                            )}</span>${showBadge}</div>`;
+                        })
+                        .join('');
+                }
+
+                // ── Main stat options for a slot ──────────────────────────────
+                function buildMainStatOptions(slot, selectedValue) {
+                    const optReq = hero.optimizationRequest || {};
+                    const slotToField = {
+                        Necklace: 'inputNecklaceStat',
+                        Ring: 'inputRingStat',
+                        Boots: 'inputBootsStat',
+                    };
+                    const field = slotToField[slot];
+                    const availableStats =
+                        field && optReq[field] && optReq[field].length > 0
+                            ? optReq[field]
+                            : [];
+                    const options = [
+                        { value: '', label: i18next.t('Any') },
+                        ...availableStats.map((s) => ({
+                            value: s,
+                            label: i18next.t(
+                                optimizerStatToDisplayStat[s] || s
+                            ),
+                        })),
+                    ];
+                    return options
+                        .map(
+                            (o) =>
+                                `<option value="${o.value}" ${
+                                    (selectedValue || '') === o.value
+                                        ? 'selected'
+                                        : ''
+                                }>${o.label}</option>`
+                        )
+                        .join('');
+                }
+
+                // ── Set options ───────────────────────────────────────────────
+                function buildSetOptions(selectedValue) {
+                    const optReq = hero.optimizationRequest || {};
+                    const allSets = [
+                        ...(optReq.inputSetsOne || []),
+                        ...(optReq.inputSetsTwo || []),
+                        ...(optReq.inputSetsThree || []),
+                    ];
+                    const uniqueSets = [...new Set(allSets)];
+                    const options = [
+                        { value: '', label: i18next.t('Any') },
+                        ...uniqueSets.map((s) => ({
+                            value: s,
+                            label: s.replace('Set', ''),
+                        })),
+                    ];
+                    return options
+                        .map(
+                            (o) =>
+                                `<option value="${o.value}" ${
+                                    (selectedValue || '') === o.value
+                                        ? 'selected'
+                                        : ''
+                                }>${o.label}</option>`
+                        )
+                        .join('');
+                }
+
+                // ── Render rule list for a slot ───────────────────────────────
+                function renderRuleList(slot) {
+                    const listEl = document.getElementById(
+                        `ruleList_${slot}`
+                    );
+                    if (!listEl) return;
+                    const rules = modSlotState[slot].rules;
+                    const activeIdx =
+                        global.modDialogActiveSlot === slot
+                            ? global.modDialogActiveRuleIdx
+                            : -1;
+
+                    listEl.innerHTML = rules
+                        .map(
+                            (rule, i) => `
+                        <div class="ruleRow${
+                            i === activeIdx ? ' ruleRowSelected' : ''
+                        }" data-slot="${slot}" data-idx="${i}">
+                            <span class="ruleRowDragHandle">☰</span>
+                            <label class="ruleEnabledLabel">
+                                <input type="checkbox" class="ruleEnabledCb" ${
+                                    rule.enabled !== false ? 'checked' : ''
+                                } data-slot="${slot}" data-idx="${i}">
+                            </label>
+                            <select class="ruleMainStatSelect" data-slot="${slot}" data-idx="${i}">${buildMainStatOptions(
+                                slot,
+                                rule.mainStat || ''
+                            )}</select>
+                            <select class="ruleSetSelect" data-slot="${slot}" data-idx="${i}">${buildSetOptions(
+                                rule.set || ''
+                            )}</select>
+                            <button class="ruleDeleteBtn" data-slot="${slot}" data-idx="${i}" type="button">✕</button>
+                        </div>`
+                        )
+                        .join('');
+
+                    if (global.modDialogRuleListSortables[slot]) {
+                        global.modDialogRuleListSortables[slot].destroy();
+                    }
+                    global.modDialogRuleListSortables[slot] =
+                        Sortable.create(listEl, {
+                            handle: '.ruleRowDragHandle',
+                            animation: 100,
+                            onEnd: (evt) => {
+                                const moved = modSlotState[
+                                    slot
+                                ].rules.splice(evt.oldIndex, 1)[0];
+                                modSlotState[slot].rules.splice(
+                                    evt.newIndex,
+                                    0,
+                                    moved
+                                );
+                                if (global.modDialogActiveSlot === slot) {
+                                    const ai = global.modDialogActiveRuleIdx;
+                                    if (evt.oldIndex === ai) {
+                                        global.modDialogActiveRuleIdx =
+                                            evt.newIndex;
+                                    } else if (
+                                        evt.oldIndex < ai &&
+                                        evt.newIndex >= ai
+                                    ) {
+                                        global.modDialogActiveRuleIdx--;
+                                    } else if (
+                                        evt.oldIndex > ai &&
+                                        evt.newIndex <= ai
+                                    ) {
+                                        global.modDialogActiveRuleIdx++;
+                                    }
+                                }
+                                renderRuleList(slot);
+                            },
+                        });
+                }
+
+                // ── Flush slot sortables → save to active rule ────────────────
+                function flushSlotSortables() {
+                    const slot = global.modDialogActiveSlot;
+                    const idx = global.modDialogActiveRuleIdx;
+                    if (
+                        slot &&
+                        idx >= 0 &&
+                        modSlotState[slot] &&
+                        modSlotState[slot].rules[idx]
+                    ) {
+                        const rule = modSlotState[slot].rules[idx];
+                        rule.keepStats = global.slotKeepGroup
+                            .toArray()
+                            .filter((x) => stats.includes(x));
+                        rule.discardStats = global.slotModifyGroup
+                            .toArray()
+                            .filter((x) => stats.includes(x));
+                        rule.ignoreStats = global.slotIgnoreGroup
+                            .toArray()
+                            .filter((x) => stats.includes(x));
+                    }
+                }
+
+                // ── Collect current dialog state into an editedHero object ───
+                function buildEditedHeroData() {
+                    flushSlotSortables();
+
+                    const modSlots = Array.from(
+                        _swalEl.querySelectorAll('.modSlotCheckbox:checked')
+                    ).map((cb) => cb.value);
+
+                    const slotModConfig = {};
+                    SLOTS.forEach((slot) => {
+                        const slotData = global.modSlotState[slot];
+                        if (!slotData || !slotData.override) {
+                            slotModConfig[slot] = null;
+                            return;
+                        }
+                        const getSelectVal = (id) => {
+                            const el = _swalEl.querySelector(`#${id}`);
+                            return el && el.value !== '' ? el.value : null;
+                        };
+                        const limitRollsRaw = getSelectVal(`slotLimitRolls_${slot}`);
+                        const rollQualityRaw = getSelectVal(`slotRollQuality_${slot}`);
+                        slotModConfig[slot] = {
+                            limitRolls: limitRollsRaw !== null ? parseInt(limitRollsRaw, 10) : null,
+                            modGrade: getSelectVal(`slotModGrade_${slot}`),
+                            rollQuality: rollQualityRaw !== null ? parseFloat(rollQualityRaw) : null,
+                            keepStatOptions: getSelectVal(`slotKeepStatOptions_${slot}`),
+                            rules: slotData.rules.map((r) => ({
+                                mainStat: r.mainStat || null,
+                                set: r.set || null,
+                                enabled: r.enabled !== false,
+                                keepStats: r.keepStats || [],
+                                ignoreStats: r.ignoreStats || [],
+                                discardStats: r.discardStats || [],
+                            })),
+                        };
+                    });
+
+                    return {
+                        discardStats: global.modifyGroup.toArray().filter((x) => stats.includes(x)),
+                        ignoreStats: global.ignoreGroup.toArray().filter((x) => stats.includes(x)),
+                        keepStats: global.keepGroup.toArray().filter((x) => stats.includes(x)),
+                        modGrade: _swalEl.querySelector('#modGrade').value,
+                        keepStatOptions: _swalEl.querySelector('#keepStatOptions').value,
+                        rollQuality: parseFloat(_swalEl.querySelector('#rollQuality').value),
+                        limitRolls: parseInt(_swalEl.querySelector('#limitRolls').value, 10),
+                        maxModPieces: parseInt(_swalEl.querySelector('#maxModPieces').value, 10),
+                        modSlots,
+                        slotModConfig,
+                        heroInfo,
+                    };
+                }
+                global._modDataCollector = buildEditedHeroData;
+
+                // ── Populate slot drag columns from a rule ────────────────────
+                function populateSlotSortables(rule, slot) {
+                    const header =
+                        document.getElementById('ruleRightHeader');
+
+                    // Stats that physically cannot appear on this slot type
+                    // (includes the slot's fixed main stat — can never be a substat)
+                    const SLOT_IMPOSSIBLE = {
+                        Weapon: ['Attack', 'Defense', 'DefensePercent'],
+                        Helmet: ['Health'],
+                        Armor:  ['Defense', 'Attack', 'AttackPercent'],
+                    };
+                    const slotImpossible = SLOT_IMPOSSIBLE[slot] || [];
+
+                    if (!rule) {
+                        const baseStats = stats.filter(
+                            (s) => !slotImpossible.includes(s)
+                        );
+                        document.getElementById(
+                            'slotKeepContainer'
+                        ).innerHTML = '';
+                        document.getElementById(
+                            'slotIgnoreContainer'
+                        ).innerHTML = buildStatDivs(baseStats, slot);
+                        document.getElementById(
+                            'slotModifyContainer'
+                        ).innerHTML = '';
+                        if (header) {
+                            header.textContent = i18next.t(
+                                'Select a rule to edit its substats'
+                            );
+                        }
+                        return;
+                    }
+                    // Exclude the rule's main stat and slot-impossible stats
+                    const forbidden = new Set([
+                        ...(rule.mainStat ? [rule.mainStat] : []),
+                        ...slotImpossible,
+                    ]);
+                    const availableStats = stats.filter(
+                        (s) => !forbidden.has(s)
+                    );
+                    const keepList = (rule.keepStats || []).filter(
+                        (s) => !forbidden.has(s)
+                    );
+                    const discardList = (rule.discardStats || []).filter(
+                        (s) => !forbidden.has(s)
+                    );
+                    const ignoreList =
+                        rule.ignoreStats && rule.ignoreStats.length > 0
+                            ? rule.ignoreStats.filter(
+                                  (s) => !forbidden.has(s)
+                              )
+                            : availableStats.filter(
+                                  (s) =>
+                                      !keepList.includes(s) &&
+                                      !discardList.includes(s)
+                              );
+                    document.getElementById(
+                        'slotKeepContainer'
+                    ).innerHTML = buildStatDivs(keepList, slot);
+                    document.getElementById(
+                        'slotIgnoreContainer'
+                    ).innerHTML = buildStatDivs(ignoreList, slot);
+                    document.getElementById(
+                        'slotModifyContainer'
+                    ).innerHTML = buildStatDivs(discardList, slot);
+                    const mainLabel = rule.mainStat
+                        ? i18next.t(
+                              optimizerStatToDisplayStat[rule.mainStat] ||
+                                  rule.mainStat
+                          )
+                        : i18next.t('Any');
+                    const setLabel = rule.set
+                        ? rule.set.replace('Set', ' set')
+                        : i18next.t('Any');
+                    if (header) {
+                        header.textContent = `${mainLabel} | ${setLabel}`;
+                    }
+                }
+
+                // ── Switch tab ────────────────────────────────────────────────
+                function switchTab(newTab) {
+                    if (
+                        global.modDialogActiveSlot &&
+                        global.modDialogActiveRuleIdx >= 0
+                    ) {
+                        flushSlotSortables();
+                    }
+                    document
+                        .querySelectorAll('.modSlotTab')
+                        .forEach((btn) =>
+                            btn.classList.remove('modSlotTabActive')
+                        );
+                    const tabBtn = document.getElementById(
+                        `modTab_${newTab}`
+                    );
+                    if (tabBtn) tabBtn.classList.add('modSlotTabActive');
+
+                    document
+                        .querySelectorAll('.modTabPanel')
+                        .forEach((p) => p.classList.add('modTabPanelHidden'));
+                    const panel = document.getElementById(
+                        `modTabPanel_${newTab}`
+                    );
+                    if (panel) panel.classList.remove('modTabPanelHidden');
+
+                    const globalDrag =
+                        document.getElementById('globalDragPanel');
+                    const slotDrag =
+                        document.getElementById('slotDragPanel');
+                    if (newTab === 'Global') {
+                        if (globalDrag) globalDrag.style.display = '';
+                        if (slotDrag) slotDrag.style.display = 'none';
+                        global.modDialogActiveSlot = null;
+                        global.modDialogActiveRuleIdx = -1;
+                    } else {
+                        if (globalDrag) globalDrag.style.display = 'none';
+                        if (slotDrag) slotDrag.style.display = '';
+                        global.modDialogActiveSlot = newTab;
+                        global.modDialogActiveRuleIdx = -1;
+                        populateSlotSortables(null, newTab);
+                        renderRuleList(newTab);
+                    }
+                }
+
+                // ── Scope all delegated events to the dialog container ───────
+                // Using _swalEl instead of document prevents listener
+                // accumulation when the dialog is opened multiple times.
+                const _swalEl = Swal.getHtmlContainer();
+
+                // ── Tab click handlers ────────────────────────────────────────
+                _swalEl.querySelectorAll('.modSlotTab').forEach((btn) => {
+                    btn.addEventListener('click', () =>
+                        switchTab(btn.dataset.tab)
+                    );
+                });
+
+                // ── Render initial rule lists ─────────────────────────────────
+                SLOTS.forEach((slot) => renderRuleList(slot));
+
+                // ── Override checkbox handlers ────────────────────────────────
+                _swalEl
+                    .querySelectorAll('.slotOverrideCheckbox')
+                    .forEach((cb) => {
+                        cb.addEventListener('change', () => {
+                            const slot = cb.dataset.slot;
+                            const enabled = cb.checked;
+                            modSlotState[slot].override = enabled;
+                            const optSec = document.getElementById(
+                                `slotOptionsSection_${slot}`
+                            );
+                            const ruleSec = document.getElementById(
+                                `slotRuleSection_${slot}`
+                            );
+                            if (optSec)
+                                optSec.classList.toggle(
+                                    'slotSectionDimmed',
+                                    !enabled
+                                );
+                            if (ruleSec)
+                                ruleSec.classList.toggle(
+                                    'slotSectionDimmed',
+                                    !enabled
+                                );
+                        });
+                    });
+
+                // ── Rule row click → select / deselect rule ───────────────────
+                _swalEl.addEventListener('click', (e) => {
+                    const ruleRow = e.target.closest('.ruleRow');
+                    if (!ruleRow) return;
+                    if (
+                        e.target.classList.contains('ruleDeleteBtn') ||
+                        e.target.classList.contains('ruleEnabledCb') ||
+                        e.target.tagName === 'SELECT'
+                    )
+                        return;
+                    const slot = ruleRow.dataset.slot;
+                    const idx = parseInt(ruleRow.dataset.idx, 10);
+                    if (global.modDialogActiveSlot !== slot) return;
+                    if (global.modDialogActiveRuleIdx >= 0)
+                        flushSlotSortables();
+                    const rule = modSlotState[slot].rules[idx];
+                    if (!rule) return;
+                    if (global.modDialogActiveRuleIdx === idx) {
+                        global.modDialogActiveRuleIdx = -1;
+                        populateSlotSortables(null, slot);
+                    } else {
+                        global.modDialogActiveRuleIdx = idx;
+                        populateSlotSortables(rule, slot);
+                    }
+                    renderRuleList(slot);
+                });
+
+                // ── Rule enabled toggle ───────────────────────────────────────
+                _swalEl.addEventListener('change', (e) => {
+                    if (!e.target.classList.contains('ruleEnabledCb')) return;
+                    const slot = e.target.dataset.slot;
+                    const idx = parseInt(e.target.dataset.idx, 10);
+                    if (modSlotState[slot] && modSlotState[slot].rules[idx]) {
+                        modSlotState[slot].rules[idx].enabled =
+                            e.target.checked;
+                    }
+                });
+
+                // ── Rule mainStat / set select changes ────────────────────────
+                _swalEl.addEventListener('change', (e) => {
+                    if (e.target.classList.contains('ruleMainStatSelect')) {
+                        const slot = e.target.dataset.slot;
+                        const idx = parseInt(e.target.dataset.idx, 10);
+                        if (
+                            modSlotState[slot] &&
+                            modSlotState[slot].rules[idx]
+                        ) {
+                            // Flush drag column changes before updating mainStat
+                            // so the user's substat assignments are preserved.
+                            if (
+                                global.modDialogActiveSlot === slot &&
+                                global.modDialogActiveRuleIdx === idx
+                            ) {
+                                flushSlotSortables();
+                            }
+                            modSlotState[slot].rules[idx].mainStat =
+                                e.target.value || null;
+                        }
+                        if (
+                            global.modDialogActiveSlot === slot &&
+                            global.modDialogActiveRuleIdx === idx
+                        ) {
+                            const r = modSlotState[slot].rules[idx];
+                            if (r) populateSlotSortables(r, slot);
+                        }
+                    }
+                    if (e.target.classList.contains('ruleSetSelect')) {
+                        const slot = e.target.dataset.slot;
+                        const idx = parseInt(e.target.dataset.idx, 10);
+                        if (
+                            modSlotState[slot] &&
+                            modSlotState[slot].rules[idx]
+                        ) {
+                            // Flush drag column changes before updating set
+                            // so the user's substat assignments are preserved.
+                            if (
+                                global.modDialogActiveSlot === slot &&
+                                global.modDialogActiveRuleIdx === idx
+                            ) {
+                                flushSlotSortables();
+                            }
+                            modSlotState[slot].rules[idx].set =
+                                e.target.value || null;
+                        }
+                        if (
+                            global.modDialogActiveSlot === slot &&
+                            global.modDialogActiveRuleIdx === idx
+                        ) {
+                            const r = modSlotState[slot].rules[idx];
+                            if (r) populateSlotSortables(r, slot);
+                        }
+                    }
+                });
+
+                // ── Delete rule ───────────────────────────────────────────────
+                _swalEl.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('ruleDeleteBtn')) return;
+                    const slot = e.target.dataset.slot;
+                    const idx = parseInt(e.target.dataset.idx, 10);
+                    modSlotState[slot].rules.splice(idx, 1);
+                    if (global.modDialogActiveSlot === slot) {
+                        if (global.modDialogActiveRuleIdx === idx) {
+                            global.modDialogActiveRuleIdx = -1;
+                            populateSlotSortables(null, slot);
+                        } else if (global.modDialogActiveRuleIdx > idx) {
+                            global.modDialogActiveRuleIdx--;
+                        }
+                    }
+                    renderRuleList(slot);
+                });
+
+                // ── Reset global substats to "Don't change" ───────────────────
+                _swalEl.addEventListener('click', (e) => {
+                    if (!e.target.closest('#modResetBtn')) return;
+                    const keepEl    = document.getElementById('keepContainer');
+                    const ignoreEl  = document.getElementById('ignoreContainer');
+                    const modifyEl  = document.getElementById('modifyContainer');
+                    while (keepEl?.firstChild)   ignoreEl.appendChild(keepEl.firstChild);
+                    while (modifyEl?.firstChild) ignoreEl.appendChild(modifyEl.firstChild);
+                    updateModEstimate();
+                });
+
+                // ── Toggle All Slots ───────────────────────────────────────────
+                _swalEl.addEventListener('click', (e) => {
+                    if (!e.target.closest('#toggleAllSlotsBtn')) return;
+                    const checkboxes = Array.from(
+                        _swalEl.querySelectorAll('.modSlotCheckbox')
+                    );
+                    const allChecked = checkboxes.every((cb) => cb.checked);
+                    checkboxes.forEach((cb) => {
+                        cb.checked = !allChecked;
+                    });
+                    updateModEstimate();
+                });
+
+                // ── Save (saves without closing the dialog) ────────────────
+                _swalEl.addEventListener('click', async (e) => {
+                    const btn = e.target.closest('#modSaveBtn');
+                    if (!btn) return;
+                    const data = buildEditedHeroData();
+                    btn.disabled = true;
+                    try {
+                        await Api.setModStats(data, hero.id);
+                        const origText = btn.innerHTML;
+                        btn.innerHTML = '✓ Saved!';
+                        setTimeout(() => {
+                            btn.innerHTML = origText;
+                            btn.disabled = false;
+                        }, 1500);
+                    } catch (err) {
+                        console.error('Failed to save mod stats', err);
+                        btn.disabled = false;
+                    }
+                });
+
+                // ── Add rule ──────────────────────────────────────────────────
+                _swalEl.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('addRuleBtn')) return;
+                    const slot = e.target.dataset.slot;
+                    const newRule = {
+                        mainStat: null,
+                        set: null,
+                        enabled: true,
+                        keepStats: [],
+                        ignoreStats: [],
+                        discardStats: [],
+                    };
+                    modSlotState[slot].rules.push(newRule);
+                    if (global.modDialogActiveSlot === slot) {
+                        flushSlotSortables();
+                        global.modDialogActiveRuleIdx =
+                            modSlotState[slot].rules.length - 1;
+                        populateSlotSortables(newRule, slot);
+                    }
+                    renderRuleList(slot);
+                });
+
+                // ── Generate rules from optimizer config ──────────────────────
+                _swalEl.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('generateRulesBtn'))
+                        return;
+                    const slot = e.target.dataset.slot;
+                    const optReq = hero.optimizationRequest || {};
+                    const slotToField = {
+                        Necklace: 'inputNecklaceStat',
+                        Ring: 'inputRingStat',
+                        Boots: 'inputBootsStat',
+                    };
+                    const field = slotToField[slot];
+                    const mainStats =
+                        field && optReq[field] && optReq[field].length > 0
+                            ? optReq[field]
+                            : [null];
+                    const allSets = [
+                        ...new Set([
+                            ...(optReq.inputSetsOne || []),
+                            ...(optReq.inputSetsTwo || []),
+                            ...(optReq.inputSetsThree || []),
+                        ]),
+                    ];
+                    const sets = allSets.length > 0 ? allSets : [null];
+                    const existing = modSlotState[slot].rules;
+                    for (const mainStat of mainStats) {
+                        for (const set of sets) {
+                            const exists = existing.some(
+                                (r) =>
+                                    (r.mainStat || null) ===
+                                        (mainStat || null) &&
+                                    (r.set || null) === (set || null)
+                            );
+                            if (!exists) {
+                                existing.push({
+                                    mainStat: mainStat || null,
+                                    set: set || null,
+                                    enabled: true,
+                                    keepStats: [],
+                                    ignoreStats: [],
+                                    discardStats: [],
+                                });
+                            }
+                        }
+                    }
+                    renderRuleList(slot);
+                });
+
+                // ── Generate rules for ALL slots from optimizer config ─────────
+                _swalEl.addEventListener('click', (e) => {
+                    if (!e.target.closest('#generateAllSlotsBtn')) return;
+                    const optReq = hero.optimizationRequest || {};
+                    const slotToField = {
+                        Necklace: 'inputNecklaceStat',
+                        Ring: 'inputRingStat',
+                        Boots: 'inputBootsStat',
+                    };
+                    const allSets = [
+                        ...new Set([
+                            ...(optReq.inputSetsOne || []),
+                            ...(optReq.inputSetsTwo || []),
+                            ...(optReq.inputSetsThree || []),
+                        ]),
+                    ];
+                    const sets = allSets.length > 0 ? allSets : [null];
+                    SLOTS.forEach((slot) => {
+                        // Enable override for this slot if not already active
+                        if (!modSlotState[slot].override) {
+                            modSlotState[slot].override = true;
+                            const cb = document.getElementById(
+                                `slotOverride_${slot}`
+                            );
+                            if (cb) cb.checked = true;
+                            const optSec = document.getElementById(
+                                `slotOptionsSection_${slot}`
+                            );
+                            const ruleSec = document.getElementById(
+                                `slotRuleSection_${slot}`
+                            );
+                            if (optSec)
+                                optSec.classList.remove('slotSectionDimmed');
+                            if (ruleSec)
+                                ruleSec.classList.remove('slotSectionDimmed');
+                        }
+                        const field = slotToField[slot];
+                        const mainStats =
+                            field &&
+                            optReq[field] &&
+                            optReq[field].length > 0
+                                ? optReq[field]
+                                : [null];
+                        const existing = modSlotState[slot].rules;
+                        for (const mainStat of mainStats) {
+                            for (const set of sets) {
+                                const exists = existing.some(
+                                    (r) =>
+                                        (r.mainStat || null) ===
+                                            (mainStat || null) &&
+                                        (r.set || null) === (set || null)
+                                );
+                                if (!exists) {
+                                    existing.push({
+                                        mainStat: mainStat || null,
+                                        set: set || null,
+                                        enabled: true,
+                                        keepStats: [],
+                                        ignoreStats: [],
+                                        discardStats: [],
+                                    });
+                                }
+                            }
+                        }
+                        renderRuleList(slot);
+                    });
+                });
+
+                // ── Copy slot config to another slot ──────────────────────────
+                _swalEl.addEventListener('click', (e) => {
+                    // Show picker panel
+                    if (e.target.classList.contains('copySlotBtn')) {
+                        const slot = e.target.dataset.slot;
+                        _swalEl.querySelectorAll('.copySlotPicker').forEach((el) => {
+                            el.style.display = 'none';
+                        });
+                        const picker = document.getElementById(`copySlotPicker_${slot}`);
+                        if (picker) picker.style.display = 'flex';
+                        return;
+                    }
+                    // Dismiss picker
+                    if (e.target.classList.contains('copySlotCancel')) {
+                        const slot = e.target.dataset.slot;
+                        const picker = document.getElementById(`copySlotPicker_${slot}`);
+                        if (picker) picker.style.display = 'none';
+                        return;
+                    }
+                    // Execute copy
+                    if (e.target.classList.contains('copySlotTarget')) {
+                        flushSlotSortables();
+                        const fromSlot = e.target.dataset.from;
+                        const toSlot = e.target.dataset.to;
+                        const src = modSlotState[fromSlot];
+
+                        // Stats that are physically impossible for each slot type.
+                        // Must mirror the same table used in populateSlotSortables.
+                        const SLOT_IMPOSSIBLE = {
+                            Weapon: ['Attack', 'Defense', 'DefensePercent'],
+                            Helmet: ['Health'],
+                            Armor:  ['Defense', 'Attack', 'AttackPercent'],
+                        };
+                        const impossibleFrom = new Set(SLOT_IMPOSSIBLE[fromSlot] || []);
+                        const impossibleTo   = new Set(SLOT_IMPOSSIBLE[toSlot]   || []);
+
+                        // Stats that were invisible in the source slot (so never in any
+                        // list) but ARE valid in the target slot → put them in ignore
+                        // (neutral) so they don't silently fall through.
+                        const freedStats = stats.filter(
+                            (s) => impossibleFrom.has(s) && !impossibleTo.has(s)
+                        );
+
+                        modSlotState[toSlot] = {
+                            override: src.override,
+                            limitRolls: src.limitRolls,
+                            modGrade: src.modGrade,
+                            rollQuality: src.rollQuality,
+                            keepStatOptions: src.keepStatOptions,
+                            rules: src.rules.map((r) => {
+                                const keepStats    = (r.keepStats    || []).filter((s) => !impossibleTo.has(s));
+                                const discardStats = (r.discardStats || []).filter((s) => !impossibleTo.has(s));
+                                const ignoreStats  = [
+                                    ...(r.ignoreStats || []).filter((s) => !impossibleTo.has(s)),
+                                    // Add stats that were invisible in source but visible in target
+                                    ...freedStats.filter(
+                                        (s) => !keepStats.includes(s) && !discardStats.includes(s)
+                                    ),
+                                ];
+                                return { ...r, keepStats, ignoreStats, discardStats };
+                            }),
+                        };
+                        // Sync override checkbox + section dimming
+                        const cb = document.getElementById(`slotOverride_${toSlot}`);
+                        if (cb) cb.checked = src.override;
+                        const optSec = document.getElementById(`slotOptionsSection_${toSlot}`);
+                        const ruleSec = document.getElementById(`slotRuleSection_${toSlot}`);
+                        if (optSec) optSec.classList.toggle('slotSectionDimmed', !src.override);
+                        if (ruleSec) ruleSec.classList.toggle('slotSectionDimmed', !src.override);
+                        // Sync option selects
+                        const setSelectVal = (id, val) => {
+                            const el = document.getElementById(id);
+                            if (el) el.value = val !== null && val !== undefined ? String(val) : '';
+                        };
+                        setSelectVal(`slotLimitRolls_${toSlot}`, src.limitRolls);
+                        setSelectVal(`slotModGrade_${toSlot}`, src.modGrade);
+                        setSelectVal(`slotRollQuality_${toSlot}`, src.rollQuality);
+                        setSelectVal(`slotKeepStatOptions_${toSlot}`, src.keepStatOptions);
+                        renderRuleList(toSlot);
+                        // Brief feedback
+                        const origText = e.target.textContent;
+                        e.target.textContent = '✓';
+                        e.target.disabled = true;
+                        setTimeout(() => {
+                            e.target.textContent = origText;
+                            e.target.disabled = false;
+                        }, 1000);
+                    }
+                });
+
+                // ── Presets ───────────────────────────────────────────
+                (() => {
+                    const PRESETS_KEY = 'modDialogPresets';
+                    const getStore = () => {
+                        try { return JSON.parse(localStorage.getItem(PRESETS_KEY) || '{}'); } catch { return {}; }
+                    };
+                    const putStore = (obj) => localStorage.setItem(PRESETS_KEY, JSON.stringify(obj));
+
+                    // All sets — matches enums.js setEnum values
+                    const ALL_SETS = [
+                        { value: '', label: i18next.t('Any set') },
+                        { value: 'HealthSet',      label: 'Health' },
+                        { value: 'DefenseSet',     label: 'Defense' },
+                        { value: 'AttackSet',      label: 'Attack' },
+                        { value: 'SpeedSet',       label: 'Speed' },
+                        { value: 'CriticalSet',    label: 'Critical' },
+                        { value: 'HitSet',         label: 'Hit' },
+                        { value: 'DestructionSet', label: 'Destruction' },
+                        { value: 'LifestealSet',   label: 'Lifesteal' },
+                        { value: 'CounterSet',     label: 'Counter' },
+                        { value: 'ResistSet',      label: 'Resist' },
+                        { value: 'UnitySet',       label: 'Unity' },
+                        { value: 'RageSet',        label: 'Rage' },
+                        { value: 'ImmunitySet',    label: 'Immunity' },
+                        { value: 'PenetrationSet', label: 'Penetration' },
+                        { value: 'RevengeSet',     label: 'Revenge' },
+                        { value: 'InjurySet',      label: 'Injury' },
+                        { value: 'ProtectionSet',  label: 'Protection' },
+                        { value: 'TorrentSet',     label: 'Torrent' },
+                        { value: 'ReversalSet',    label: 'Reversal' },
+                        { value: 'RiposteSet',     label: 'Riposte' },
+                        { value: 'WarfareSet',     label: 'Warfare' },
+                        { value: 'PursuitSet',     label: 'Pursuit' },
+                    ];
+
+                    // Helpers
+                    const getGlobalSubstats = () => ({
+                        keepStats:    global.keepGroup.toArray().filter((x) => stats.includes(x)),
+                        ignoreStats:  global.ignoreGroup.toArray().filter((x) => stats.includes(x)),
+                        discardStats: global.modifyGroup.toArray().filter((x) => stats.includes(x)),
+                    });
+
+                    const refreshPresetSelect = () => {
+                        const sel = document.getElementById('presetSelect');
+                        if (!sel) return;
+                        const names = Object.keys(getStore()).sort();
+                        sel.innerHTML = `<option value="">${i18next.t('\u2014 select preset \u2014')}</option>` +
+                            names.map((n) => `<option value="${n}">${n}</option>`).join('');
+                    };
+
+                    const initApplySetSelect = () => {
+                        const sel = document.getElementById('presetApplySetSelect');
+                        if (!sel) return;
+                        sel.innerHTML = ALL_SETS
+                            .map((o) => `<option value="${o.value}">${o.label}</option>`)
+                            .join('');
+                    };
+
+                    refreshPresetSelect();
+                    initApplySetSelect();
+
+                    // Save-preset logic in a named function so both Enter-key and
+                    // button-click paths call it directly without any synthetic .click()
+                    // call that could create a bubbling click Swal2 might intercept.
+                    const saveCurrentPreset = () => {
+                        const nameEl = document.getElementById('modDialogPresetNameInput');
+                        const name = nameEl?.value.trim();
+                        if (!name) { nameEl?.focus(); return; }
+                        const store = getStore();
+                        store[name] = getGlobalSubstats();
+                        putStore(store);
+                        refreshPresetSelect();
+                        const sel = document.getElementById('presetSelect');
+                        if (sel) sel.value = name;
+                        const btn = document.getElementById('presetSaveBtn');
+                        if (btn) {
+                            const orig = btn.innerHTML;
+                            btn.innerHTML = '\u2713 Saved!';
+                            setTimeout(() => { btn.innerHTML = orig; }, 1200);
+                        }
+                        // Keep focus in the name input — prevents aria-hidden error
+                        // that occurs when focus drifts while the popup is closing.
+                        nameEl?.focus();
+                    };
+
+                    // Enter in the name input: call saveCurrentPreset directly.
+                    // stopPropagation stops the keydown from reaching Swal's popup-
+                    // level keydown handler; stopImmediatePropagation stops any other
+                    // listener on this element; preventDefault stops the browser from
+                    // natively clicking any focused button.
+                    document.getElementById('modDialogPresetNameInput')?.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            e.preventDefault();
+                            saveCurrentPreset();
+                        }
+                    });
+
+                    // Save preset button: stopPropagation prevents the click from
+                    // bubbling up to Swal2's popup/container click handlers.
+                    document.getElementById('presetSaveBtn')?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        saveCurrentPreset();
+                    });
+
+                    // Delete preset
+                    document.getElementById('presetDeleteBtn')?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const sel = document.getElementById('presetSelect');
+                        const name = sel?.value;
+                        if (!name) return;
+                        const store = getStore();
+                        delete store[name];
+                        putStore(store);
+                        refreshPresetSelect();
+                        const nameEl = document.getElementById('modDialogPresetNameInput');
+                        if (nameEl && nameEl.value === name) nameEl.value = '';
+                    });
+
+                    // Load preset → restore Global sortable lists
+                    document.getElementById('presetLoadBtn')?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const sel = document.getElementById('presetSelect');
+                        const name = sel?.value;
+                        if (!name) return;
+                        const preset = getStore()[name];
+                        if (!preset) return;
+                        const keepSet    = new Set(preset.keepStats    || []);
+                        const discardSet = new Set(preset.discardStats || []);
+                        const ignoreSet  = new Set(preset.ignoreStats  || []);
+                        const keepList    = stats.filter((s) => keepSet.has(s));
+                        const discardList = stats.filter((s) => discardSet.has(s));
+                        // anything not explicitly in keep or discard falls into ignore
+                        const ignoreList  = stats.filter(
+                            (s) => ignoreSet.has(s) || (!keepSet.has(s) && !discardSet.has(s))
+                        );
+                        document.getElementById('keepContainer').innerHTML   = buildStatDivs(keepList);
+                        document.getElementById('ignoreContainer').innerHTML = buildStatDivs(ignoreList);
+                        document.getElementById('modifyContainer').innerHTML = buildStatDivs(discardList);
+                        const nameEl = document.getElementById('modDialogPresetNameInput');
+                        if (nameEl) nameEl.value = name;
+                    });
+
+                    // Apply current Global substats to all matching slot rules
+                    document.getElementById('presetApplyBtn')?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const targetSet = document.getElementById('presetApplySetSelect')?.value || '';
+                        const substats  = getGlobalSubstats();
+                        const SLOT_IMPOSSIBLE = {
+                            Weapon: new Set(['Attack', 'Defense', 'DefensePercent']),
+                            Helmet: new Set(['Health']),
+                            Armor:  new Set(['Defense', 'Attack', 'AttackPercent']),
+                        };
+                        let count = 0;
+                        SLOTS.forEach((slot) => {
+                            const impossible = SLOT_IMPOSSIBLE[slot] || new Set();
+                            (modSlotState[slot]?.rules || []).forEach((rule) => {
+                                if (targetSet && (rule.set || '') !== targetSet) return;
+                                rule.keepStats    = substats.keepStats.filter((s) => !impossible.has(s));
+                                rule.ignoreStats  = substats.ignoreStats.filter((s) => !impossible.has(s));
+                                rule.discardStats = substats.discardStats.filter((s) => !impossible.has(s));
+                                count++;
+                            });
+                            renderRuleList(slot);
+                        });
+                        const btn = document.getElementById('presetApplyBtn');
+                        if (btn) {
+                            const orig = btn.innerHTML;
+                            btn.innerHTML = `\u2713 ${count} rule${count !== 1 ? 's' : ''}`;
+                            setTimeout(() => { btn.innerHTML = orig; }, 1500);
+                        }
+                    });
+                })();
 
                 tippy('#limitRollsLabel', {
                     placement: 'top',
@@ -1943,6 +3292,32 @@ const Dialog = {
                     )}</p>`,
                 });
 
+                tippy('#maxModPiecesLabel', {
+                    placement: 'top',
+                    content: `<p>${i18next.t(
+                        'Limit the number of gear pieces that can be modded in a single build. Lower values reduce the number of valid build combinations and can speed up optimization.'
+                    )}</p>`,
+                });
+                tippy('#maxModPieces', {
+                    placement: 'top',
+                    content: `<p>${i18next.t(
+                        'Limit the number of gear pieces that can be modded in a single build. Lower values reduce the number of valid build combinations and can speed up optimization.'
+                    )}</p>`,
+                });
+
+                tippy('#modSlotsLabel', {
+                    placement: 'top',
+                    content: `<p>${i18next.t(
+                        'Choose which gear slots can have substats modified. Unchecked slots will never have mod variants generated, reducing the number of permutations.'
+                    )}</p>`,
+                });
+                tippy('#modSlotToggleRow', {
+                    placement: 'top',
+                    content: `<p>${i18next.t(
+                        'Choose which gear slots can have substats modified. Unchecked slots will never have mod variants generated, reducing the number of permutations.'
+                    )}</p>`,
+                });
+
                 tippy('#keepGroup', {
                     placement: 'top',
                     delay: [500, null],
@@ -1966,37 +3341,106 @@ const Dialog = {
                         'Choose the substats that you want to discard when modifying. Substats in the unwanted column will be replaced by substats in wanted column.'
                     )}</p>`,
                 });
+
+                // ── Phase 3: live permutation count estimate ──────────────────────
+                const slotBlockedForEstimate = {
+                    Weapon: ['Defense', 'DefensePercent'],
+                    Armor: ['Attack', 'AttackPercent'],
+                };
+                const { items: modEstimateItems } = await Api.getAllItems();
+
+                updateModEstimate = () => {
+                    const display = document.getElementById('modEstimateDisplay');
+                    if (!display) return;
+
+                    const limitRolls = parseInt(
+                        document.getElementById('limitRolls').value,
+                        10
+                    );
+                    const keepStatOpts =
+                        document.getElementById('keepStatOptions').value;
+                    const enabledSlots = Array.from(
+                        _swalEl.querySelectorAll('.modSlotCheckbox:checked')
+                    ).map((cb) => cb.value);
+
+                    const keepList = (
+                        global.keepGroup ? global.keepGroup.toArray() : []
+                    ).filter((x) => stats.includes(x));
+                    const discardList = (
+                        global.modifyGroup ? global.modifyGroup.toArray() : []
+                    ).filter((x) => stats.includes(x));
+
+                    if (keepList.length === 0) {
+                        display.textContent = '';
+                        display.className = 'modEstimateDisplay';
+                        return;
+                    }
+
+                    let estimate = 0;
+                    for (const item of modEstimateItems) {
+                        if (item.enhance !== 15) continue;
+                        if (item.disableMods) continue;
+                        if (!enabledSlots.includes(item.gear)) continue;
+
+                        const blocked = slotBlockedForEstimate[item.gear] || [];
+                        const effectiveKeepLen = keepList.filter(
+                            (s) => !blocked.includes(s)
+                        ).length;
+                        if (effectiveKeepLen === 0) continue;
+
+                        const substats = item.substats || [];
+                        let candidates = 0;
+                        for (const sub of substats) {
+                            const rolls = sub.rolls || 0;
+                            if (rolls > limitRolls) continue;
+                            const isDiscard = discardList.includes(sub.type);
+                            const isKeep =
+                                keepList.includes(sub.type) &&
+                                keepStatOpts === 'replace';
+                            if (isDiscard || isKeep) candidates++;
+                        }
+                        estimate += candidates * effectiveKeepLen;
+                    }
+
+                    let className = 'modEstimateDisplay modEstimateGreen';
+                    let text = `Estimated variants: ~${estimate.toLocaleString()}`;
+                    if (estimate > 10000) {
+                        className = 'modEstimateDisplay modEstimateRed';
+                        text += ' \u2014 This may significantly slow optimization';
+                    } else if (estimate > 2000) {
+                        className = 'modEstimateDisplay modEstimateYellow';
+                    }
+                    display.textContent = text;
+                    display.className = className;
+                };
+
+                document
+                    .getElementById('limitRolls')
+                    .addEventListener('change', updateModEstimate);
+                document
+                    .getElementById('keepStatOptions')
+                    .addEventListener('change', updateModEstimate);
+                _swalEl
+                    .querySelectorAll('.modSlotCheckbox')
+                    .forEach((cb) => cb.addEventListener('change', updateModEstimate));
+
+                updateModEstimate();
             },
             focusConfirm: false,
+            allowEnterKey: false,
             showCancelButton: true,
             confirmButtonText: i18next.t('OK'),
             cancelButtonText: i18next.t('Cancel'),
             preConfirm: async () => {
-                const editedHero = {
-                    discardStats: modifyGroup
-                        .toArray()
-                        .filter((x) => stats.includes(x)),
-                    ignoreStats: ignoreGroup
-                        .toArray()
-                        .filter((x) => stats.includes(x)),
-                    keepStats: keepGroup
-                        .toArray()
-                        .filter((x) => stats.includes(x)),
-
-                    modGrade: document.getElementById('modGrade').value,
-                    keepStatOptions:
-                        document.getElementById('keepStatOptions').value,
-                    rollQuality: parseFloat(
-                        document.getElementById('rollQuality').value
-                    ),
-                    limitRolls: parseInt(
-                        document.getElementById('limitRolls').value,
-                        10
-                    ),
-                    heroInfo,
-                };
-
-                return editedHero;
+                console.trace('[preConfirm] triggered — call stack above shows what fired confirm');
+                // If the Save button pre-collected the data, use it directly.
+                if (global._preCollectedModData) {
+                    const data = global._preCollectedModData;
+                    global._preCollectedModData = null;
+                    return data;
+                }
+                // Fallback: collect via the shared builder (OK button path).
+                return global._modDataCollector ? global._modDataCollector() : null;
             },
         });
         return formValues;
@@ -3051,6 +4495,21 @@ function getGearMaterialOptionsHtml(item) {
 `;
 }
 
+// Stats that cannot be modded onto certain slots — used for badge annotations.
+const MOD_SLOT_CONSTRAINTS = {
+    Health:         '✗Helm',
+    Defense:        '✗Weap ✗Arm',
+    DefensePercent: '✗Weap',
+    Attack:         '✗Weap ✗Arm',
+    AttackPercent:  '✗Arm',
+};
+
+function modConstraintBadge(stat) {
+    const label = MOD_SLOT_CONSTRAINTS[stat];
+    if (!label) return '';
+    return `<span class="modConstraintBadge">${label}</span>`;
+}
+
 function generateStatList(hero, state) {
     let keepStats = hero.keepStats || [];
     let discardStats = hero.discardStats || [];
@@ -3072,9 +4531,9 @@ function generateStatList(hero, state) {
     let result = '';
     for (let i = 0; i < list.length; i += 1) {
         const stat = list[i];
-        result += `<div class="list-group-item" data-id="${stat}">${i18next.t(
+        result += `<div class="list-group-item" data-id="${stat}"><span class="modStatLabel">${i18next.t(
             optimizerStatToDisplayStat[stat]
-        )}</div>`;
+        )}</span>${modConstraintBadge(stat)}</div>`;
     }
     return result;
 }
@@ -3199,3 +4658,200 @@ function getBaseStatsHtml(hero, heroInfo) {
 }
 
 export default Dialog;
+
+// ─── Per-Slot Substat Pre-Filter Dialog ─────────────────────────────────────
+
+// Substats that cannot appear on a slot — either because they are the fixed
+// main stat for that slot, or because the game prevents them as substats.
+const SLOT_MAIN_STATS = {
+    Weapon:  'Attack',
+    Helmet:  'Health',
+    Armor:   'Defense',
+};
+
+const SLOT_EXCLUDED_SUBSTATS = {
+    Weapon: ['Attack', 'Defense', 'DefensePercent'],
+    Helmet: ['Health'],
+    Armor:  ['Defense', 'Attack', 'AttackPercent'],
+};
+
+const ALL_SUBSTATS = [
+    { type: 'AttackPercent',          label: 'Atk%'   },
+    { type: 'Attack',                 label: 'ATK'    },
+    { type: 'HealthPercent',          label: 'HP%'    },
+    { type: 'Health',                 label: 'HP'     },
+    { type: 'DefensePercent',         label: 'DEF%'   },
+    { type: 'Defense',                label: 'DEF'    },
+    { type: 'Speed',                  label: 'Spd'    },
+    { type: 'CriticalHitChancePercent', label: 'CC%'  },
+    { type: 'CriticalHitDamagePercent', label: 'CD%'  },
+    { type: 'EffectivenessPercent',   label: 'EFF%'   },
+    { type: 'EffectResistancePercent',label: 'ER%'    },
+];
+
+const GEAR_SLOTS = [
+    { key: 'Weapon',   label: 'Weapon',   icon: './assets/gearweapon.png'   },
+    { key: 'Helmet',   label: 'Helmet',   icon: './assets/gearhelmet.png'   },
+    { key: 'Armor',    label: 'Armor',    icon: './assets/geararmor.png'    },
+    { key: 'Necklace', label: 'Necklace', icon: './assets/gearnecklace.png' },
+    { key: 'Ring',     label: 'Ring',     icon: './assets/gearring.png'     },
+    { key: 'Boots',    label: 'Boots',    icon: './assets/gearboots.png'    },
+];
+
+Dialog.slotSubstatFilterDialog = async function slotSubstatFilterDialog(currentFilters, index) {
+    const tabButtons = GEAR_SLOTS.map((s, i) =>
+        `<button type="button" class="ssf-tab${i === 0 ? ' ssf-tab-active' : ''}" data-slot="${s.key}" style="display:flex;align-items:center;gap:4px;padding:4px 8px;border:1px solid #555;background:#2a2a2a;color:#ccc;cursor:pointer;border-radius:4px;font-size:12px">
+            <img src="${s.icon}" width="16" height="16" style="vertical-align:middle"> ${s.label}
+         </button>`
+    ).join('');
+
+    const panels = GEAR_SLOTS.map((s, i) => {
+        const excluded = SLOT_EXCLUDED_SUBSTATS[s.key] || [];
+        const sf = (currentFilters && currentFilters[s.key]) || {};
+        const enabledChecked = sf.enabled ? 'checked' : '';
+        const currentSubstats = sf.substats || [];
+        const currentCount = sf.minCount || 1;
+
+        const checkboxes = ALL_SUBSTATS.map((sub) => {
+            const isExcluded = excluded.includes(sub.type);
+            const isMainStat = SLOT_MAIN_STATS[s.key] === sub.type;
+            const isChecked = !isExcluded && currentSubstats.includes(sub.type) ? 'checked' : '';
+            const disabledAttr = isExcluded ? 'disabled' : '';
+            const opacityStyle = isExcluded ? 'opacity:0.3;' : '';
+            const titleAttr = isMainStat ? 'title="Fixed main stat — cannot be a substat"' : '';
+            const mainStatTag = isMainStat
+                ? '<span style="font-size:10px;color:#888;margin-left:2px">(main)</span>'
+                : '';
+            return `<label style="${opacityStyle}display:flex;align-items:center;gap:4px;font-size:12px;cursor:${isExcluded ? 'default' : 'pointer'}" ${titleAttr}>
+                <input type="checkbox" class="ssf-sub" data-slot="${s.key}" value="${sub.type}" ${isChecked} ${disabledAttr}>
+                ${sub.label}${mainStatTag}
+            </label>`;
+        }).join('');
+
+        return `<div class="ssf-panel" data-slot="${s.key}" style="display:${i === 0 ? 'block' : 'none'}">
+            <div style="margin-bottom:8px">
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:bold;cursor:pointer">
+                    <input type="checkbox" class="ssf-enabled" data-slot="${s.key}" ${enabledChecked}>
+                    Enable filter for ${s.label}
+                </label>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin:8px 0">
+                ${checkboxes}
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px">
+                <span>Require at least:</span>
+                <button type="button" class="ssf-minus" data-slot="${s.key}" style="width:24px;height:24px;border:1px solid #666;background:#333;color:#ccc;cursor:pointer;border-radius:3px;font-size:14px;line-height:1">−</button>
+                <span class="ssf-count" data-slot="${s.key}" style="min-width:16px;text-align:center;font-weight:bold">${currentCount}</span>
+                <button type="button" class="ssf-plus" data-slot="${s.key}" style="width:24px;height:24px;border:1px solid #666;background:#333;color:#ccc;cursor:pointer;border-radius:3px;font-size:14px;line-height:1">+</button>
+                <span style="color:#999">substats matched</span>
+            </div>
+        </div>`;
+    }).join('');
+
+    const html = `
+        <div style="color:#ccc;text-align:left">
+            <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+                ${tabButtons}
+                <div style="margin-left:auto;display:flex;gap:4px">
+                    <button type="button" id="ssf-enable-all" style="padding:3px 8px;border:1px solid #51A259;background:transparent;color:#51A259;cursor:pointer;border-radius:3px;font-size:11px">Enable All</button>
+                    <button type="button" id="ssf-disable-all" style="padding:3px 8px;border:1px solid #888;background:transparent;color:#aaa;cursor:pointer;border-radius:3px;font-size:11px">Disable All</button>
+                </div>
+            </div>
+            <div id="ssf-panels">
+                ${panels}
+            </div>
+        </div>`;
+
+    const result = await Swal.fire({
+        title: 'Per-Slot Substat Filter',
+        html,
+        width: '520px',
+        background: '#1e1e1e',
+        showCancelButton: true,
+        confirmButtonText: 'Apply',
+        cancelButtonText: 'Cancel',
+        didOpen: () => {
+            const container = Swal.getHtmlContainer();
+
+            // Tab switching
+            container.querySelectorAll('.ssf-tab').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    container.querySelectorAll('.ssf-tab').forEach((b) => b.classList.remove('ssf-tab-active'));
+                    btn.classList.add('ssf-tab-active');
+                    const slot = btn.dataset.slot;
+                    container.querySelectorAll('.ssf-panel').forEach((p) => {
+                        p.style.display = p.dataset.slot === slot ? 'block' : 'none';
+                    });
+                });
+            });
+
+            // Highlight active tabs
+            const updateTabHighlight = () => {
+                container.querySelectorAll('.ssf-tab').forEach((btn) => {
+                    const slot = btn.dataset.slot;
+                    const enabledCb = container.querySelector(`.ssf-enabled[data-slot="${slot}"]`);
+                    const hasSubs = container.querySelectorAll(`.ssf-sub[data-slot="${slot}"]:checked`).length > 0;
+                    if (enabledCb && enabledCb.checked && hasSubs) {
+                        btn.style.borderColor = '#51A259';
+                        btn.style.color = '#51A259';
+                    } else {
+                        btn.style.borderColor = '#555';
+                        btn.style.color = '#ccc';
+                    }
+                });
+            };
+
+            container.querySelectorAll('.ssf-enabled, .ssf-sub').forEach((el) => {
+                el.addEventListener('change', updateTabHighlight);
+            });
+            updateTabHighlight();
+
+            // Enable All / Disable All
+            container.querySelector('#ssf-enable-all').addEventListener('click', () => {
+                container.querySelectorAll('.ssf-enabled').forEach((cb) => { cb.checked = true; });
+                updateTabHighlight();
+            });
+            container.querySelector('#ssf-disable-all').addEventListener('click', () => {
+                container.querySelectorAll('.ssf-enabled').forEach((cb) => { cb.checked = false; });
+                updateTabHighlight();
+            });
+
+            // +/- buttons
+            container.querySelectorAll('.ssf-minus').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const slot = btn.dataset.slot;
+                    const countEl = container.querySelector(`.ssf-count[data-slot="${slot}"]`);
+                    const val = parseInt(countEl.textContent, 10) || 1;
+                    if (val > 1) countEl.textContent = val - 1;
+                });
+            });
+            container.querySelectorAll('.ssf-plus').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const slot = btn.dataset.slot;
+                    const countEl = container.querySelector(`.ssf-count[data-slot="${slot}"]`);
+                    const val = parseInt(countEl.textContent, 10) || 1;
+                    if (val < 4) countEl.textContent = val + 1;
+                });
+            });
+        },
+        preConfirm: () => {
+            const container = Swal.getHtmlContainer();
+            const slotFilters = {};
+            GEAR_SLOTS.forEach(({ key }) => {
+                const enabledCb = container.querySelector(`.ssf-enabled[data-slot="${key}"]`);
+                const enabled = enabledCb ? enabledCb.checked : false;
+                const substats = Array.from(container.querySelectorAll(`.ssf-sub[data-slot="${key}"]:checked`))
+                    .map((cb) => cb.value);
+                const countEl = container.querySelector(`.ssf-count[data-slot="${key}"]`);
+                const minCount = countEl ? parseInt(countEl.textContent, 10) || 1 : 1;
+                slotFilters[key] = { enabled, substats, minCount };
+            });
+            return { slotFilters };
+        },
+    });
+
+    if (result.isConfirmed) {
+        return result.value;
+    }
+    return null;
+};

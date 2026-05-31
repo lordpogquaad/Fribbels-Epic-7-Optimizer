@@ -1,7 +1,6 @@
 /* global Reforge */
 
 const { v4: uuidv4 } = require('uuid');
-const ArchetypeScorer = require('../scoring/archetypeScorer');
 
 function fixProblemItem(item) {
     let fixNeeded = false;
@@ -57,24 +56,30 @@ function augmentStats(item) {
         'EffectResistancePercent',
     ];
 
-    item.allowedMods.splice(item.allowedMods.indexOf(item.main.type), 1);
+    const mainIdx = item.allowedMods.indexOf(item.main.type);
+    if (mainIdx !== -1) item.allowedMods.splice(mainIdx, 1);
 
     item.substats.forEach((subStat) => {
         item.augmentedStats[subStat.type] = subStat.value;
 
         if (!subStat.modified) {
-            item.allowedMods.splice(item.allowedMods.indexOf(subStat.type), 1);
+            const idx = item.allowedMods.indexOf(subStat.type);
+            if (idx !== -1) item.allowedMods.splice(idx, 1);
         }
     });
 
     if (item.gear === 'Weapon') {
-        item.allowedMods.splice(item.allowedMods.indexOf('Defense'), 1);
-        item.allowedMods.splice(item.allowedMods.indexOf('DefensePercent'), 1);
+        const dIdx = item.allowedMods.indexOf('Defense');
+        if (dIdx !== -1) item.allowedMods.splice(dIdx, 1);
+        const dpIdx = item.allowedMods.indexOf('DefensePercent');
+        if (dpIdx !== -1) item.allowedMods.splice(dpIdx, 1);
     }
 
     if (item.gear === 'Armor') {
-        item.allowedMods.splice(item.allowedMods.indexOf('Attack'), 1);
-        item.allowedMods.splice(item.allowedMods.indexOf('AttackPercent'), 1);
+        const aIdx = item.allowedMods.indexOf('Attack');
+        if (aIdx !== -1) item.allowedMods.splice(aIdx, 1);
+        const apIdx = item.allowedMods.indexOf('AttackPercent');
+        if (apIdx !== -1) item.allowedMods.splice(apIdx, 1);
     }
 
     item.allowedMods = `|${item.allowedMods.join('|')}|`;
@@ -145,9 +150,6 @@ const ItemAugmenter = {
                 item.id = uuidv4();
             }
         });
-
-        // Score each item against all applicable archetypes
-        ArchetypeScorer.scoreAllItems(items);
     },
 };
 

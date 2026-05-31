@@ -98,6 +98,9 @@ public class Sorter {
                     case EQ:
                         Arrays.sort(data, Comparator.comparingInt(HeroStats::getEq));
                         break;
+                    case CUSTOMSCORE:
+                        Arrays.sort(data, Comparator.comparingInt(HeroStats::getCustomScore));
+                        break;
                     default:
                         System.err.println("INVALID COLUMN " + column);
                 }
@@ -188,6 +191,9 @@ public class Sorter {
                         break;
                     case EQ:
                         Arrays.sort(data, Comparator.comparingInt(HeroStats::getEq).reversed());
+                        break;
+                    case CUSTOMSCORE:
+                        Arrays.sort(data, Comparator.comparingInt(HeroStats::getCustomScore).reversed());
                         break;
                     default:
                         System.err.println("INVALID COLUMN " + column);

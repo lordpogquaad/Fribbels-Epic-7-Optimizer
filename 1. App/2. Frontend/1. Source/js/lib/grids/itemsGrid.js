@@ -1,7 +1,7 @@
 /* global i18next, AG_GRID_LOCALE_ZH, AG_GRID_LOCALE_ZH_TW, AG_GRID_LOCALE_FR */
 /* global AG_GRID_LOCALE_JA, AG_GRID_LOCALE_KO, AG_GRID_LOCALE_RU, AG_GRID_LOCALE_EN */
 /* global Api, Grid, GridRenderer, ItemsTab, Assets, HeroData, HtmlGenerator, Reforge, Tooltip, $ */
-/* global HeroGearMatcher */
+/* global HeroGearMatcher, ArchetypeScorer, ArchetypeStore */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-console */
 const tinygradient = require('tinygradient');
@@ -29,7 +29,33 @@ let itemsGrid = global.itemsGrid || null;
 const currentAggregate = {};
 let selectedCell = null;
 
-const ITEMS_GRID_COLUMN_STATE_KEY = 'itemsGridColumnState_v3';
+// Currently selected group for the gScore column (empty = off)
+let _selectedGroup = '';
+
+function _populateGroupFilter() {
+    const sel = document.getElementById('archetypeGroupFilter');
+    if (!sel) return;
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">— Off —</option>';
+    const groups = [
+        ...new Set(
+            ArchetypeStore.getArchetypes()
+                .map((a) => a.group)
+                .filter((g) => g && g.trim()),
+        ),
+    ].sort();
+    groups.forEach((g) => {
+        const opt = document.createElement('option');
+        opt.value = g;
+        opt.textContent = g;
+        if (g === prev) opt.selected = true;
+        sel.appendChild(opt);
+    });
+    // If the previously selected group no longer exists, reset
+    if (!groups.includes(prev)) _selectedGroup = '';
+}
+
+const ITEMS_GRID_COLUMN_STATE_KEY = 'itemsGridColumnState';
 
 function saveColumnState() {
     try {
@@ -92,12 +118,8 @@ module.exports = {
                 resizable: true,
                 sortingOrder: ['desc', 'asc', null],
                 cellStyle: columnGradient,
-                tooltipShowDelay: 0,
                 // valueFormatter: numberFormatter,
             },
-            headerHeight: 24,
-            groupHeaderHeight: 24,
-            enableBrowserTooltips: true,
 
             columnDefs: [
                 {
@@ -139,241 +161,117 @@ module.exports = {
                     field: 'main.value',
                     width: 60,
                 },
-                // ── Substats ────────────────────────────────────────────
                 {
-                    headerName: 'Substats',
-                    headerClass: 'substats-group-header',
-                    openByDefault: true,
-                    marryChildren: true,
-                    children: [
-                        {
-                            headerName: i18next.t('Atk%'),
-                            field: 'augmentedStats.AttackPercent',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Atk'),
-                            field: 'augmentedStats.Attack',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Spd'),
-                            field: 'augmentedStats.Speed',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Cr'),
-                            field: 'augmentedStats.CriticalHitChancePercent',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Cd'),
-                            field: 'augmentedStats.CriticalHitDamagePercent',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Hp%'),
-                            field: 'augmentedStats.HealthPercent',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Hp'),
-                            field: 'augmentedStats.Health',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Def%'),
-                            field: 'augmentedStats.DefensePercent',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Def'),
-                            field: 'augmentedStats.Defense',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Eff'),
-                            field: 'augmentedStats.EffectivenessPercent',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                        {
-                            headerName: i18next.t('Res'),
-                            field: 'augmentedStats.EffectResistancePercent',
-                            cellRenderer: (params) =>
-                                params.value === 0 ? '' : params.value,
-                        },
-                    ],
+                    headerName: i18next.t('Atk%'),
+                    field: 'augmentedStats.AttackPercent',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
                 },
-                // ── Scores group ─────────────────────────────────────────
                 {
-                    headerName: i18next.t('Scores'),
-                    openByDefault: true,
-                    children: [
-                        {
-                            headerName: i18next.t('Score'),
-                            field: 'reforgedWss',
-                            width: 50,
-                            cellStyle: scoreColumnGradient,
-                        },
-                        // ΔScore: reforge gain (reforgedWss - wss)
-                        {
-                            headerName: i18next.t('ΔScore'),
-                            colId: 'deltaScore',
-                            valueGetter: (params) => {
-                                const item = params.data;
-                                if (!item || !item.reforgeable
-                                    || item.reforgedWss == null || item.wss == null) return null;
-                                return Math.round(item.reforgedWss - item.wss);
-                            },
-                            width: 60,
-                            cellRenderer: (params) => {
-                                if (params.value == null) return '\u2014';
-                                return params.value > 0
-                                    ? `<span style="color:#4CAF50">+${params.value}</span>`
-                                    : String(params.value);
-                            },
-                        },
-                        // Top official archetype score
-                        {
-                            headerName: i18next.t('Top Off.'),
-                            colId: 'bestOfficialScore',
-                            field: 'archetypeScores.bestOfficialScore',
-                            width: 58,
-                            cellStyle: scoreColumnGradient,
-                            cellRenderer: (params) =>
-                                params.value != null ? String(params.value) : '\u2014',
-                            tooltipValueGetter: (params) => {
-                                const s = params.data?.archetypeScores;
-                                if (!s) return '';
-                                return buildArchetypeBreakdownTooltip(s.allScores, 'Off. ');
-                            },
-                        },
-                        // Best official archetype name (short, no "Off. " prefix)
-                        // Tooltip shows ALL scored archetypes (full breakdown) for both tracks
-                        {
-                            headerName: i18next.t('Top Arch.'),
-                            colId: 'bestOfficialArchetype',
-                            field: 'archetypeScores.bestOfficialArchetype',
-                            width: 70,
-                            cellStyle: () => undefined,
-                            cellRenderer: (params) => {
-                                if (!params.value) return '\u2014';
-                                return params.value.replace(/^(Off\.|UOff\.) /, '');
-                            },
-                            tooltipValueGetter: (params) => {
-                                const s = params.data?.archetypeScores;
-                                if (!s) return '';
-                                const offLine  = buildArchetypeBreakdownTooltip(s.allScores, 'Off. ');
-                                const uoffLine = buildArchetypeBreakdownTooltip(s.allScores, 'UOff. ');
-                                const lines = [];
-                                if (offLine)  lines.push(offLine);
-                                if (uoffLine) lines.push(uoffLine);
-                                return lines.join('\n');
-                            },
-                        },
-                        // Top personal (UOff.) archetype score
-                        {
-                            headerName: i18next.t('Top UOff.'),
-                            colId: 'bestPersonalScore',
-                            field: 'archetypeScores.bestPersonalScore',
-                            width: 58,
-                            cellStyle: scoreColumnGradient,
-                            cellRenderer: (params) =>
-                                params.value != null ? String(params.value) : '\u2014',
-                            tooltipValueGetter: (params) => {
-                                const s = params.data?.archetypeScores;
-                                if (!s) return '';
-                                return buildArchetypeBreakdownTooltip(s.allScores, 'UOff. ');
-                            },
-                        },
-                        // Off. C.Power — Top Speed + Speed (qualified) + best priority group (off. track, incl. Future)
-                        {
-                            headerName: i18next.t('Off.C.Power'),
-                            colId: 'offCPower',
-                            field: 'archetypeScores.offCPower',
-                            width: 68,
-                            cellStyle: (params) => {
-                                const base = scoreColumnGradient(params);
-                                return base ? { ...base, color: '#ffd93d' } : { color: '#ffd93d' };
-                            },
-                            cellRenderer: (params) =>
-                                params.value > 0 ? String(params.value) : '\u2014',
-                            tooltipValueGetter: (params) => {
-                                const s = params.data?.archetypeScores;
-                                if (!s) return '';
-                                return `Off. C.Power: ${s.offCPower ?? 0} | Off. A.Power: ${s.offAPower ?? 0}`;
-                            },
-                        },
-                        // UOff. C.Power — personal track (borrows Off. Future)
-                        {
-                            headerName: i18next.t('UOff.C.Pwr'),
-                            colId: 'uoffCPower',
-                            field: 'archetypeScores.uoffCPower',
-                            width: 68,
-                            cellStyle: (params) => {
-                                const base = scoreColumnGradient(params);
-                                return base ? { ...base, color: '#ffd93d' } : { color: '#ffd93d' };
-                            },
-                            cellRenderer: (params) =>
-                                params.value > 0 ? String(params.value) : '\u2014',
-                            tooltipValueGetter: (params) => {
-                                const s = params.data?.archetypeScores;
-                                if (!s) return '';
-                                return `UOff. C.Power: ${s.uoffCPower ?? 0} | UOff. A.Power: ${s.uoffAPower ?? 0}`;
-                            },
-                        },
-                        // Off. A.Power — same as C.Power but excludes Future group
-                        {
-                            headerName: i18next.t('Off.A.Power'),
-                            colId: 'offAPower',
-                            field: 'archetypeScores.offAPower',
-                            width: 68,
-                            hide: true,
-                            cellStyle: (params) => {
-                                const base = scoreColumnGradient(params);
-                                return base ? { ...base, color: '#ff9f43' } : { color: '#ff9f43' };
-                            },
-                            cellRenderer: (params) =>
-                                params.value > 0 ? String(params.value) : '\u2014',
-                            tooltipValueGetter: () => 'Off. A.Power (no Future group)',
-                        },
-                        // UOff. A.Power
-                        {
-                            headerName: i18next.t('UOff.A.Pwr'),
-                            colId: 'uoffAPower',
-                            field: 'archetypeScores.uoffAPower',
-                            width: 68,
-                            hide: true,
-                            cellStyle: (params) => {
-                                const base = scoreColumnGradient(params);
-                                return base ? { ...base, color: '#ff9f43' } : { color: '#ff9f43' };
-                            },
-                            cellRenderer: (params) =>
-                                params.value > 0 ? String(params.value) : '\u2014',
-                            tooltipValueGetter: () => 'UOff. A.Power (no Future group)',
-                        },
-                    ],
+                    headerName: i18next.t('Atk'),
+                    field: 'augmentedStats.Attack',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Spd'),
+                    field: 'augmentedStats.Speed',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Cr'),
+                    field: 'augmentedStats.CriticalHitChancePercent',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Cd'),
+                    field: 'augmentedStats.CriticalHitDamagePercent',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Hp%'),
+                    field: 'augmentedStats.HealthPercent',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Hp'),
+                    field: 'augmentedStats.Health',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Def%'),
+                    field: 'augmentedStats.DefensePercent',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Def'),
+                    field: 'augmentedStats.Defense',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Eff'),
+                    field: 'augmentedStats.EffectivenessPercent',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Res'),
+                    field: 'augmentedStats.EffectResistancePercent',
+                    cellRenderer: (params) =>
+                        params.value === 0 ? '' : params.value,
+                },
+                {
+                    headerName: i18next.t('Score'),
+                    field: 'reforgedWss',
+                    width: 50,
+                    cellStyle: scoreColumnGradient,
+                    valueGetter: (p) => p.data ? ArchetypeScorer.computeGearScore(p.data) : null,
+                },
+                {
+                    headerName: i18next.t('dScore'),
+                    field: 'dpsWss',
+                    width: 50,
+                    cellStyle: scoreColumnGradient,
+                    valueGetter: (p) => p.data ? ArchetypeScorer.getArchetypeScore(p.data, ArchetypeStore.getArchetypes(), 'dps') : null,
+                },
+                {
+                    headerName: i18next.t('sScore'),
+                    field: 'supportWss',
+                    width: 50,
+                    cellStyle: scoreColumnGradient,
+                    valueGetter: (p) => p.data ? ArchetypeScorer.getArchetypeScore(p.data, ArchetypeStore.getArchetypes(), 'er-tank') : null,
+                },
+                {
+                    headerName: i18next.t('cScore'),
+                    field: 'combatWss',
+                    width: 50,
+                    cellStyle: scoreColumnGradient,
+                    valueGetter: (p) => p.data ? ArchetypeScorer.getArchetypeScore(p.data, ArchetypeStore.getArchetypes(), 'bruiser') : null,
+                },
+                {
+                    headerName: 'A.Score',
+                    field: 'groupWss',
+                    width: 60,
+                    cellStyle: scoreColumnGradient,
+                    valueGetter: (p) => {
+                        if (!p.data || !_selectedGroup) return null;
+                        return ArchetypeScorer.getBestGroupScore(p.data, ArchetypeStore.getArchetypes(), _selectedGroup);
+                    },
                 },
                 {
                     headerName: i18next.t('Match%'),
                     field: 'heroMatchPercent',
                     width: 60,
                     cellStyle: scoreColumnGradient,
-                    tooltipField: 'heroMatchPercent',
-                    cellRenderer: (params) => {
-                        if (params.value !== undefined) return String(params.value);
-                        return '<span title="Select a hero in the optimizer to see match %">\u2014</span>';
-                    },
+                    cellRenderer: (params) =>
+                        params.value !== undefined ? String(params.value) : '\u2014',
                 },
                 {
                     headerName: i18next.t('Equipped'),
@@ -448,6 +346,31 @@ module.exports = {
         itemsGrid = new Grid(gridDiv, gridOptions);
         global.itemsGrid = itemsGrid;
         console.log('!!! itemsGrid', itemsGrid);
+
+        window.addEventListener('archetypesChanged', () => {
+            if (itemsGrid && itemsGrid.gridOptions && itemsGrid.gridOptions.api) {
+                _populateGroupFilter();
+                itemsGrid.gridOptions.api.refreshCells({
+                    force: true,
+                    columns: ['reforgedWss', 'dpsWss', 'supportWss', 'combatWss', 'groupWss'],
+                });
+            }
+        });
+
+        // Group filter selector
+        const groupSel = document.getElementById('archetypeGroupFilter');
+        if (groupSel) {
+            _populateGroupFilter();
+            groupSel.addEventListener('change', () => {
+                _selectedGroup = groupSel.value;
+                if (itemsGrid && itemsGrid.gridOptions && itemsGrid.gridOptions.api) {
+                    itemsGrid.gridOptions.api.refreshCells({
+                        force: true,
+                        columns: ['groupWss'],
+                    });
+                }
+            });
+        }
 
         // Restore saved column state (widths, order, visibility)
         const savedColumnState = localStorage.getItem(ITEMS_GRID_COLUMN_STATE_KEY);
@@ -671,7 +594,7 @@ function columnGradient(params) {
 
 function scoreColumnGradient(params) {
     try {
-        if (!params || params.value === undefined) return undefined;
+        if (!params || params.value === undefined || params.value === null) return undefined;
         const { value } = params;
 
         // var percent = value * (80-40) + 0.4;
@@ -812,134 +735,12 @@ async function drawPreview(item) {
 function onRowSelected(event) {
     if (event.node.selected) {
         selectedCell = event.data;
+        updateSelectedCount();
+
         // Testing purposes
         // Reforge.calculateMaxes(event.data);
         Reforge.unreforgeItem(event.data);
         console.log(event.data);
         // GearRating.rate(event.data);
     }
-
-    updateSelectedCount();
-
-    // Show comparison panel when exactly 2 items are selected
-    const selected = itemsGrid.gridOptions.api.getSelectedRows();
-    const panel = document.getElementById('comparisonPanel');
-    if (selected.length === 2) {
-        showComparison(selected[0], selected[1]);
-    } else if (panel) {
-        panel.style.display = 'none';
-    }
-}
-
-/**
- * Builds a single-line tooltip string showing all non-zero archetype scores for one track.
- * Format: "Off.  DPS: 30 | Future: 2"  or  "UOff. DPS: 30 | Atk + EFF: 8 | Bruiser: 8"
- *
- * @param {Object|null} allScores - item.archetypeScores.allScores
- * @param {string} prefix - 'Off. ' or 'UOff. '
- * @returns {string} formatted tooltip line, or '' if no scores
- */
-function buildArchetypeBreakdownTooltip(allScores, prefix) {
-    if (!allScores) return '';
-    const entries = Object.entries(allScores)
-        .filter(([k]) => k.startsWith(prefix))
-        .sort(([, a], [, b]) => b.score - a.score)
-        .map(([k, v]) => `${k.slice(prefix.length)}: ${v.score}`);
-    if (!entries.length) return '';
-    const label = prefix === 'Off. ' ? 'Off. ' : 'UOff.';
-    return `${label}  ${entries.join(' | ')}`;
-}
-
-function showComparison(itemA, itemB) {
-    const panel = document.getElementById('comparisonPanel');
-    if (!panel) return;
-
-    panel.style.display = 'block';
-
-    const aEl = document.getElementById('compItem1');
-    const bEl = document.getElementById('compItem2');
-    if (aEl) aEl.innerHTML = HtmlGenerator.buildItemPanel(itemA, 'comp1', null);
-    if (bEl) bEl.innerHTML = HtmlGenerator.buildItemPanel(itemB, 'comp2', null);
-
-    buildComparisonScoreTable(itemA, itemB);
-}
-
-function buildComparisonScoreTable(itemA, itemB) {
-    const container = document.getElementById('comparisonScoreTable');
-    if (!container) return;
-
-    const aScores = itemA.archetypeScores && itemA.archetypeScores.allScores;
-    const bScores = itemB.archetypeScores && itemB.archetypeScores.allScores;
-
-    // Collect all archetype names present in either item (score > 0)
-    const archetypeNames = new Set();
-    if (aScores) Object.keys(aScores).forEach((n) => archetypeNames.add(n));
-    if (bScores) Object.keys(bScores).forEach((n) => archetypeNames.add(n));
-
-    // Sort: Official archetypes first, then by higher-of-two score descending
-    const sorted = [...archetypeNames].sort((x, y) => {
-        const xOff = x.startsWith('Off.') ? 0 : 1;
-        const yOff = y.startsWith('Off.') ? 0 : 1;
-        if (xOff !== yOff) return xOff - yOff;
-        const xMax = Math.max(
-            (aScores && aScores[x] && aScores[x].score) || 0,
-            (bScores && bScores[x] && bScores[x].score) || 0,
-        );
-        const yMax = Math.max(
-            (aScores && aScores[y] && aScores[y].score) || 0,
-            (bScores && bScores[y] && bScores[y].score) || 0,
-        );
-        return yMax - xMax;
-    });
-
-    const rows = sorted
-        .map((name) => {
-            const aScore = (aScores && aScores[name] && aScores[name].score) || 0;
-            const bScore = (bScores && bScores[name] && bScores[name].score) || 0;
-            if (aScore === 0 && bScore === 0) return '';
-            const diff = aScore - bScore;
-            const diffStr =
-                diff > 0
-                    ? `<span style="color:#4CAF50">+${diff}</span>`
-                    : diff < 0
-                    ? `<span style="color:#f77">${diff}</span>`
-                    : '<span style="color:#888">0</span>';
-            const aStyle = aScore > bScore ? 'color:#4CAF50;font-weight:bold' : '';
-            const bStyle = bScore > aScore ? 'color:#4CAF50;font-weight:bold' : '';
-            const shortName = name.replace(/^(Off\.|UOff\.) /, '');
-            return `<tr>
-                <td style="padding:2px 6px;white-space:nowrap">${shortName}</td>
-                <td style="padding:2px 8px;text-align:right;${aStyle}">${aScore || ''}</td>
-                <td style="padding:2px 6px;text-align:center">${diffStr}</td>
-                <td style="padding:2px 8px;text-align:right;${bStyle}">${bScore || ''}</td>
-            </tr>`;
-        })
-        .join('');
-
-    const aWss = itemA.reforgedWss != null ? itemA.reforgedWss : '—';
-    const bWss = itemB.reforgedWss != null ? itemB.reforgedWss : '—';
-    const wssAStyle = aWss > bWss ? 'color:#4CAF50;font-weight:bold' : '';
-    const wssBStyle = bWss > aWss ? 'color:#4CAF50;font-weight:bold' : '';
-
-    container.innerHTML = `
-        <div style="font-size:11px;color:#aaa;margin-bottom:6px;">
-            Archetype Score Comparison &nbsp;|&nbsp;
-            <span>Score: <b style="${wssAStyle}">${aWss}</b> vs <b style="${wssBStyle}">${bWss}</b></span>
-        </div>
-        <table style="font-size:11px;border-collapse:collapse;width:100%">
-            <thead>
-                <tr style="border-bottom:1px solid #555">
-                    <th style="text-align:left;padding:2px 6px">Archetype</th>
-                    <th style="padding:2px 8px">A</th>
-                    <th style="padding:2px 6px">&#916;</th>
-                    <th style="padding:2px 8px">B</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${
-                    rows ||
-                    '<tr><td colspan="4" style="text-align:center;color:#888;padding:8px">No archetype scores — augment items first</td></tr>'
-                }
-            </tbody>
-        </table>`;
 }

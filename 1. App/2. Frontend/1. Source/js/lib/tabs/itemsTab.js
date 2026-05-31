@@ -3,8 +3,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-console */
 
-const ArchetypeScorer = require('../scoring/archetypeScorer');
-
 let modifyGreater = true;
 
 // Filters that support multiple selections (toggle in/out of array)
@@ -35,11 +33,6 @@ const filters = {
     modifyFilter: null,
 };
 
-// Archetype / reforge filters (managed separately from the button-based filters above)
-let reforgeStatusFilter = 'all';   // 'all' | 'reforgeable' | 'reforged' | 'not_reforgeable'
-let archetypeFilter = '';           // '' means Any; otherwise an archetype name like 'Off. DPS'
-let archetypeMinScore = 1;          // minimum score for the archetype filter
-
 const ItemsTab = {
     isExternalFilterPresent: () => {
         return (
@@ -49,9 +42,7 @@ const ItemsTab = {
             filters.enhanceFilter.length > 0 ||
             filters.statFilter.length > 0 ||
             filters.substatFilter.length > 0 ||
-            filters.rankFilter.length > 0 ||
-            reforgeStatusFilter !== 'all' ||
-            archetypeFilter !== ''
+            filters.rankFilter.length > 0
         );
     },
 
@@ -127,21 +118,6 @@ const ItemsTab = {
             if (!passesRank && !passesOW) return false;
         }
 
-        // Reforge status filter
-        if (reforgeStatusFilter !== 'all') {
-            if (reforgeStatusFilter === 'reforgeable' && !item.reforgeable) return false;
-            if (reforgeStatusFilter === 'reforged' && item.level !== 90) return false;
-            if (reforgeStatusFilter === 'not_reforgeable' && (item.reforgeable || item.level === 90)) return false;
-        }
-
-        // Archetype score filter
-        if (archetypeFilter !== '') {
-            const scores = item.archetypeScores && item.archetypeScores.allScores;
-            if (!scores) return false;
-            const entry = scores[archetypeFilter];
-            if (!entry || entry.score < archetypeMinScore) return false;
-        }
-
         return true;
     },
 
@@ -153,18 +129,8 @@ const ItemsTab = {
     },
 
     initialize: () => {
+        console.log('[ItemsTab] initialize');
         setupEventListeners();
-
-        // Populate archetype filter dropdown from scoring rules
-        const archetypeSelect = document.getElementById('archetypeFilter');
-        if (archetypeSelect) {
-            ArchetypeScorer.getAllArchetypeNames().forEach((name) => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                archetypeSelect.appendChild(option);
-            });
-        }
 
         // document.getElementById('updateGear').addEventListener("click", () => {
         //     ItemsTab.redraw();
@@ -197,16 +163,12 @@ const ItemsTab = {
             unlockGear();
         });
 
-        // Close comparison panel manually
-        document
-            .getElementById('closeComparisonPanel')
-            ?.addEventListener('click', () => {
-                const panel = document.getElementById('comparisonPanel');
-                if (panel) panel.style.display = 'none';
-            });
-
         document.getElementById('tab3label').addEventListener('click', () => {
-            itemsGrid.gridOptions.api.redrawRows();
+            try {
+                itemsGrid.gridOptions.api.redrawRows();
+            } catch (e) {
+                // noop — grid may not be initialized yet
+            }
             ItemsTab.redraw();
         });
 
@@ -232,9 +194,10 @@ async function editGear() {
     }
 
     const item = items[0];
+    console.log('[ItemsTab] editGear', item.id);
 
     const editedItem = await Dialog.editGearDialog(item, true, false);
-    console.warn('EDITITEMS', editedItem);
+    console.log('[ItemsTab] editGear result', editedItem);
 
     if (!editedItem) return;
 
@@ -269,7 +232,7 @@ async function reforgeGear() {
 
     ItemAugmenter.augment([item]);
     const editedItem = await Dialog.editGearDialog(item, true, true);
-    console.warn('EDITITEMS', editedItem);
+    console.log('[ItemsTab] reforgeGear result', editedItem);
 
     await Api.editItems([editedItem]);
 
@@ -280,8 +243,9 @@ async function reforgeGear() {
 }
 
 async function addGear() {
+    console.log('[ItemsTab] addGear');
     const newItem = await Dialog.editGearDialog(null, false, false);
-    console.warn('NEWITEM', newItem);
+    console.log('[ItemsTab] addGear result', newItem);
 
     Notifier.quick('Added item');
     await ItemsGrid.editedItem();
@@ -299,7 +263,7 @@ async function duplicateGear() {
     const item = items[0];
 
     const editedItem = await Dialog.editGearDialog(item, false, false);
-    console.warn('EDITITEMS', editedItem);
+    console.log('[ItemsTab] duplicateGear result', editedItem);
 
     await Api.editItems([editedItem]);
 
@@ -311,6 +275,7 @@ async function duplicateGear() {
 
 async function removeGear() {
     const items = ItemsGrid.getSelectedGear();
+    console.log('[ItemsTab] removeGear', items.length, 'items');
 
     await Api.deleteItems(items.map((x) => x.id));
 
@@ -324,6 +289,7 @@ async function removeGear() {
 
 async function unequipGear() {
     const items = ItemsGrid.getSelectedGear();
+    console.log('[ItemsTab] unequipGear', items.length, 'items');
 
     await Api.unequipItems(items.map((x) => x.id));
 
@@ -337,6 +303,7 @@ async function unequipGear() {
 
 async function lockGear() {
     const items = ItemsGrid.getSelectedGear();
+    console.log('[ItemsTab] lockGear', items.length, 'items');
 
     await Api.lockItems(items.map((x) => x.id));
 
@@ -350,12 +317,13 @@ async function lockGear() {
 
 async function unlockGear() {
     const items = ItemsGrid.getSelectedGear();
+    console.log('[ItemsTab] unlockGear', items.length, 'items');
 
     await Api.unlockItems(items.map((x) => x.id));
     const hintString = `${i18next.t('Unlocked ')}${items.length}${i18next.t(
         ' item(s).',
     )}`;
-    console.log('unlock item hint string', hintString);
+    console.log('[ItemsTab] unlockGear hint:', hintString);
     Notifier.quick(
         `${i18next.t('Unlocked ')}${items.length}${i18next.t(' item(s).')}`,
     );
@@ -707,84 +675,7 @@ function setupEventListeners() {
             });
             filters[key] = MULTI_SELECT_FILTERS.has(key) ? [] : null;
         });
-        // Also reset archetype / reforge filters
-        reforgeStatusFilter = 'all';
-        archetypeFilter = '';
-        archetypeMinScore = 1;
-        const rfEl = document.getElementById('reforgeStatusFilter');
-        if (rfEl) rfEl.value = 'all';
-        const arcEl = document.getElementById('archetypeFilter');
-        if (arcEl) arcEl.value = '';
-        const minEl = document.getElementById('archetypeMinScore');
-        if (minEl) minEl.value = '1';
         ItemsGrid.refreshFilters(filters);
-        if (itemsGrid) itemsGrid.gridOptions.api.onFilterChanged();
-    });
-
-    // ── Reforge status filter ─────────────────────────────────────────────
-    document.getElementById('reforgeStatusFilter')?.addEventListener('change', (e) => {
-        reforgeStatusFilter = e.target.value;
-        if (itemsGrid) itemsGrid.gridOptions.api.onFilterChanged();
-    });
-
-    // ── Archetype score filter ────────────────────────────────────────────
-    document.getElementById('archetypeFilter')?.addEventListener('change', (e) => {
-        archetypeFilter = e.target.value;
-        if (itemsGrid) itemsGrid.gridOptions.api.onFilterChanged();
-    });
-    document.getElementById('archetypeMinScore')?.addEventListener('input', (e) => {
-        archetypeMinScore = Number(e.target.value) || 0;
-        if (itemsGrid) itemsGrid.gridOptions.api.onFilterChanged();
-    });
-
-    // ── Preset buttons ────────────────────────────────────────────────────
-    document.getElementById('presetDpsCandidates')?.addEventListener('click', () => {
-        archetypeFilter = 'Off. DPS';
-        archetypeMinScore = 5;
-        reforgeStatusFilter = 'all';
-        const arcEl = document.getElementById('archetypeFilter');
-        if (arcEl) arcEl.value = 'Off. DPS';
-        const minEl = document.getElementById('archetypeMinScore');
-        if (minEl) minEl.value = '5';
-        const rfEl = document.getElementById('reforgeStatusFilter');
-        if (rfEl) rfEl.value = 'all';
-        if (itemsGrid) itemsGrid.gridOptions.api.onFilterChanged();
-    });
-
-    document.getElementById('presetSpeedCandidates')?.addEventListener('click', () => {
-        archetypeFilter = 'Off. Speed';
-        archetypeMinScore = 2;
-        reforgeStatusFilter = 'all';
-        const arcEl = document.getElementById('archetypeFilter');
-        if (arcEl) arcEl.value = 'Off. Speed';
-        const minEl = document.getElementById('archetypeMinScore');
-        if (minEl) minEl.value = '2';
-        const rfEl = document.getElementById('reforgeStatusFilter');
-        if (rfEl) rfEl.value = 'all';
-        if (itemsGrid) itemsGrid.gridOptions.api.onFilterChanged();
-    });
-
-    document.getElementById('presetReforgeNow')?.addEventListener('click', () => {
-        archetypeFilter = '';
-        reforgeStatusFilter = 'reforgeable';
-        const arcEl = document.getElementById('archetypeFilter');
-        if (arcEl) arcEl.value = '';
-        const rfEl = document.getElementById('reforgeStatusFilter');
-        if (rfEl) rfEl.value = 'reforgeable';
-        if (itemsGrid) itemsGrid.gridOptions.api.onFilterChanged();
-    });
-
-    document.getElementById('presetClearFilters')?.addEventListener('click', () => {
-        archetypeFilter = '';
-        archetypeMinScore = 1;
-        reforgeStatusFilter = 'all';
-        const arcEl = document.getElementById('archetypeFilter');
-        if (arcEl) arcEl.value = '';
-        const minEl = document.getElementById('archetypeMinScore');
-        if (minEl) minEl.value = '1';
-        const rfEl = document.getElementById('reforgeStatusFilter');
-        if (rfEl) rfEl.value = 'all';
-        if (itemsGrid) itemsGrid.gridOptions.api.onFilterChanged();
     });
 
     // Button

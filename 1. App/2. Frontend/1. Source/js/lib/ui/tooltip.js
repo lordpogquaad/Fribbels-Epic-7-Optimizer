@@ -39,6 +39,19 @@ const Tooltip = {
         // `
         //         });
 
+        tippy('#slotFilterTooltip', {
+            content:
+                `<p>${i18next.t(
+                    'Enter the <b>actual top % of items by score</b> to include per slot. The value in the input box is the percentage used — e.g. <b>25 = top 25% of gear</b>.'
+                )}</p>` +
+                `<p>${i18next.t(
+                    'The slider thumb uses a <b>quadratic (non-linear) scale</b>: dragging to the visual midpoint (position 50) passes only the <b>top 25%</b> of gear, not 50%. Type the desired percentage directly into the input for an exact value.'
+                )}</p>` +
+                `<p>${i18next.t(
+                    'Reference: position 30 → 9% | position 50 → 25% | position 70 → 49% | position 100 → 100%'
+                )}</p>`,
+        });
+
         tippy('#accessoryMainStatsTooltip', {
             content: `<p>${i18next.t(
                 'Choose the desired main stats for accessories. Multiple options can be selected per slot.'

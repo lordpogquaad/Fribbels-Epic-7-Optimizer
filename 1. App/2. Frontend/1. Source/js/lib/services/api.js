@@ -6,12 +6,14 @@
 
 import axios from 'axios';
 
-const endpoint = 'http://localhost:8130';
+function getEndpoint() {
+    return 'http://localhost:' + (global.backendPort || 8130);
+}
 
 function post(api, request) {
     return new Promise((resolve, reject) => {
         axios
-            .post(endpoint + api, request)
+            .post(getEndpoint() + api, request)
             .then((response) => {
                 // console.trace("Api call", api, request, response);
                 console.log('Api call', api, request, response);
@@ -164,6 +166,9 @@ const Api = {
             keepStatOptions: modStats.keepStatOptions,
             rollQuality: modStats.rollQuality,
             limitRolls: modStats.limitRolls,
+            maxModPieces: modStats.maxModPieces,
+            modSlots: modStats.modSlots,
+            slotModConfig: modStats.slotModConfig,
 
             heroId,
         });
@@ -408,6 +413,24 @@ const Api = {
 
     getResultRows: async (request) => {
         return post('/optimization/getResultRows', request);
+    },
+
+    getBestSoFar: async (executionId) => {
+        return post('/optimization/getBestSoFar', {
+            id: executionId,
+        });
+    },
+
+    getExecutionProgress: async (executionId) => {
+        return post('/optimization/getExecutionProgress', {
+            id: executionId,
+        });
+    },
+
+    cancelExecution: async (executionId) => {
+        return post('/optimization/cancelExecution', {
+            id: executionId,
+        });
     },
 };
 

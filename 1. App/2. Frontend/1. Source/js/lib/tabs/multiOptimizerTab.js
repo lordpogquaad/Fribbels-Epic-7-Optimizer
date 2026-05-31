@@ -400,10 +400,16 @@ function initializeBlank(index) {
     document
         .getElementById(`multiCancel${index}`)
         .addEventListener('click', async () => {
-            if (progressTimer) {
-                clearInterval(progressTimer);
+            const heroIndex = multiOptimizerHeroes[index];
+            if (heroIndex && heroIndex.progressTimer) {
+                clearInterval(heroIndex.progressTimer);
+                heroIndex.progressTimer = null;
             }
-            Api.cancelOptimizationRequest();
+            if (heroIndex && heroIndex.executionId) {
+                Api.cancelExecution(heroIndex.executionId);
+            } else {
+                Api.cancelOptimizationRequest();
+            }
         });
 
     document
@@ -584,6 +590,7 @@ module.exports = {
     },
 
     initialize: async () => {
+        console.log('[MultiOptimizerTab] initialize');
         initializeBlank(0);
 
         document
@@ -646,33 +653,42 @@ ${i18next.t(
             .getElementById('multiStartAll')
             .addEventListener('click', async () => {
                 interrupt = false;
-                let index = 0;
-                const callback = (result) => {
-                    if (result === 'OK') {
-                        if (index >= multiOptimizerHeroes.length || interrupt) {
-                            console.log(
-                                'index >= len, interrupt',
-                                index,
-                                multiOptimizerHeroes.length,
-                                interrupt,
-                            );
-                            return;
-                        }
+                const PARALLEL_SLOTS = 2;
+                const heroIndices = multiOptimizerHeroes
+                    .map((h, i) => ({ h, i }))
+                    .filter(({ h }) => h && h.hero)
+                    .map(({ i }) => i);
+                let queuePos = 0;
+                let activeSlots = 0;
 
-                        index += 1;
-                        handleStartOptimizationRequest(index, callback);
+                function tryStartNext() {
+                    while (activeSlots < PARALLEL_SLOTS && queuePos < heroIndices.length && !interrupt) {
+                        const idx = heroIndices[queuePos++];
+                        activeSlots++;
+                        handleStartOptimizationRequest(idx, () => {
+                            activeSlots--;
+                            tryStartNext();
+                        }, true);
                     }
-                };
-                handleStartOptimizationRequest(index, callback);
+                }
+                tryStartNext();
             });
 
         document
             .getElementById('multiCancelAll')
             .addEventListener('click', async () => {
                 interrupt = true;
-                if (progressTimer) {
-                    clearInterval(progressTimer);
-                }
+                multiOptimizerHeroes.forEach((heroIndex) => {
+                    if (!heroIndex) return;
+                    if (heroIndex.progressTimer) {
+                        clearInterval(heroIndex.progressTimer);
+                        heroIndex.progressTimer = null;
+                    }
+                    if (heroIndex.executionId) {
+                        Api.cancelExecution(heroIndex.executionId);
+                    }
+                });
+                // global safety net for single-optimizer and legacy paths
                 Api.cancelOptimizationRequest();
             });
 
@@ -1253,7 +1269,7 @@ function getSelectedGearMods(grid) {
     return [];
 }
 
-async function handleStartOptimizationRequest(index, callback) {
+async function handleStartOptimizationRequest(index, callback, skipInProgressCheck = false) {
     console.log(`Start request @ index: ${index}`);
 
     if (!multiOptimizerHeroes[index] || !multiOptimizerHeroes[index].hero) {
@@ -1265,7 +1281,7 @@ async function handleStartOptimizationRequest(index, callback) {
     }
 
     const inProgressResponse = await Api.getOptimizationInProgress();
-    if (inProgressResponse.inProgress) {
+    if (!skipInProgressCheck && inProgressResponse.inProgress) {
         Notifier.warn(
             'Optimization already in progress. Please cancel before starting a new search.',
         );
@@ -1362,8 +1378,23 @@ async function handleStartOptimizationRequest(index, callback) {
     console.log('Sending request:', mergedRequest);
     // OptimizerGrid.showLoadingOverlay();
 
+    if (multiOptimizerHeroes[index] && multiOptimizerHeroes[index].progressTimer) {
+        clearInterval(multiOptimizerHeroes[index].progressTimer);
+    }
+    // Also clear the old module-level timer for single-optimizer compat
+    if (progressTimer) {
+        clearInterval(progressTimer);
+    }
+
+    const oldExecutionId = multiOptimizerHeroes[index].executionId;
+    await Api.deleteExecution(oldExecutionId);
+
+    const newExecutionId = await Api.prepareExecution();
+    mergedRequest.executionId = newExecutionId;
+    multiOptimizerHeroes[index].executionId = newExecutionId;
+
     function updateProgress() {
-        Api.getOptimizationProgress()
+        Api.getExecutionProgress(newExecutionId)
             .then((result) => {
                 const searchedCount = result.searched;
                 const resultsCounter = result.results;
@@ -1382,22 +1413,20 @@ async function handleStartOptimizationRequest(index, callback) {
             .catch(console.error);
     }
 
-    if (progressTimer) {
-        clearInterval(progressTimer);
+    const slotTimer = setInterval(updateProgress, 400);
+    if (multiOptimizerHeroes[index]) {
+        multiOptimizerHeroes[index].progressTimer = slotTimer;
     }
-    progressTimer = setInterval(updateProgress, 400);
-
-    const oldExecutionId = multiOptimizerHeroes[index].executionId;
-    await Api.deleteExecution(oldExecutionId);
-
-    const newExecutionId = await Api.prepareExecution();
-    mergedRequest.executionId = newExecutionId;
-    multiOptimizerHeroes[index].executionId = newExecutionId;
+    progressTimer = slotTimer;
 
     setPinnedHero(index, hero);
     Api.submitOptimizationRequest(mergedRequest)
         .then((result) => {
             console.log('RESPONSE RECEIVED', result);
+            if (multiOptimizerHeroes[index] && multiOptimizerHeroes[index].progressTimer) {
+                clearInterval(multiOptimizerHeroes[index].progressTimer);
+                multiOptimizerHeroes[index].progressTimer = null;
+            }
             clearInterval(progressTimer);
 
             const searchedCount = result.searched;

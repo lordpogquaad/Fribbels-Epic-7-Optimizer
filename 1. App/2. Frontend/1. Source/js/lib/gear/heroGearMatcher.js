@@ -1,6 +1,8 @@
 /* global HeroData */
 /* eslint-disable no-console */
 
+import ROLL_DIVISORS from './rollDivisors.js';
+
 const HERO_MATCHER_STORAGE_KEY = 'heroMatcherConfigs';
 
 let currentConfig = null;
@@ -23,37 +25,37 @@ function rawScoreItem(item, config, baseStats) {
             mainTypeValue(stats, 'AttackPercent') +
             ((stats.Attack + mainTypeValue(stats, 'Attack')) / baseStats.atk) *
                 100) /
-        8;
+        ROLL_DIVISORS.pct;
     const hpRolls =
         (stats.HealthPercent +
             mainTypeValue(stats, 'HealthPercent') +
             ((stats.Health + mainTypeValue(stats, 'Health')) / baseStats.hp) *
                 100) /
-        8;
+        ROLL_DIVISORS.pct;
     const defRolls =
         (stats.DefensePercent +
             mainTypeValue(stats, 'DefensePercent') +
             ((stats.Defense + mainTypeValue(stats, 'Defense')) /
                 baseStats.def) *
                 100) /
-        8;
-    const spdRolls = (stats.Speed + mainTypeValue(stats, 'Speed')) / 4;
+        ROLL_DIVISORS.pct;
+    const spdRolls = (stats.Speed + mainTypeValue(stats, 'Speed')) / ROLL_DIVISORS.spd;
     const crRolls =
         (stats.CriticalHitChancePercent +
             mainTypeValue(stats, 'CriticalHitChancePercent')) /
-        5;
+        ROLL_DIVISORS.cr;
     const cdRolls =
         (stats.CriticalHitDamagePercent +
             mainTypeValue(stats, 'CriticalHitDamagePercent')) /
-        7;
+        ROLL_DIVISORS.cd;
     const effRolls =
         (stats.EffectivenessPercent +
             mainTypeValue(stats, 'EffectivenessPercent')) /
-        8;
+        ROLL_DIVISORS.pct;
     const resRolls =
         (stats.EffectResistancePercent +
             mainTypeValue(stats, 'EffectResistancePercent')) /
-        8;
+        ROLL_DIVISORS.pct;
 
     const rawScore =
         atkRolls * priorities.atk +

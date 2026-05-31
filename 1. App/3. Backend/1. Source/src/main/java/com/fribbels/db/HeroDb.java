@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,7 @@ public class HeroDb {
 
     public Hero getHeroById(final String id) {
         return heroes.stream()
+                .filter(Objects::nonNull)
                 .filter(x -> StringUtils.equals(x.getId(), id))
                 .findFirst()
                 .orElse(null);

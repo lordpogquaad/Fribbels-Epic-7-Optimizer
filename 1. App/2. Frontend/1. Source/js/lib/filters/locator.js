@@ -1,4 +1,5 @@
 import tippy from 'tippy.js';
+import Constants from '../constants';
 
 /* global Api, Settings */
 
@@ -16,20 +17,9 @@ const readableSubstatByName = {
     EffectResistancePercent: 'Eff res',
 };
 
-const opStatToSubstat = {
-    att_rate: 'AttackPercent',
-    max_hp_rate: 'HealthPercent',
-    def_rate: 'DefensePercent',
-    att: 'Attack',
-    max_hp: 'Health',
-    def: 'Defense',
-    speed: 'Speed',
-    res: 'EffectResistancePercent',
-    cri: 'CriticalHitChancePercent',
-    cri_dmg: 'CriticalHitDamagePercent',
-    acc: 'EffectivenessPercent',
-    coop: 'DualAttackChancePercent',
-};
+// Ingame stat key → optimizer stat type name. Canonical definition lives in
+// Constants.ingameStatToStatType (constants.js).
+const opStatToSubstat = Constants.ingameStatToStatType;
 
 function locateSingleItem(itemId, items) {
     if (!itemId) {

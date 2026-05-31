@@ -180,6 +180,9 @@ const Assets = {
     getStorage: () => {
         return DarkMode.isDark() ? './assets/bag_dt.png' : './assets/bag.png';
     },
+    getSetBlock: () => {
+        return './assets/setblock.png';
+    },
 };
 
 export default Assets;

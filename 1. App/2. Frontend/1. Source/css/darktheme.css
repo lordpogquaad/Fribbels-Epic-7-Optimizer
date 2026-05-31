@@ -1,3 +1,13 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+ * DARK MODE OVERRIDES  ←  pair every style.css visual rule with one here
+ * ═══════════════════════════════════════════════════════════════════════════
+ * This file is loaded/disabled at runtime alongside style.css (not a
+ * replacement — both files are active simultaneously in dark mode).
+ *
+ * RULE: When adding visual CSS to style.css (colors, backgrounds, borders),
+ *       add a corresponding override here using the :root variables below.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
     --bg-color: #1a1a1a;
     --font-color: #e2e2e2;
@@ -73,6 +83,18 @@ body {
 }
 
 /* data input */
+
+/* optimizer stat filter number inputs — incl. new ↓T min-target / ↑T max-target placeholders */
+.optimizer-number-input::placeholder {
+    color: var(--font-color);
+    opacity: 0.45;
+}
+
+/* roll count badges — item panel [N] display and edit-gear dialog [N] badge */
+.itemDisplaySubstatRolls,
+.editGearRollBadge {
+    color: #aaa;
+}
 
 .ms-choice {
     background-color: var(--input-color);
@@ -208,6 +230,116 @@ input[type='checkbox']:checked:after {
     background: var(--inactive-color);
 }
 
+/* Archetype editor table */
+.archetypeTable th,
+.archetypeTable td {
+    border-color: var(--border-color);
+    color: var(--font-color);
+    background-color: var(--bg-color);
+}
+.archetypeTable thead th {
+    background: var(--btn-color);
+}
+.archetype-cell-input {
+    color: var(--font-color);
+    background: transparent;
+}
+.archetypeHint {
+    color: var(--inactive-color);
+}
+/* Archetype multi-select dropdowns (new) */
+.arch-ms-trigger {
+    background: var(--btn-color);
+    border-color: var(--border-color);
+    color: var(--font-color);
+}
+.arch-ms-trigger:hover {
+    background: var(--input-color);
+}
+.arch-ms-panel {
+    background: var(--btn-color);
+    border-color: var(--border-color);
+}
+.arch-ms-option {
+    color: var(--font-color);
+}
+.arch-ms-option:hover {
+    background: var(--input-color);
+}
+.arch-ms-any {
+    border-color: var(--border-color);
+}
+.arch-ss {
+    background: var(--btn-color);
+    border-color: var(--border-color);
+    color: var(--font-color);
+}
+.arch-drag-handle {
+    color: var(--inactive-color);
+}
+.arch-row-over td {
+    box-shadow: inset 0 -2px 0 var(--accent-green, #38821f);
+}
+.arch-wt-trigger {
+    background: var(--btn-color);
+    border-color: var(--border-color);
+    color: var(--font-color);
+}
+.arch-wt-trigger:hover {
+    background: var(--input-color);
+}
+.arch-wt-label {
+    color: var(--font-color);
+}
+.arch-wt-input {
+    background: var(--input-color);
+    border-color: var(--border-color);
+    color: var(--font-color);
+}
+.arch-wt-any-row {
+    background: var(--btn-color);
+}
+.arch-wt-any-row .arch-wt-label {
+    color: var(--font-color);
+}
+.arch-wt-divider {
+    border-bottom-color: var(--border-color);
+}
+.arch-slot-panel {
+    background: var(--bg-color);
+    border-color: var(--border-color);
+}
+.arch-slot-header {
+    border-bottom-color: var(--border-color);
+}
+.arch-slot-name {
+    color: var(--font-color);
+}
+.arch-slot-sel-hdr {
+    color: var(--font-color);
+}
+.arch-slot-sel {
+    background: var(--btn-color);
+    border-color: var(--border-color);
+    color: var(--font-color);
+}
+.gearGroupScoreLabel {
+    color: var(--font-color);
+}
+.archetypeGroupFilterSelect {
+    background: var(--btn-color);
+    border: 1px solid var(--border-color);
+    color: var(--font-color);
+}
+.gearPreviewButton {
+    background: var(--btn-color);
+    color: var(--font-color);
+    border: 1px solid var(--border-color);
+}
+.gearPreviewButton:hover {
+    background: var(--input-color);
+}
+
 /* AG-Grid-Theme */
 
 .ag-theme-balham {
@@ -340,4 +472,304 @@ input[type='checkbox']:checked:after {
 .tabsContent.active {
     display: block;
     background-color: var(--inactive-color);
+}
+
+/* Fribbels Library */
+.optimizer-bottom-tab-bar {
+    background: #2a2a2a;
+    border-bottom-color: #555;
+}
+
+.optimizer-bottom-tab-btn {
+    color: #bbb;
+}
+
+.optimizer-bottom-tab-btn.active {
+    color: #6dbfff;
+    border-bottom-color: #6dbfff;
+}
+
+.optimizer-bottom-tab-btn:hover:not(.active) {
+    background: #3a3a3a;
+}
+
+.fribbels-copy-bar {
+    background: #1e3a1e;
+    border-bottom-color: #3a5a3a;
+}
+
+.fribbels-copy-stats {
+    color: #ccc;
+}
+
+.fribbels-header {
+    background: #2a2a2a;
+    border-bottom-color: #444;
+}
+
+.fribbels-fetch-btn {
+    background: #1a6fbf;
+}
+
+.fribbels-fetch-btn:hover {
+    background: #1558a0;
+}
+
+.fribbels-status {
+    color: #999;
+}
+
+.fribbels-builds-table th {
+    background: #3a3a3a;
+    border-right-color: #555;
+    color: #fff;
+}
+
+.fribbels-builds-table td {
+    background: #1a1a1a;
+    border-right-color: #3a3a3a;
+    border-bottom-color: #2e2e2e;
+    color: #fff;
+}
+
+.fribbels-builds-table tbody tr:hover td {
+    background: #1a3a5a !important;
+}
+
+.fribbels-builds-table tbody tr.fribbels-selected td {
+    background: #1a4a7a !important;
+}
+
+.fribbels-set-abbrev {
+    color: #ccc;
+}
+
+/* Fribbels Filter & Summary dark mode */
+
+.fribbels-filter-btn,
+.fribbels-summary-btn {
+    background: #3a3a3a;
+    color: #ccc;
+    border-color: #555;
+}
+
+.fribbels-filter-btn:hover,
+.fribbels-summary-btn:hover {
+    background: #4a4a4a;
+}
+
+.fribbels-filter-popup {
+    background: #2a2a2a;
+    border-color: #555;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.fribbels-filter-title {
+    color: #ccc;
+}
+
+.fribbels-filter-section-label {
+    color: #999;
+}
+
+.fribbels-filter-stats-grid label {
+    color: #ccc;
+}
+
+.fribbels-filter-stats-grid input {
+    background: #1a1a1a;
+    color: #ccc;
+    border-color: #555;
+}
+
+.fribbels-filter-sets-grid label {
+    color: #ccc;
+}
+
+.fribbels-filter-close-btn {
+    color: #999;
+}
+
+.fribbels-filter-close-btn:hover {
+    color: #ccc;
+}
+
+.fribbels-filter-artifact-search {
+    background: #1a1a1a;
+    color: #ccc;
+    border-color: #555;
+}
+
+.fribbels-filter-artifact-list {
+    background: #1a1a1a;
+    border-color: #555;
+}
+
+.fribbels-filter-artifact-list label {
+    color: #ccc;
+}
+
+.fribbels-filter-artifact-list label:hover {
+    background: #3a3a3a;
+}
+
+.fribbels-summary-panel {
+    background: #222;
+    border-bottom-color: #444;
+    color: #ccc;
+}
+
+.fribbels-summary-header {
+    color: #aaa;
+}
+
+.fribbels-summary-table th {
+    background: #3a3a3a;
+    color: #fff;
+    border-color: #555;
+}
+
+.fribbels-summary-table td {
+    color: #ccc;
+    border-bottom-color: #2e2e2e;
+}
+
+.fribbels-summary-table td:first-child {
+    color: #fff;
+}
+
+/* ── Search Hero input (Heroes tab) ─────────────────────────────────── */
+/* NOTE: add hero-search-related dark overrides here */
+#heroSearchInput {
+    background-color: var(--input-color);
+    color: var(--font-color);
+    border-color: var(--border-color);
+}
+#heroSearchInput::placeholder {
+    color: var(--font-color);
+    opacity: 0.45;
+}
+
+/* ── Mod dialog: slot enable/disable checkboxes ──────────────────────── */
+/* NOTE: add mod-slot-toggle dark overrides here */
+.modSlotLabel {
+    color: var(--font-color);
+}
+
+/* ── Mod dialog: slot constraint badges on drag-list items ────────────── */
+/* NOTE: add mod-constraint-badge dark overrides here */
+.modConstraintBadge {
+    color: #e07070;
+}
+
+/* ── Mod dialog: permutation estimate display ─────────────────────────── */
+.modEstimateGreen { color: #5abf5a; }
+.modEstimateYellow { color: #d4a520; }
+.modEstimateRed { color: #e05050; }
+
+/* ── Optimizer: hero mod config summary pill ──────────────────────────── */
+.heroModSummary {
+    background: rgba(60, 100, 180, 0.18);
+    border-left-color: #5580cc;
+    color: #bbb;
+}
+
+/* ── Mod dialog: per-slot tab bar (dark) ──────────────────────────────── */
+.modSlotTabBar {
+    border-bottom-color: #555;
+}
+
+.modSlotTab {
+    color: #ccc;
+}
+
+.modSlotTabActive {
+    background: #2a2a2a;
+    border-color: #555;
+    border-bottom-color: #2a2a2a;
+    color: #fff;
+}
+
+/* ── Mod dialog: rule list (dark) ─────────────────────────────────────── */
+.ruleList {
+    border-color: #555;
+}
+
+.ruleRow:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+.ruleRowSelected {
+    background: rgba(70, 130, 200, 0.2);
+    border-color: rgba(70, 130, 200, 0.5);
+}
+
+.ruleDeleteBtn {
+    color: #e07070;
+}
+
+.modListBtn {
+    border-color: #666;
+    background: #333;
+    color: #ddd;
+}
+
+.modListBtn:hover {
+    background: #444;
+}
+
+.modListBtn.modSaveBtn {
+    border-color: #4a8a4a;
+    color: #7dcf7d;
+    font-weight: 600;
+}
+
+.modListBtn.modSaveBtn:hover {
+    background: rgba(80,180,80,0.15);
+}
+
+.modListBtn.modResetBtn {
+    border-color: #777;
+    color: #bbb;
+}
+
+/* ── Mod dialog: slot options (dark) ──────────────────────────────────── */
+.slotOptionsSectionLabel,
+.slotRuleSectionLabel {
+    color: #aaa;
+}
+
+/* ── Mod dialog: rule right header (dark) ────────────────────────────── */
+.ruleRightHeader {
+    border-color: #555;
+    background: rgba(255,255,255,0.04);
+    color: #ccc;
+}
+
+/* ── Mod dialog: copy-slot picker (dark) ─────────────────────────────── */
+.copySlotPicker {
+    border-color: #666;
+    background: rgba(255,255,255,0.04);
+}
+
+/* ── Mod dialog: preset section (dark) ───────────────────────────────── */
+.presetNameInput,
+.presetSelectEl {
+    background: var(--input-color);
+    border-color: #7d7d7d;
+    color: var(--font-color);
+}
+
+.presetNameInput::placeholder {
+    color: #aaa;
+    opacity: 1;
+}
+
+.modListBtn.presetApplyBtn {
+    border-color: #5a9abf;
+    color: #7abfdf;
+}
+
+.modListBtn.presetApplyBtn:hover {
+    background: rgba(90,160,210,0.15);
 }

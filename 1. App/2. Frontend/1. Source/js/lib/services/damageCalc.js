@@ -27,42 +27,6 @@ function findSkill(skill, hero, heroData) {
     );
 }
 
-// function calculateRate(skill, hero, heroData, skillOptions) {
-//     return findSkill(skill, skillOptions, heroData).rate;
-// }
-
-// function calculateAtkMod(skill, hero, heroData, skillOptions) {
-//     var atkMod = 1;
-
-//     if (findSkill(skill, skillOptions, heroData).type == 0) {
-//         return atkMod;
-//     }
-
-//     if (skillOptions[skill].greaterAttackBuffEnabled) {
-//         atkMod += 0.75
-//     } else if (skillOptions[skill].attackBuffEnabled) {
-//         atkMod += 0.5
-//     }
-
-//     if (skillOptions[skill].vigorAttackBuffEnabled) {
-//         atkMod += 0.3
-//     }
-
-//     if (skillOptions[skill].decreasedAttackBuffEnabled) {
-//         atkMod -= 0.5
-//     }
-
-//     return atkMod;
-// }
-
-// function calculateSelfHpScaling(skill, hero, heroData, skillOptions) {
-//     return findSkill(skill, skillOptions, heroData).selfHpScaling || 0;
-// }
-
-// function calculateType(skill, hero, heroData, skillOptions) {
-//     return findSkill(skill, skillOptions, heroData).type || 0;
-// }
-
 function getHitTypeMulti(skill, hero) {
     if (!hero.skillOptions[skill].skillEffect) {
         return 0;
@@ -81,26 +45,6 @@ function getHitTypeMulti(skill, hero) {
     }
     return 0;
 }
-
-// function calculateMultis(skill, hero, heroData, skillOptions) {
-//     var multis = 1;
-
-//     multis += findSkill(skill, skillOptions, heroData).type != 0 ? 0 : getHitTypeMulti(skill, hero, heroData, skillOptions)
-
-//     if (skillOptions[skill].elementalAdvantageEnabled && findSkill(skill, skillOptions, heroData).type == 0) {
-//         multis *= 1.1
-//     }
-
-//     if (skillOptions[skill].targetTargetBuffEnabled && findSkill(skill, skillOptions, heroData).type == 0) {
-//         multis *= 1.15
-//     }
-
-//     // Enhance mod
-
-//     // DamageUpMod
-
-//     return multis
-// }
 
 function fixSkillOptions(hero, heroData) {
     if (!hero.skillOptions) {
@@ -134,6 +78,7 @@ function fixSkillOptions(hero, heroData) {
 const DamageCalc = {
     getMultipliers: (hero) => {
         const heroData = HeroData.getHeroExtraInfo(hero.name);
+        if (!heroData) return null;
         fixSkillOptions(hero, heroData);
 
         // var s1Multis = calculateMultis("S1", hero, heroData, skillOptions)

@@ -4,6 +4,10 @@
  */
 @import '~@fortawesome/fontawesome-free/css/all.css';
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     position: relative;
     height: 100vh;

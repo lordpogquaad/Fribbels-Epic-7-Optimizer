@@ -1,6 +1,6 @@
 /* global Reforge */
-import reforgeConstants from './reforgeConstants';
-const { plainStats, plainStatRollsToValue, critDamageRollsToValue, speedRollsToValue, flatRollsByTier } = reforgeConstants;
+
+import FlatStatCalibration from './flatStatCalibration.js';
 
 const n = 25000;
 
@@ -98,7 +98,13 @@ function pickSubstat(substats, grade, j) {
         if (j === 6) return substats[1];
         if (j === 3) return substats[0];
     }
-    return substats[Math.floor(Math.random() * 4)];
+    // Enhancement roll: only select from already-unlocked substats
+    const unlockedCount =
+        grade === 'Heroic' ? 3 :
+        grade === 'Rare'   ? (j < 9 ? 2 : 3) :
+        grade === 'Good'   ? (j < 6 ? 1 : j < 9 ? 2 : 3) :
+        4;  // Epic (Normal handled above)
+    return substats[Math.floor(Math.random() * unlockedCount)];
 }
 
 const potentialGsByRolls = {
@@ -123,6 +129,13 @@ const substatGroupByType = {
     EffectivenessPercent: 'Default',
     EffectResistancePercent: 'Default',
 };
+const plainStats = [
+    'AttackPercent',
+    'DefensePercent',
+    'HealthPercent',
+    'EffectivenessPercent',
+    'EffectResistancePercent',
+];
 function valueFromProbabilities(probs) {
     const sum = Object.values(probs).reduce((acc, x) => acc + x, 0);
     const rand = Math.random() * sum;
@@ -140,23 +153,107 @@ function valueFromProbabilities(probs) {
     return parseInt(value, 10);
 }
 
-// Weights chosen so that max GS per single roll = 9 for every stat type,
-// matching potentialGsByRolls[0] = 9 and the GAS scoring sheet baseline.
-// (Speed max roll = 4 → 9/4; CC% max roll = 5 → 9/5; CD% max roll = 8 → 9/8)
-const substatWeights = {
+let substatWeights = {
     AttackPercent: 1,
     DefensePercent: 1,
     HealthPercent: 1,
     EffectivenessPercent: 1,
     EffectResistancePercent: 1,
-    Attack: 3.46 / 39,
-    Health: 3.09 / 174,
-    Defense: 4.99 / 31,
-    CriticalHitDamagePercent: 9 / 8,
-    CriticalHitChancePercent: 9 / 5,
-    Speed: 9 / 4,
+    Attack: 7 / FlatStatCalibration.getWeights().atk,
+    Health: 7 / FlatStatCalibration.getWeights().hp,
+    Defense: 7 / FlatStatCalibration.getWeights().def,
+    CriticalHitDamagePercent: 9 / 8,   // 7 base max + 1 reforge → 8; normalize to % max (9): 9/8
+    CriticalHitChancePercent: 9 / 6,   // 5 base max + 1 reforge → 6; normalize to % max (9): 9/6
+    Speed: 8 / 4,                      // fallback for ≥1 reforge roll; rolls===0 uses 2.5 dynamically
 };
 
+window.addEventListener('flatStatCalibrationChanged', () => {
+    const w = FlatStatCalibration.getWeights();
+    substatWeights.Attack  = 7 / w.atk;
+    substatWeights.Health  = 7 / w.hp;
+    substatWeights.Defense = 7 / w.def;
+});
+
+const plainStatRollsToValue = {
+    1: 1,
+    2: 3,
+    3: 4,
+    4: 5,
+    5: 7,
+    6: 8,
+};
+
+const critDamageRollsToValue = {
+    1: 1,
+    2: 2,
+    3: 3,
+    4: 4,
+    5: 6,
+    6: 7,
+};
+
+const speedRollsToValue = {
+    1: 0,
+    2: 1,
+    3: 2,
+    4: 3,
+    5: 4,
+    6: 4,
+};
+
+const flatRollsByTier = {
+    88: {
+        Attack: {
+            Epic: [37, 53],
+            Heroic: [36, 50],
+            Rare: [34, 48],
+        },
+        Defense: {
+            Epic: [32, 40],
+            Heroic: [30, 38],
+            Rare: [28, 36],
+        },
+        Health: {
+            Epic: [178, 229],
+            Heroic: [169, 218],
+            Rare: [160, 206],
+        },
+    },
+    85: {
+        Attack: {
+            Epic: [33, 46],
+            Heroic: [31, 44],
+            Rare: [29, 42],
+        },
+        Defense: {
+            Epic: [28, 35],
+            Heroic: [26, 33],
+            Rare: [25, 31],
+        },
+        Health: {
+            Epic: [157, 202],
+            Heroic: [149, 192],
+            Rare: [141, 182],
+        },
+    },
+    71: {
+        Attack: {
+            Epic: [28, 40],
+            Heroic: [27, 38],
+            Rare: [25, 36],
+        },
+        Defense: {
+            Epic: [24, 30],
+            Heroic: [22, 28],
+            Rare: [21, 27],
+        },
+        Health: {
+            Epic: [136, 175],
+            Heroic: [129, 166],
+            Rare: [122, 157],
+        },
+    },
+};
 
 const percentProbabilitiesByTier = {
     88: {
@@ -450,11 +547,11 @@ const ItemSimulator = {
         }
 
         const baseSubstats = item.substats;
-        const substatTypeArr = [];
         const gsArr = [];
         const moddedGsArr = [];
 
         Array.from({ length: n }).forEach(() => {
+            const substatTypeArr = []; // reset each iteration so rolled types don't bleed across simulations
             const substats = [];
             Array.from({ length: 4 }).forEach((_, j) => {
                 if (baseSubstats[j]) {
@@ -551,7 +648,7 @@ const ItemSimulator = {
                     }
                 }
 
-                substat.gs = substatWeights[substat.type] * substat.value;
+                substat.gs = (substat.type === 'Speed' && substat.rolls === 0 ? 2.5 : substatWeights[substat.type]) * substat.value;
                 substat.potentialGs = potentialGsByRolls[substat.rolls - 1];
 
                 gs += substat.gs;

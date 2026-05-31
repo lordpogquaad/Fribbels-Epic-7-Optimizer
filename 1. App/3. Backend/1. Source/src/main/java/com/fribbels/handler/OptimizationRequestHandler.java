@@ -41,6 +41,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,25 +59,38 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     private final Map<String, OptimizationDb> optimizationDbs;
     private final HeroDb heroDb;
     private final ItemDb itemDb;
-    public static boolean inProgress = false;
+    /** Number of optimizations currently running (max 2 for parallel support). */
+    public static final AtomicInteger runningCount = new AtomicInteger(0);
+    public static final int MAX_CONCURRENT = 2;
 
     private static final Gson gson = new Gson();
     @Getter
     private AtomicLong searchedCounter = new AtomicLong(0);
     private AtomicLong resultsCounter = new AtomicLong(0);
 
-    private long[] setSolutionBitMasks;
+    private volatile long[] setSolutionBitMasks;
 
-    private boolean canUseGpu = true;
+    private float[] pooledWeaponAccs = new float[0];
+    private float[] pooledHelmetAccs = new float[0];
+    private float[] pooledArmorAccs = new float[0];
+    private float[] pooledNecklaceAccs = new float[0];
+    private float[] pooledRingAccs = new float[0];
+    private float[] pooledBootAccs = new float[0];
+
+    private GpuOptimizerKernel cachedKernel = null;
+    private String cachedKernelHeroId = null;
+    private boolean cachedKernelIsFormat0 = false;
+
+    private volatile boolean canUseGpu = true;
 
     public static final int SET_COUNT = 22;
-    public static final int ARG_COUNT = 17;
+    public static final int ARG_COUNT = 14;
 
     //
     private static final int SET_EXPONENTIAL = 113379904; // 22 ^ 6
 
-    private boolean[] permutations = new boolean[SET_EXPONENTIAL];
-    private int[] setPermutationIndicesPlusOne = new int[SET_EXPONENTIAL];
+    private boolean[] permutations;
+    private int[] setPermutationIndicesPlusOne;
 
     public static OptimizationRequestHandler instance;
 
@@ -89,110 +104,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
 
             System.out.println(KernelManager.instance().bestDevice().getType());
 
-            ExecutorService t = Executors.newFixedThreadPool(3);
-            t.execute(() -> {
-                try {
-                    System.out.println("Starting setSolutionBitMasks generation...");
-                    long start = System.currentTimeMillis();
-                    setSolutionBitMasks = new long[SET_EXPONENTIAL];
-                    int count = 0;
-                    for (int a = 0; a < SET_COUNT; a++) {
-                        for (int b = 0; b < SET_COUNT; b++) {
-                            for (int c = 0; c < SET_COUNT; c++) {
-                                for (int d = 0; d < SET_COUNT; d++) {
-                                    for (int e = 0; e < SET_COUNT; e++) {
-                                        for (int f = 0; f < SET_COUNT; f++) {
-                                            int[] sets = new int[] { a, b, c, d, e, f };
-                                            int[] counters = convertSetsToSetCounters(sets);
-
-                                            long l = 0;
-
-                                            l += counters[21] / 2 > 0 ? 1L : 0L; // pursuit
-                                            l <<= 1;
-                                            l += counters[20] / 4 > 0 ? 1L : 0L; // warfare (opener)
-                                            l <<= 1;
-                                            l += counters[19] / 4 > 0 ? 1L : 0L; // riposte
-                                            l <<= 1;
-                                            l += counters[18] / 4 > 0 ? 1L : 0L; // reversal
-                                            l <<= 1;
-                                            l += counters[17] / 2 > 0 ? 1L : 0L; // torrent 1
-                                            l <<= 1;
-                                            l += counters[17] / 2 - 1 > 0 ? 1L : 0L; // torrent 2
-                                            l <<= 1;
-                                            l += counters[17] / 2 - 2 > 0 ? 1L : 0L; // torrent 3
-                                            l <<= 1;
-                                            l += counters[16] / 4 > 0 ? 1L : 0L; // protection
-                                            l <<= 1;
-                                            l += counters[15] / 4 > 0 ? 1L : 0L; // injury
-                                            l <<= 1;
-                                            l += counters[14] / 4 > 0 ? 1L : 0L; // revenge
-                                            l <<= 1;
-                                            l += counters[13] / 2 > 0 ? 1L : 0L; // pen
-                                            l <<= 1;
-                                            l += counters[12] / 2 > 0 ? 1L : 0L; // immunity
-                                            l <<= 1;
-                                            l += counters[11] / 4 > 0 ? 1L : 0L; // rage
-                                            l <<= 1;
-                                            l += counters[10] / 2 > 0 ? 1L : 0L; // unity - should be x3 but don't need
-                                                                                 // it
-                                            l <<= 1;
-                                            l += counters[9] / 2 > 0 ? 1L : 0L; // res1
-                                            l <<= 1;
-                                            l += counters[9] / 2 - 1 > 0 ? 1L : 0L; // res2
-                                            l <<= 1;
-                                            l += counters[9] / 2 - 2 > 0 ? 1L : 0L; // res3
-                                            l <<= 1;
-                                            l += counters[8] / 4 > 0 ? 1L : 0L; // counter
-                                            l <<= 1;
-                                            l += counters[7] / 4 > 0 ? 1L : 0L; // lifesteal
-                                            l <<= 1;
-                                            l += counters[6] / 4 > 0 ? 1L : 0L; // destr
-                                            l <<= 1;
-                                            l += counters[5] / 2 > 0 ? 1L : 0L; // hit1
-                                            l <<= 1;
-                                            l += counters[5] / 2 - 1 > 0 ? 1L : 0L; // hit2
-                                            l <<= 1;
-                                            l += counters[5] / 2 - 2 > 0 ? 1L : 0L; // hit3
-                                            l <<= 1;
-                                            l += counters[4] / 2 > 0 ? 1L : 0L; // crit1
-                                            l <<= 1;
-                                            l += counters[4] / 2 - 1 > 0 ? 1L : 0L; // crit2
-                                            l <<= 1;
-                                            l += counters[4] / 2 - 2 > 0 ? 1L : 0L; // crit3
-                                            l <<= 1;
-                                            l += counters[3] / 4 > 0 ? 1L : 0L; // spd
-                                            l <<= 1;
-                                            l += counters[2] / 4 > 0 ? 1L : 0L; // atk
-                                            l <<= 1;
-                                            l += counters[1] / 2 > 0 ? 1L : 0L; // def1
-                                            l <<= 1;
-                                            l += counters[1] / 2 - 1 > 0 ? 1L : 0L; // def2
-                                            l <<= 1;
-                                            l += counters[1] / 2 - 2 > 0 ? 1L : 0L; // def3
-                                            l <<= 1;
-                                            l += counters[0] / 2 > 0 ? 1L : 0L; // hp1
-                                            l <<= 1;
-                                            l += counters[0] / 2 - 1 > 0 ? 1L : 0L; // hp2
-                                            l <<= 1;
-                                            l += counters[0] / 2 - 2 > 0 ? 1L : 0L; // hp3
-
-                                            setSolutionBitMasks[count] = l;
-                                            count++;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    System.out.println("Finished setSolutionBitMasks generation in "
-                            + (System.currentTimeMillis() - start) + "ms. First element: " + setSolutionBitMasks[0]
-                            + ", Last element: " + setSolutionBitMasks[setSolutionBitMasks.length - 1]);
-                } catch (Throwable e) {
-                    System.err.println("Error generating set solution bit masks: ");
-                    e.printStackTrace();
-                }
-            });
-
+            ExecutorService t = Executors.newFixedThreadPool(1);
             t.execute(() -> {
                 try {
                     final boolean isIntel = KernelManager
@@ -225,7 +137,108 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                     System.out.println("Error detecting GPU");
                 }
             });
+            t.shutdown();
         }
+    }
+
+    private synchronized void ensureSolutionBitMasks() {
+        if (setSolutionBitMasks != null)
+            return;
+        System.out.println("Starting setSolutionBitMasks generation...");
+        long start = System.currentTimeMillis();
+        final long[] masks = new long[SET_EXPONENTIAL];
+        int count = 0;
+        for (int a = 0; a < SET_COUNT; a++) {
+            for (int b = 0; b < SET_COUNT; b++) {
+                for (int c = 0; c < SET_COUNT; c++) {
+                    for (int d = 0; d < SET_COUNT; d++) {
+                        for (int e = 0; e < SET_COUNT; e++) {
+                            for (int f = 0; f < SET_COUNT; f++) {
+                                int[] sets = new int[] { a, b, c, d, e, f };
+                                int[] counters = convertSetsToSetCounters(sets);
+
+                                long l = 0;
+
+                                l += counters[21] / 2 > 0 ? 1L : 0L; // pursuit
+                                l <<= 1;
+                                l += counters[20] / 4 > 0 ? 1L : 0L; // warfare (opener)
+                                l <<= 1;
+                                l += counters[19] / 4 > 0 ? 1L : 0L; // riposte
+                                l <<= 1;
+                                l += counters[18] / 4 > 0 ? 1L : 0L; // reversal
+                                l <<= 1;
+                                l += counters[17] / 2 > 0 ? 1L : 0L; // torrent 1
+                                l <<= 1;
+                                l += counters[17] / 2 - 1 > 0 ? 1L : 0L; // torrent 2
+                                l <<= 1;
+                                l += counters[17] / 2 - 2 > 0 ? 1L : 0L; // torrent 3
+                                l <<= 1;
+                                l += counters[16] / 4 > 0 ? 1L : 0L; // protection
+                                l <<= 1;
+                                l += counters[15] / 4 > 0 ? 1L : 0L; // injury
+                                l <<= 1;
+                                l += counters[14] / 4 > 0 ? 1L : 0L; // revenge
+                                l <<= 1;
+                                l += counters[13] / 2 > 0 ? 1L : 0L; // pen
+                                l <<= 1;
+                                l += counters[12] / 2 > 0 ? 1L : 0L; // immunity
+                                l <<= 1;
+                                l += counters[11] / 4 > 0 ? 1L : 0L; // rage
+                                l <<= 1;
+                                l += counters[10] / 2 > 0 ? 1L : 0L; // unity - should be x3 but don't need it
+                                l <<= 1;
+                                l += counters[9] / 2 > 0 ? 1L : 0L; // res1
+                                l <<= 1;
+                                l += counters[9] / 2 - 1 > 0 ? 1L : 0L; // res2
+                                l <<= 1;
+                                l += counters[9] / 2 - 2 > 0 ? 1L : 0L; // res3
+                                l <<= 1;
+                                l += counters[8] / 4 > 0 ? 1L : 0L; // counter
+                                l <<= 1;
+                                l += counters[7] / 4 > 0 ? 1L : 0L; // lifesteal
+                                l <<= 1;
+                                l += counters[6] / 4 > 0 ? 1L : 0L; // destr
+                                l <<= 1;
+                                l += counters[5] / 2 > 0 ? 1L : 0L; // hit1
+                                l <<= 1;
+                                l += counters[5] / 2 - 1 > 0 ? 1L : 0L; // hit2
+                                l <<= 1;
+                                l += counters[5] / 2 - 2 > 0 ? 1L : 0L; // hit3
+                                l <<= 1;
+                                l += counters[4] / 2 > 0 ? 1L : 0L; // crit1
+                                l <<= 1;
+                                l += counters[4] / 2 - 1 > 0 ? 1L : 0L; // crit2
+                                l <<= 1;
+                                l += counters[4] / 2 - 2 > 0 ? 1L : 0L; // crit3
+                                l <<= 1;
+                                l += counters[3] / 4 > 0 ? 1L : 0L; // spd
+                                l <<= 1;
+                                l += counters[2] / 4 > 0 ? 1L : 0L; // atk
+                                l <<= 1;
+                                l += counters[1] / 2 > 0 ? 1L : 0L; // def1
+                                l <<= 1;
+                                l += counters[1] / 2 - 1 > 0 ? 1L : 0L; // def2
+                                l <<= 1;
+                                l += counters[1] / 2 - 2 > 0 ? 1L : 0L; // def3
+                                l <<= 1;
+                                l += counters[0] / 2 > 0 ? 1L : 0L; // hp1
+                                l <<= 1;
+                                l += counters[0] / 2 - 1 > 0 ? 1L : 0L; // hp2
+                                l <<= 1;
+                                l += counters[0] / 2 - 2 > 0 ? 1L : 0L; // hp3
+
+                                masks[count] = l;
+                                count++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        setSolutionBitMasks = masks;
+        System.out.println("Finished setSolutionBitMasks generation in "
+                + (System.currentTimeMillis() - start) + "ms. First element: " + setSolutionBitMasks[0]
+                + ", Last element: " + setSolutionBitMasks[setSolutionBitMasks.length - 1]);
     }
 
     public OptimizationRequestHandler(final BaseStatsDb baseStatsDb,
@@ -235,7 +248,12 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         this.heroDb = heroDb;
         this.itemDb = itemDb;
         instance = this;
-        optimizationDbs = new HashMap<>();
+        optimizationDbs = new LinkedHashMap<String, OptimizationDb>(4, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<String, OptimizationDb> eldest) {
+                return size() > 3;
+            }
+        };
 
         ExecutorService t = Executors.newFixedThreadPool(3);
 
@@ -262,8 +280,9 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                     final IdRequest deleteExecutionRequest = parseRequest(exchange, IdRequest.class);
                     sendResponse(exchange, deleteExecutionRequest(deleteExecutionRequest));
                     System.out.println("Sent response");
+                    return;
                 case "/optimization/optimizationRequest":
-                    Main.interrupt = false;
+                    // Do NOT reset Main.interrupt here — concurrent runs each use per-execution interrupt flags
                     final OptimizationRequest optimizationRequest = parseRequest(exchange, OptimizationRequest.class);
                     sendResponse(exchange, handleOptimizationRequest(optimizationRequest));
                     System.out.println("Sent response");
@@ -301,14 +320,27 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                     sendResponse(exchange, handleGetModItemsRequest(getModItemsRequest));
                     System.out.println("Sent response");
                     return;
+                case "/optimization/getBestSoFar":
+                    final IdRequest getBestSoFarRequest = parseRequest(exchange, IdRequest.class);
+                    sendResponse(exchange, handleGetBestSoFarRequest(getBestSoFarRequest));
+                    System.out.println("Sent response");
+                    return;
+                case "/optimization/getExecutionProgress":
+                    final IdRequest execProgressRequest = parseRequest(exchange, IdRequest.class);
+                    sendResponse(exchange, handleGetExecutionProgressRequest(execProgressRequest));
+                    System.out.println("Sent response");
+                    return;
+                case "/optimization/cancelExecution":
+                    final IdRequest cancelExecRequest = parseRequest(exchange, IdRequest.class);
+                    sendResponse(exchange, handleCancelExecutionRequest(cancelExecRequest));
+                    System.out.println("Sent response");
+                    return;
                 default:
                     System.out.println("No handler found for " + path);
             }
         } catch (final RuntimeException e) {
             System.err.println(e);
             e.printStackTrace();
-        } finally {
-            Main.interrupt = false;
         }
 
         System.out.println("Sent error");
@@ -321,16 +353,23 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
 
     public String handleInProgressRequest() {
         final GetInProgressResponse response = GetInProgressResponse.builder()
-                .inProgress(inProgress)
+                .inProgress(runningCount.get() >= MAX_CONCURRENT)
                 .build();
 
         return gson.toJson(response);
     }
 
     public String handleGetProgressRequest() {
+        // Sum progress across all active executions so single-optimizer tab polling still works
+        long searched = 0;
+        long results = 0;
+        for (final OptimizationDb db : optimizationDbs.values()) {
+            searched += db.getSearchedCounter().get();
+            results += db.getResultsCounter().get();
+        }
         final OptimizationResponse response = OptimizationResponse.builder()
-                .searched(searchedCounter.get())
-                .results(resultsCounter.get())
+                .searched(searched)
+                .results(results)
                 .build();
 
         return gson.toJson(response);
@@ -421,6 +460,18 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                 && heroStats.getDmgh() <= request.getInputMaxDmgHLimit()
                 && heroStats.getDmgd() >= request.getInputMinDmgDLimit()
                 && heroStats.getDmgd() <= request.getInputMaxDmgDLimit()
+                && heroStats.getHmcdmgs() >= request.getInputMinHmcdmgsLimit()
+                && heroStats.getHmcdmgs() <= request.getInputMaxHmcdmgsLimit()
+                && heroStats.getDmcdmgs() >= request.getInputMinDmcdmgsLimit()
+                && heroStats.getDmcdmgs() <= request.getInputMaxDmcdmgsLimit()
+                && heroStats.getHdmg() >= request.getInputMinHdmgLimit()
+                && heroStats.getHdmg() <= request.getInputMaxHdmgLimit()
+                && heroStats.getHdmgs() >= request.getInputMinHdmgsLimit()
+                && heroStats.getHdmgs() <= request.getInputMaxHdmgsLimit()
+                && heroStats.getDdmg() >= request.getInputMinDdmgLimit()
+                && heroStats.getDdmg() <= request.getInputMaxDdmgLimit()
+                && heroStats.getDdmgs() >= request.getInputMinDdmgsLimit()
+                && heroStats.getDdmgs() <= request.getInputMaxDdmgsLimit()
                 && heroStats.getS1() >= request.getInputMinS1Limit()
                 && heroStats.getS1() <= request.getInputMaxS1Limit()
                 && heroStats.getS2() >= request.getInputMinS2Limit()
@@ -460,25 +511,20 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     }
 
     public String handleOptimizationRequest(final OptimizationRequest request) {
-        try {
-            heroDb.saveOptimizationRequest(request);
-            System.gc();
+        heroDb.saveOptimizationRequest(request);
+        System.gc();
 
-            return optimize(request, HeroStats.builder()
-                    .atk(request.getAtk())
-                    .hp(request.getHp())
-                    .spd(request.getSpd())
-                    .def(request.getDef())
-                    .cr(request.getCr())
-                    .cd(request.getCd())
-                    .eff(request.getEff())
-                    .res(request.getRes())
-                    .dac(request.getDac())
-                    .build());
-        } catch (final Exception e) {
-            inProgress = false;
-            throw new RuntimeException("Optimization request failed", e);
-        }
+        return optimize(request, HeroStats.builder()
+                .atk(request.getAtk())
+                .hp(request.getHp())
+                .spd(request.getSpd())
+                .def(request.getDef())
+                .cr(request.getCr())
+                .cd(request.getCd())
+                .eff(request.getEff())
+                .res(request.getRes())
+                .dac(request.getDac())
+                .build());
     }
 
     private String handleGetResultRowsRequest(final GetResultRowsRequest request) {
@@ -525,6 +571,47 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         return gson.toJson(response);
     }
 
+    private String handleGetBestSoFarRequest(final IdRequest request) {
+        final GetResultRowsResponse emptyResponse = GetResultRowsResponse.builder()
+                .heroStats(new HeroStats[] {})
+                .maximum(0)
+                .build();
+        if (request.getId() == null) {
+            return gson.toJson(emptyResponse);
+        }
+        final OptimizationDb optimizationDb = optimizationDbs.get(request.getId());
+        if (optimizationDb == null) {
+            return gson.toJson(emptyResponse);
+        }
+        final HeroStats[] best = optimizationDb.getBestSoFar(100);
+        final long maximum = optimizationDb.getMaximum();
+        final GetResultRowsResponse response = GetResultRowsResponse.builder()
+                .heroStats(best)
+                .maximum(maximum)
+                .build();
+        return gson.toJson(response);
+    }
+
+    private String handleGetExecutionProgressRequest(final IdRequest request) {
+        final OptimizationResponse empty = OptimizationResponse.builder()
+                .searched(0).results(0).done(true).build();
+        if (request.getId() == null) return gson.toJson(empty);
+        final OptimizationDb db = optimizationDbs.get(request.getId());
+        if (db == null) return gson.toJson(empty);
+        return gson.toJson(OptimizationResponse.builder()
+                .searched(db.getSearchedCounter().get())
+                .results(db.getResultsCounter().get())
+                .done(db.isDone())
+                .build());
+    }
+
+    private String handleCancelExecutionRequest(final IdRequest request) {
+        if (request.getId() == null) return "";
+        final OptimizationDb db = optimizationDbs.get(request.getId());
+        if (db != null) db.interrupt();
+        return "";
+    }
+
     private String handleEditResultRowsRequest(final EditResultRowsRequest request) {
         final OptimizationDb optimizationDb = optimizationDbs.get(request.getExecutionId());
         if (optimizationDb == null) {
@@ -553,35 +640,23 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     }
 
     public float[] flattenAccArrs(final Item[] items, final StatCalculator statCalculator) {
-        final int outputSize = items.length * ARG_COUNT;
-        final float[] output = new float[outputSize];
+        return flattenAccArrs(items, statCalculator, new float[0]);
+    }
+
+    public float[] flattenAccArrs(final Item[] items, final StatCalculator statCalculator, final float[] pool) {
+        final int needed = items.length * ARG_COUNT;
+        final float[] output = pool.length >= needed ? pool : new float[needed];
 
         for (int i = 0; i < items.length; i++) {
             final Item item = items[i];
-            System.arraycopy(item.tempStatAccArr, 0, output, i * 17, ARG_COUNT - 5);
-            output[i * ARG_COUNT + ARG_COUNT - 5] = item.set.index;
-            output[i * ARG_COUNT + ARG_COUNT - 4] = item.priority;
-            output[i * ARG_COUNT + ARG_COUNT - 3] = item.upgradeable;
-            output[i * ARG_COUNT + ARG_COUNT - 2] = item.convertable;
-            output[i * ARG_COUNT + ARG_COUNT - 1] = item.alreadyEquipped;
-
-            // 0 atk
-            // 1 hp
-            // 2 def
-            // 3 -
-            // 4 -
-            // 5 -
-            // 6 cr
-            // 7 cd
-            // 8 eff
-            // 9 res
-            // 10 spd
-            // 11 score
-            // 12 set
-            // 13 prio
-            // 14 upg
-            // 15 conv
-            // 16 eq
+            final int base = i * ARG_COUNT;
+            System.arraycopy(item.tempStatAccArr, 0, output, base, 3); // 0 atk, 1 hp, 2 def
+            System.arraycopy(item.tempStatAccArr, 6, output, base + 3, 6); // 3 cr, 4 cd, 5 eff, 6 res, 7 spd, 8 score
+            output[base + ARG_COUNT - 5] = item.set.index; // 9 set
+            output[base + ARG_COUNT - 4] = item.priority; // 10 prio
+            output[base + ARG_COUNT - 3] = item.upgradeable; // 11 upg
+            output[base + ARG_COUNT - 2] = item.convertable; // 12 conv
+            output[base + ARG_COUNT - 1] = item.alreadyEquipped; // 13 eq
         }
 
         return output;
@@ -602,18 +677,44 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
 
     @SneakyThrows
     public String optimize(final OptimizationRequest request, final HeroStats unused) {
-        long startTime = System.currentTimeMillis();
-        final StatCalculator statCalculator = new StatCalculator();
         final OptimizationDb optimizationDb = optimizationDbs.get(request.getExecutionId());
         if (optimizationDb == null) {
             return "";
         }
 
-        inProgress = true;
+        // Register this execution in the global running count; always decrement on exit
+        runningCount.incrementAndGet();
+        try {
+            return optimizeInternal(request, optimizationDb);
+        } finally {
+            runningCount.decrementAndGet();
+            optimizationDb.setDone(true);
+        }
+    }
+
+    @SneakyThrows
+    private String optimizeInternal(final OptimizationRequest request, final OptimizationDb optimizationDb) {
+        // Reset the global interrupt flag only when we're the sole running optimization;
+        // if a parallel run is already active, don't clear its interrupt state.
+        if (runningCount.get() <= 1) {
+            Main.interrupt = false;
+        }
+
+        long startTime = System.currentTimeMillis();
+        final StatCalculator statCalculator = new StatCalculator();
+
+        // Per-execution counters (thread-safe; each execution has its own)
+        final AtomicLong searchedCounter = optimizationDb.getSearchedCounter();
+        final AtomicLong resultsCounter  = optimizationDb.getResultsCounter();
+
         final HeroStats base = baseStatsDb.getBaseStatsByName(request.hero.name, request.hero.getStars());
+        if (base == null) {
+            throw new RuntimeException("Hero not found in base stats database: " + request.hero.name
+                    + " (stars=" + request.hero.getStars() + "). Check that hero data is loaded.");
+        }
         System.out.println("Started optimization request");
         addCalculatedFields(request);
-        final boolean useReforgeStats = request.getInputPredictReforges();
+        final boolean useReforgeStats = Boolean.TRUE.equals(request.getInputPredictReforges());
         final List<Item> rawItems = request.getItems();
         rawItems.forEach(x -> itemDb.calculateWss(x));
 
@@ -641,18 +742,10 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
             }
         });
 
-        final int MAXIMUM_RESULTS = SETTING_MAXIMUM_RESULTS;
-        System.out.println("Start allocating memory");
-        final HeroStats[] resultHeroStats = new HeroStats[MAXIMUM_RESULTS];
-        // final long[] resultInts = new long[MAXIMUM_RESULTS];
-        System.out.println("Finished allocating memory");
-
         final Map<Gear, List<Item>> itemsByGear = buildItemsByGear(items);
 
         final Map<String, float[]> accumulatorArrsByItemId = new ConcurrentHashMap<>(new HashMap<>());
         final ExecutorService executorService = Executors.newFixedThreadPool(2);
-        searchedCounter = new AtomicLong(0);
-        resultsCounter = new AtomicLong(0);
 
         final long wSize = itemsByGear.get(Gear.WEAPON).size();
         final long hSize = itemsByGear.get(Gear.HELMET).size();
@@ -682,13 +775,15 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         System.out.println("OUTPUTSTART");
 
         statCalculator.setBaseValues(base, request.hero);
+        statCalculator.setPriorityWeights(request);
 
-        final float[] flattenedWeaponAccs = flattenAccArrs(allweapons, statCalculator);
-        final float[] flattenedHelmetAccs = flattenAccArrs(allhelmets, statCalculator);
-        final float[] flattenedArmorAccs = flattenAccArrs(allarmors, statCalculator);
+        // Always use fresh local arrays — pooled arrays are not safe for concurrent runs
+        final float[] flattenedWeaponAccs  = flattenAccArrs(allweapons,   statCalculator);
+        final float[] flattenedHelmetAccs  = flattenAccArrs(allhelmets,   statCalculator);
+        final float[] flattenedArmorAccs   = flattenAccArrs(allarmors,    statCalculator);
         final float[] flattenedNecklaceAccs = flattenAccArrs(allnecklaces, statCalculator);
-        final float[] flattenedRingAccs = flattenAccArrs(allrings, statCalculator);
-        final float[] flattenedBootAccs = flattenAccArrs(allboots, statCalculator);
+        final float[] flattenedRingAccs    = flattenAccArrs(allrings,     statCalculator);
+        final float[] flattenedBootAccs    = flattenAccArrs(allboots,     statCalculator);
 
         final Hero hero = request.hero;
 
@@ -729,6 +824,14 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
 
         final long maxPerms = wSize * hSize * aSize * nSize * rSize * bSize;
 
+        final int MAXIMUM_RESULTS = (int) Math.min(maxPerms, SETTING_MAXIMUM_RESULTS);
+        System.out.println("Start allocating memory");
+        final HeroStats[] resultHeroStats = new HeroStats[MAXIMUM_RESULTS];
+        System.out.println("Finished allocating memory");
+
+        // Enable live streaming: frontend can poll getResultRows during the run
+        optimizationDb.setLiveResults(resultHeroStats, resultsCounter);
+
         final GpuOptimizerKernel kernel;
 
         hero.setDamageMultipliers(request.damageMultipliers);
@@ -739,13 +842,17 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         // System.out.println("multis");
         // System.out.println(request.damageMultipliers.toString());
 
-        if (SETTING_GPU && canUseGpu && maxPerms >= 20_000_000) {
+        // Disable GPU when running in parallel — the GPU kernel is not thread-safe across concurrent executions
+        final boolean useGpu = SETTING_GPU && canUseGpu && maxPerms >= 20_000_000 && runningCount.get() <= 1;
+
+        if (useGpu) {
             // GPU Optimize
 
             // final int max = 2097152;
             final int max = 1048576;
 
-            kernel = selectKernel(
+            ensureSolutionBitMasks();
+            kernel = getOrCreateKernel(
                     request,
                     flattenedWeaponAccs,
                     flattenedHelmetAccs,
@@ -813,7 +920,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                 final Map<String, PassesContainer> passesPool = new HashMap<>();
 
                 for (int i = 0; i < maxPerms / max + 1; i++) {
-                    if (exit.get() || Main.interrupt)
+                    if (exit.get() || Main.interrupt || optimizationDb.isInterrupted())
                         break;
 
                     final int finalI = i;
@@ -840,8 +947,6 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                                     .build());
                         } catch (final OutOfMemoryError e) {
                             e.printStackTrace();
-                            inProgress = false;
-
                             break;
                         }
                     }
@@ -852,7 +957,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                             .filter(x -> x.getDeviceId() == Main.BEST_DEVICE_ID)
                             .findFirst();
 
-                    while (executionCounter.get() > 1 && !exit.get() && !Main.interrupt) {
+                    while (executionCounter.get() > 1 && !exit.get() && !Main.interrupt && !optimizationDb.isInterrupted()) {
                         Thread.sleep(10);
                     }
 
@@ -861,11 +966,12 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                     final Range range = bestDevice.get().createRange(max, finalMaxWorkGroupSize);
                     kernel.setIteration(finalI);
                     kernel.setPasses(passes);
+                    kernel.putPasses();
                     try {
                         kernel.execute(range);
+                        kernel.getPasses();
                     } catch (final Exception e) {
                         System.err.println("GPU error, please try again. " + e);
-                        inProgress = false;
                         break;
                     }
 
@@ -883,7 +989,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                                     if (iteration >= maxPerms) {
                                         break;
                                     }
-                                    if (Main.interrupt || exit.get()) {
+                                    if (Main.interrupt || optimizationDb.isInterrupted() || exit.get()) {
                                         break;
                                     }
 
@@ -904,6 +1010,18 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                                     final Item necklace = allnecklaces[n];
                                     final Item ring = allrings[r];
                                     final Item boots = allboots[b];
+
+                                    // Phase 4: max pieces to mod filter
+                                    final Integer maxModPieces4 = request.hero.getMaxModPieces();
+                                    if (maxModPieces4 != null && maxModPieces4 < 6) {
+                                        final int modCount = (weapon.getMod() != null ? 1 : 0)
+                                                + (helmet.getMod() != null ? 1 : 0)
+                                                + (armor.getMod() != null ? 1 : 0)
+                                                + (necklace.getMod() != null ? 1 : 0)
+                                                + (ring.getMod() != null ? 1 : 0)
+                                                + (boots.getMod() != null ? 1 : 0);
+                                        if (modCount > maxModPieces4) continue;
+                                    }
 
                                     final Item[] collectedItems = new Item[] { weapon, helmet, armor, necklace, ring,
                                             boots };
@@ -960,27 +1078,25 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
 
                 }
             } finally {
-                System.out.println("DISPOSE");
-                kernel.dispose();
+                // kernel kept alive for reuse via cachedKernel
             }
         } else {
-            // CPU Optimize
-
+            // CPU Optimize — split at weapon × helmet level so ForkJoinPool.commonPool()
+            // can work-steal across all available cores instead of one task per weapon.
+            final List<Future<?>> cpuFutures = new ArrayList<>((int) (wSize * hSize));
             for (int w = 0; w < wSize; w++) {
                 final Item weapon = itemsByGear.get(Gear.WEAPON).get(w);
-                // final long finalW = w;
+                final float[] weaponAccumulatorArr = statCalculator.getStatAccumulatorArr(base, weapon,
+                        accumulatorArrsByItemId, useReforgeStats);
 
-                executorService.submit(() -> {
-                    boolean exit = false;
-                    try {
+                for (int h = 0; h < hSize; h++) {
+                    final Item helmet = itemsByGear.get(Gear.HELMET).get(h);
+                    final float[] helmetAccumulatorArr = statCalculator.getStatAccumulatorArr(base, helmet,
+                            accumulatorArrsByItemId, useReforgeStats);
 
-                        final float[] weaponAccumulatorArr = statCalculator.getStatAccumulatorArr(base, weapon,
-                                accumulatorArrsByItemId, useReforgeStats);
-
-                        for (int h = 0; h < hSize; h++) {
-                            final Item helmet = itemsByGear.get(Gear.HELMET).get(h);
-                            final float[] helmetAccumulatorArr = statCalculator.getStatAccumulatorArr(base, helmet,
-                                    accumulatorArrsByItemId, useReforgeStats);
+                    cpuFutures.add(ForkJoinPool.commonPool().submit(() -> {
+                        boolean exit = false;
+                        try {
 
                             for (int a = 0; a < aSize; a++) {
                                 final Item armor = itemsByGear.get(Gear.ARMOR).get(a);
@@ -994,7 +1110,6 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                                     if (!(firstSets.contains(weapon.getSet())
                                             || firstSets.contains(helmet.getSet())
                                             || firstSets.contains(armor.getSet()))) {
-                                        // continue not return because other helmets may work
                                         break;
                                     }
                                 }
@@ -1010,14 +1125,26 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                                                 ring, accumulatorArrsByItemId, useReforgeStats);
 
                                         for (int b = 0; b < bSize; b++) {
-                                            if (Main.interrupt) {
-                                                executorService.shutdownNow();
+                                            if (Main.interrupt || optimizationDb.isInterrupted()) {
                                                 return;
                                             }
                                             if (exit)
                                                 return;
 
                                             final Item boots = itemsByGear.get(Gear.BOOTS).get(b);
+
+                                            // Phase 4: max pieces to mod filter
+                                            final Integer maxModPieces4 = request.hero.getMaxModPieces();
+                                            if (maxModPieces4 != null && maxModPieces4 < 6) {
+                                                final int modCount = (weapon.getMod() != null ? 1 : 0)
+                                                        + (helmet.getMod() != null ? 1 : 0)
+                                                        + (armor.getMod() != null ? 1 : 0)
+                                                        + (necklace.getMod() != null ? 1 : 0)
+                                                        + (ring.getMod() != null ? 1 : 0)
+                                                        + (boots.getMod() != null ? 1 : 0);
+                                                if (modCount > maxModPieces4) continue;
+                                            }
+
                                             final float[] bootsAccumulatorArr = statCalculator.getStatAccumulatorArr(
                                                     base, boots, accumulatorArrsByItemId, useReforgeStats);
 
@@ -1098,12 +1225,18 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                                     }
                                 }
                             }
+                        } catch (final Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (final Exception e) {
-                        inProgress = false;
-                        e.printStackTrace();
-                    }
-                });
+                    }));
+                }
+            }
+            for (final Future<?> f : cpuFutures) {
+                try {
+                    f.get();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -1128,19 +1261,13 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                         .results(resultsCounter.get())
                         .build();
 
-                inProgress = false;
-
                 return gson.toJson(response);
             } catch (final Exception e) {
-                inProgress = false;
                 e.printStackTrace();
             }
         } catch (final Exception e) {
-            inProgress = false;
             e.printStackTrace();
         }
-
-        inProgress = false;
 
         return "";
     }
@@ -1192,6 +1319,12 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                 || heroStats.mcdmgps < request.inputMinMcdmgpsLimit || heroStats.mcdmgps > request.inputMaxMcdmgpsLimit
                 || heroStats.dmgh < request.inputMinDmgHLimit || heroStats.dmgh > request.inputMaxDmgHLimit
                 || heroStats.dmgd < request.inputMinDmgDLimit || heroStats.dmgd > request.inputMaxDmgDLimit
+                || heroStats.hmcdmgs < request.inputMinHmcdmgsLimit || heroStats.hmcdmgs > request.inputMaxHmcdmgsLimit
+                || heroStats.dmcdmgs < request.inputMinDmcdmgsLimit || heroStats.dmcdmgs > request.inputMaxDmcdmgsLimit
+                || heroStats.hdmg < request.inputMinHdmgLimit || heroStats.hdmg > request.inputMaxHdmgLimit
+                || heroStats.hdmgs < request.inputMinHdmgsLimit || heroStats.hdmgs > request.inputMaxHdmgsLimit
+                || heroStats.ddmg < request.inputMinDdmgLimit || heroStats.ddmg > request.inputMaxDdmgLimit
+                || heroStats.ddmgs < request.inputMinDdmgsLimit || heroStats.ddmgs > request.inputMaxDdmgsLimit
                 || heroStats.s1 < request.inputMinS1Limit || heroStats.s1 > request.inputMaxS1Limit
                 || heroStats.s2 < request.inputMinS2Limit || heroStats.s2 > request.inputMaxS2Limit
                 || heroStats.s3 < request.inputMinS3Limit || heroStats.s3 > request.inputMaxS3Limit
@@ -1230,11 +1363,11 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         return sets;
     }
 
-    private static final int POW_20_5 = 5153632;
-    private static final int POW_20_4 = 234256;
-    private static final int POW_20_3 = 10648;
-    private static final int POW_20_2 = 484;
-    private static final int POW_20_1 = 22;
+    private static final int POW_22_5 = 5153632;
+    private static final int POW_22_4 = 234256;
+    private static final int POW_22_3 = 10648;
+    private static final int POW_22_2 = 484;
+    private static final int POW_22_1 = 22;
 
     // private static final int POW_18_5 = 1889568;
     // private static final int POW_18_4 = 104976;
@@ -1243,11 +1376,11 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     // private static final int POW_18_1 = 18;
 
     public int calculateSetIndex(final int[] indices) { // sorted, size 6, elements [0-17]
-        return indices[0] * POW_20_5
-                + indices[1] * POW_20_4
-                + indices[2] * POW_20_3
-                + indices[3] * POW_20_2
-                + indices[4] * POW_20_1
+        return indices[0] * POW_22_5
+                + indices[1] * POW_22_4
+                + indices[2] * POW_22_3
+                + indices[3] * POW_22_2
+                + indices[4] * POW_22_1
                 + indices[5];
     }
 
@@ -1290,6 +1423,10 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     public void addCalculatedFields(OptimizationRequest request) {
         // final boolean[] permutations = new boolean[SET_EXPONENTIAL];
         // final int[] setPermutationIndicesPlusOne = new int[SET_EXPONENTIAL];
+        if (permutations == null) {
+            permutations = new boolean[SET_EXPONENTIAL];
+            setPermutationIndicesPlusOne = new int[SET_EXPONENTIAL];
+        }
         Arrays.fill(permutations, false);
         Arrays.fill(setPermutationIndicesPlusOne, 0);
         // int[] setSolutionCounters;
@@ -1491,7 +1628,76 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
 
     }
 
-    public static GpuOptimizerKernel selectKernel(
+    private GpuOptimizerKernel getOrCreateKernel(
+            final OptimizationRequest request,
+            final float[] flattenedWeaponAccs,
+            final float[] flattenedHelmetAccs,
+            final float[] flattenedArmorAccs,
+            final float[] flattenedNecklaceAccs,
+            final float[] flattenedRingAccs,
+            final float[] flattenedBootAccs,
+            final float bonusBaseAtk,
+            final float bonusBaseDef,
+            final float bonusBaseHp,
+            final float atkSetBonus,
+            final float hpSetBonus,
+            final float defSetBonus,
+            final float speedSetBonus,
+            final float revengeSetBonus,
+            final float reversalSetBonus,
+            final float penSetDmgBonus,
+            final float targetDefense,
+            final float bonusMaxAtk,
+            final float bonusMaxDef,
+            final float bonusMaxHp,
+            final int SETTING_RAGE_SET,
+            final int SETTING_PEN_SET,
+            final HeroStats base,
+            final Hero hero,
+            final long argSize,
+            final long wSize,
+            final long hSize,
+            final long aSize,
+            final long nSize,
+            final long rSize,
+            final long bSize,
+            final long max,
+            final long[] longSetMasks) {
+        final boolean isFormat0 = request.getSetFormat() == 0;
+        final String heroId = request.hero.getId();
+        final boolean canReuse = cachedKernel != null
+                && heroId.equals(cachedKernelHeroId)
+                && isFormat0 == cachedKernelIsFormat0;
+        if (canReuse) {
+            cachedKernel.update(request,
+                    flattenedWeaponAccs, flattenedHelmetAccs, flattenedArmorAccs,
+                    flattenedNecklaceAccs, flattenedRingAccs, flattenedBootAccs,
+                    wSize, hSize, aSize, nSize, rSize, bSize);
+            cachedKernel.putPerRunArrays();
+            return cachedKernel;
+        }
+        if (cachedKernel != null) {
+            cachedKernel.dispose();
+            cachedKernel = null;
+        }
+        final GpuOptimizerKernel kernel = selectKernel(request,
+                flattenedWeaponAccs, flattenedHelmetAccs, flattenedArmorAccs,
+                flattenedNecklaceAccs, flattenedRingAccs, flattenedBootAccs,
+                bonusBaseAtk, bonusBaseDef, bonusBaseHp,
+                atkSetBonus, hpSetBonus, defSetBonus,
+                speedSetBonus, revengeSetBonus, reversalSetBonus, penSetDmgBonus,
+                targetDefense, bonusMaxAtk, bonusMaxDef, bonusMaxHp,
+                SETTING_RAGE_SET, SETTING_PEN_SET,
+                base, hero, argSize, wSize, hSize, aSize, nSize, rSize, bSize, max, longSetMasks);
+        kernel.setExplicit(true);
+        kernel.putInitialArrays();
+        cachedKernel = kernel;
+        cachedKernelHeroId = heroId;
+        cachedKernelIsFormat0 = isFormat0;
+        return kernel;
+    }
+
+    private static GpuOptimizerKernel selectKernel(
             final OptimizationRequest request,
             final float[] flattenedWeaponAccs,
             final float[] flattenedHelmetAccs,

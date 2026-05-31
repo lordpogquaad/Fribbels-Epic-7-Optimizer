@@ -42,7 +42,7 @@ const MainStatFixer = {
             if (isCritChance(stat)) return '5%';
             if (isCritDamage(stat)) return '15%';
             if (isSpeed(stat)) return '15';
-            if (isAccessory(stat)) return '10%';
+            if (isAccessory(gear)) return '10%';
         }
 
         if (level >= 15 && level < 30) {

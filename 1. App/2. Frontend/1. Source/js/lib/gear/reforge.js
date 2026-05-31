@@ -1,6 +1,12 @@
 /* global Utils, Notifier, i18next */
 import reforgeConstants from './reforgeConstants';
-const { plainStats, plainStatRollsToValue, critDamageRollsToValue, speedRollsToValue, maxRollsByRank } = reforgeConstants;
+const {
+    plainStats,
+    plainStatRollsToValue,
+    critDamageRollsToValue,
+    speedRollsToValue,
+    maxRollsByRank,
+} = reforgeConstants;
 
 const mainStatValuesByStatType = {
     Attack: 525,
@@ -15,7 +21,6 @@ const mainStatValuesByStatType = {
     EffectResistancePercent: 65,
     Speed: 45,
 };
-
 
 const powers = {
     Normal: 0.8,
@@ -379,9 +384,9 @@ const reforgedNameBySetByGear = {
         RageSet: "Origin Spider Queen's Ring",
         ImmunitySet: "Origin Spider Queen's Ring",
         RevengeSet: "Dark Soul's Ring",
-        InjurySet: "Dark Soul's Necklace",
-        PenetrationSet: "Dark Soul's Necklace",
-        TorrentSet: "Dark Soul's Necklace",
+        InjurySet: "Dark Soul's Ring",
+        PenetrationSet: "Dark Soul's Ring",
+        TorrentSet: "Dark Soul's Ring",
         ReversalSet: 'Ring of Grudges',
         RiposteSet: 'Ring of Grudges',
         WarfareSet: 'Curse of Grudges',
@@ -483,7 +488,7 @@ function calculateReforgeValuesTypeValueAndRolls(
     type,
     value,
     rolls,
-    level
+    level,
 ) {
     if (level !== 85 && level !== 90) {
         return value;
@@ -514,7 +519,7 @@ function calculateReforgeValuesTypeValueAndRolls(
     if (type === 'Speed') {
         return value + speedRollsToValue[rolls];
     }
-    return 0;
+    return value; // unknown type: return original value unchanged
 }
 
 // We can get reforged stats of non +15 gear however
@@ -531,8 +536,8 @@ function getItemReforgedStats(gear) {
     if (!gear.substats) {
         Notifier.error(
             i18next.t(
-                'Cannot calculate reforged stats. Find the item and fix it: '
-            ) + JSON.stringify(gear)
+                'Cannot calculate reforged stats. Find the item and fix it: ',
+            ) + JSON.stringify(gear),
         );
         return;
     }
@@ -663,7 +668,7 @@ function getItemReforgedStats(gear) {
             });
 
             const maxSubstat = gear.substats.reduce((prev, curr) =>
-                prev.scaledDiff > curr.scaledDiff ? prev : curr
+                prev.scaledDiff > curr.scaledDiff ? prev : curr,
             );
             maxSubstat.rolls += 1;
             maxSubstat.bonus = true;
@@ -718,13 +723,13 @@ const Reforge = {
         if (conversionDistance > huntDistance && conversionDistance > 0.85) {
             gear.material = 'Conversion';
             gear.mconfidence = `${Math.round(
-                100 * Utils.stringDistance(name, conversionName)
+                100 * Utils.stringDistance(name, conversionName),
             )}`;
             gear.convertable = 1;
         } else if (huntDistance > conversionDistance && huntDistance > 0.85) {
             gear.material = 'Hunt';
             gear.mconfidence = `${Math.round(
-                100 * Utils.stringDistance(name, huntName)
+                100 * Utils.stringDistance(name, huntName),
             )}`;
         } else {
             gear.material = 'Unknown';
@@ -995,21 +1000,21 @@ hp range: 178 - 229 (203.5)
                 substat.type,
                 substat.min,
                 substat.rolls,
-                gear.level
+                gear.level,
             );
             const reforgedMax = calculateReforgeValuesTypeValueAndRolls(
                 gaveleets,
                 substat.type,
                 substat.max,
                 substat.rolls,
-                gear.level
+                gear.level,
             );
             const reforgedValue = calculateReforgeValuesTypeValueAndRolls(
                 gaveleets,
                 substat.type,
                 substat.value,
                 substat.rolls,
-                gear.level
+                gear.level,
             );
 
             substat.reforgedMin = reforgedMin;

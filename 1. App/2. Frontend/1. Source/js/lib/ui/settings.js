@@ -1,4 +1,4 @@
-/* global $, Files, Notifier, GearRating, Saves, DarkMode, ColorPicker, Updater, Api */
+/* global $, Files, Notifier, GearRating, Saves, DarkMode, ColorPicker, Updater, Api, HeroData, FlatStatCalibration */
 
 import * as remote from '@electron/remote';
 
@@ -89,7 +89,7 @@ const Settings = {
 
                 const filenames = dialog.showOpenDialogSync(
                     currentWindow,
-                    options
+                    options,
                 );
 
                 if (!filenames || filenames.length < 1) {
@@ -100,11 +100,49 @@ const Settings = {
                 pathOverride = path;
                 Settings.saveSettings();
                 $('#selectDefaultFolderSubmitOutputText').text(
-                    `New saves folder: ${path}`
+                    `New saves folder: ${path}`,
                 );
 
                 Notifier.info(path);
             });
+
+        function _updateCalibrationStatus() {
+            const w = FlatStatCalibration.getWeights();
+            const isCalibrated = FlatStatCalibration.isCalibrated();
+            const msg = isCalibrated
+                ? `Calibrated: Atk=${w.atk.toFixed(2)}, HP=${w.hp.toFixed(2)}, Def=${w.def.toFixed(2)}`
+                : `Using defaults: Atk=${w.atk.toFixed(2)}, HP=${w.hp.toFixed(2)}, Def=${w.def.toFixed(2)}`;
+            document.getElementById('calibrateFlatStatsResult').textContent =
+                msg;
+        }
+
+        document
+            .getElementById('calibrateFlatStatsBtn')
+            .addEventListener('click', () => {
+                const result = FlatStatCalibration.calibrate(
+                    HeroData.getAllHeroData(),
+                );
+                if (result && result.heroCount > 0) {
+                    document.getElementById(
+                        'calibrateFlatStatsResult',
+                    ).textContent =
+                        `Calibrated (${result.heroCount} heroes): Atk=${result.atk.toFixed(2)}, HP=${result.hp.toFixed(2)}, Def=${result.def.toFixed(2)}`;
+                } else {
+                    document.getElementById(
+                        'calibrateFlatStatsResult',
+                    ).textContent =
+                        'No eligible 5★ heroes found. Load hero data first.';
+                }
+            });
+
+        document
+            .getElementById('resetFlatStatsBtn')
+            .addEventListener('click', () => {
+                FlatStatCalibration.reset();
+                _updateCalibrationStatus();
+            });
+
+        _updateCalibrationStatus();
     },
 
     getDefaultPath: () => {
@@ -163,7 +201,7 @@ const Settings = {
             Saves.createFolder();
         } catch (e) {
             Notifier.error(
-                'Unable to create the Documents/FribbelsOptimizerSaves folder. Try disabling running the app as admin and disabling your virus scan'
+                'Unable to create the Documents/FribbelsOptimizerSaves folder. Try disabling running the app as admin and disabling your virus scan',
             );
             return;
         }
@@ -176,8 +214,8 @@ const Settings = {
             settings = Settings.getDefaultSettings();
             Notifier.error(
                 `There was an error parsing the ${Files.path(
-                    settingsPath
-                )} file. Please repair the file or delete it.`
+                    settingsPath,
+                )} file. Please repair the file or delete it.`,
             );
             Notifier.error(`Using default settings instead.`);
         }
@@ -185,7 +223,7 @@ const Settings = {
         const isNullUndefined = (x) => x === null || x === undefined;
 
         document.getElementById('settingGpu').checked = isNullUndefined(
-            settings.settingGpu
+            settings.settingGpu,
         )
             ? true
             : settings.settingGpu;
@@ -194,12 +232,12 @@ const Settings = {
                 ? true
                 : settings.settingUnlockOnUnequip;
         document.getElementById('settingRageSet').checked = isNullUndefined(
-            settings.settingRageSet
+            settings.settingRageSet,
         )
             ? true
             : settings.settingRageSet;
         document.getElementById('settingPenSet').checked = isNullUndefined(
-            settings.settingPenSet
+            settings.settingPenSet,
         )
             ? true
             : settings.settingPenSet;
@@ -219,7 +257,7 @@ const Settings = {
             settings.settingDefaultKeepCurrent;
         defaultOptimizerSettings = {
             settingDefaultUseReforgedStats: isNullUndefined(
-                settings.settingDefaultUseReforgedStats
+                settings.settingDefaultUseReforgedStats,
             )
                 ? true
                 : settings.settingDefaultUseReforgedStats,
@@ -288,7 +326,7 @@ const Settings = {
         if (settings.settingExcludeEquipped) {
             $('#optionsExcludeGearFrom').multipleSelect(
                 'setSelects',
-                settings.settingExcludeEquipped
+                settings.settingExcludeEquipped,
             );
             excludeSelects = settings.settingExcludeEquipped;
         }
@@ -296,7 +334,7 @@ const Settings = {
         if (settings.settingEnhanceLimit) {
             $('#optionsEnhanceLimit').multipleSelect(
                 'setSelects',
-                settings.settingEnhanceLimit
+                settings.settingEnhanceLimit,
             );
         }
 
@@ -322,12 +360,12 @@ const Settings = {
             Settings.saveSettings();
         }
 
-        if (settings.settingArchetypes) {
-            GearRating.setArchetypes(settings.settingArchetypes);
-        }
+        // NOTE: settingArchetypes intentionally NOT applied here.
+        // ArchetypeStore owns e7-archetypes.json as sole source of truth.
+        // Loading from settings.ini would overwrite the dedicated file with stale data.
 
         $('#selectDefaultFolderSubmitOutputText').text(
-            settings.settingDefaultPath || defaultPath
+            settings.settingDefaultPath || defaultPath,
         );
         Api.setSettings(settings);
     },
@@ -337,7 +375,7 @@ const Settings = {
             Saves.createFolder();
         } catch (e) {
             Notifier.error(
-                'Unable to create the Documents/FribbelsOptimizerSaves folder. Try disabling running the app as admin and disabling your virus scan'
+                'Unable to create the Documents/FribbelsOptimizerSaves folder. Try disabling running the app as admin and disabling your virus scan',
             );
             return;
         }
@@ -345,56 +383,56 @@ const Settings = {
         const settings = {
             settingGpu: document.getElementById('settingGpu').checked,
             settingUnlockOnUnequip: document.getElementById(
-                'settingUnlockOnUnequip'
+                'settingUnlockOnUnequip',
             ).checked,
             settingRageSet: document.getElementById('settingRageSet').checked,
             settingPenSet: document.getElementById('settingPenSet').checked,
             settingDefaultUseReforgedStats: document.getElementById(
-                'settingDefaultUseReforgedStats'
+                'settingDefaultUseReforgedStats',
             ).checked,
             settingDefaultUseHeroPriority: document.getElementById(
-                'settingDefaultUseHeroPriority'
+                'settingDefaultUseHeroPriority',
             ).checked,
             settingDefaultUseSubstatMods: document.getElementById(
-                'settingDefaultUseSubstatMods'
+                'settingDefaultUseSubstatMods',
             ).checked,
             settingDefaultLockedItems: document.getElementById(
-                'settingDefaultLockedItems'
+                'settingDefaultLockedItems',
             ).checked,
             settingDefaultEquippedItems: document.getElementById(
-                'settingDefaultEquippedItems'
+                'settingDefaultEquippedItems',
             ).checked,
             settingDefaultKeepCurrent: document.getElementById(
-                'settingDefaultKeepCurrent'
+                'settingDefaultKeepCurrent',
             ).checked,
             settingMaxResults: parseInt(
                 Settings.parseNumberValue('settingMaxResults') || 5_000_000,
-                10
+                10,
             ),
             settingMaxRamGb: parseInt(
                 Settings.parseNumberValue('settingMaxRamGb') || 6,
-                10
+                10,
             ),
             settingPenDefense: parseInt(
                 Settings.parseNumberValue('settingPenDefense') || 1_500,
-                10
+                10,
             ),
             settingLocatorWidth: parseInt(
                 Settings.parseNumberValue('settingLocatorWidth') || 5,
-                10
+                10,
             ),
             settingDefaultPath: pathOverride || defaultPath,
             settingExcludeEquipped: $('#optionsExcludeGearFrom').multipleSelect(
-                'getSelects'
+                'getSelects',
             ),
             settingEnhanceLimit: $('#optionsEnhanceLimit').multipleSelect(
-                'getSelects'
+                'getSelects',
             ),
             settingDarkMode: document.getElementById('darkSlider').checked,
             settingVersion: Updater.getCurrentVersion(),
-            settingArchetypes: GearRating.getArchetypes(),
+            // settingArchetypes removed — archetypes are persisted to e7-archetypes.json by ArchetypeStore
             settingBackgroundColor: document.getElementById(
-                'backgroundColorPicker'
+                'backgroundColorPicker',
             ).value,
             settingTextColorPicker:
                 document.getElementById('textColorPicker').value,
@@ -403,7 +441,7 @@ const Settings = {
             settingInputColorPicker:
                 document.getElementById('inputColorPicker').value,
             settingGridTextColorPicker: document.getElementById(
-                'gridTextColorPicker'
+                'gridTextColorPicker',
             ).value,
             settingRedColorPicker:
                 document.getElementById('redColorPicker').value,

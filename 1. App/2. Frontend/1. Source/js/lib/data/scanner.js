@@ -187,7 +187,6 @@ function convertMainStat(item) {
     item.main = new Stat(mainType, fixedMainValue);
 }
 
-// temp1.filter(x => x.id == "4229824545")[0]
 function convertSubStats(item) {
     const statAcc = {};
 
@@ -239,14 +238,14 @@ function filterItems(rawItems, scanType) {
         enhanceLimit = parseInt(
             document.querySelector(
                 'input[name="heroImporterEnhanceRadio"]:checked'
-            ).value,
+            )?.value ?? '6',
             10
         );
     } else if (scanType === 'items') {
         enhanceLimit = parseInt(
             document.querySelector(
                 'input[name="gearImporterEnhanceRadio"]:checked'
-            ).value,
+            )?.value ?? '6',
             10
         );
     }
@@ -439,6 +438,7 @@ function launchScanner(cmd, scanType) {
             Notifier.error(i18next.t('Unable to start python script ') + e);
         }
 
+        if (!scannerChild) return;
         scannerChild.stderr.resume();
 
         scannerChild.stdout.on('data', (chunk) => {

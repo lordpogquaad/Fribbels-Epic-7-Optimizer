@@ -379,22 +379,22 @@ const Importer = {
 
                 const path = filenames[0];
 
-                const data = fs.readFileSync(Files.path(path), {
-                    encoding: 'utf8',
-                    flag: 'r',
-                });
-
                 $('#importMergeHeroesOutputText').text(
                     i18next.t('Opening file..')
                 );
 
                 try {
+                    const data = fs.readFileSync(Files.path(path), {
+                        encoding: 'utf8',
+                        flag: 'r',
+                    });
+
                     $('#importMergeHeroesOutputText').text(
                         i18next.t('Parsing data..')
                     );
 
                     const parsedData = JSON.parse(data);
-                    const { items } = parsedData;
+                    const items = parsedData.items || [];
                     const heroes = parsedData.heroes || [];
                     const filteredHeroes = [];
 

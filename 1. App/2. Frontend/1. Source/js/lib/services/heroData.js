@@ -9,7 +9,7 @@ let HERO_CACHE =
 let ARTIFACT_CACHE =
     'https://e7-optimizer-game-data.s3-accelerate.amazonaws.com/artifactdata.json?';
 
-global.TEST = true;
+global.TEST = false;
 
 function UrlExists(url, cb) {
     jQuery.ajax({
@@ -22,41 +22,66 @@ function UrlExists(url, cb) {
     });
 }
 
-async function fetchCache(url) {
-    const myHeaders = new Headers();
-    myHeaders.append('pragma', 'no-cache');
-    myHeaders.append('cache-control', 'no-cache');
+// ---------------------------------------------------------------------------
+// ETag-based conditional fetch.  Stores the server's ETag in localStorage so
+// subsequent cold starts can send If-None-Match and receive a 304 (Not
+// Modified) instead of re-downloading the full JSON.
+//
+// Returns:
+//   parsed JSON object  — on HTTP 200 (new content downloaded & file updated)
+//   null                — on HTTP 304 (local cache file is already current)
+// ---------------------------------------------------------------------------
+async function fetchCacheConditional(url, storageKey, localCachePath) {
+    const storedEtag = localStorage.getItem(`${storageKey}_etag`);
 
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: myHeaders,
-    });
+    const headers = new Headers();
+    headers.append('pragma', 'no-cache');
+    headers.append('cache-control', 'no-cache');
+    if (storedEtag) {
+        headers.append('If-None-Match', storedEtag);
+    }
+
+    const response = await fetch(url, { method: 'GET', headers });
+
+    if (response.status === 304) {
+        // Content unchanged — the local cache file is already up to date
+        return null;
+    }
+
     const text = await response.text();
-    const json = JSON.parse(text);
 
-    return json;
+    // Persist the new ETag for the next cold start
+    const newEtag = response.headers.get('ETag') || response.headers.get('etag');
+    if (newEtag) {
+        try { localStorage.setItem(`${storageKey}_etag`, newEtag); } catch (e) { /* ignore */ }
+    }
+
+    // Keep the local cache file in sync so 304 paths stay consistent
+    if (localCachePath) {
+        try { Files.saveFile(localCachePath, text); } catch (e) { /* ignore */ }
+    }
+
+    return JSON.parse(text);
 }
 
-try {
-    UrlExists(
-        'https://e7-optimizer-game-data.s3-accelerate.amazonaws.com/herodata.json?',
-        (status) => {
-            if (status === 200) {
-                HERO_CACHE =
-                    'https://e7-optimizer-game-data.s3-accelerate.amazonaws.com/herodata.json?';
-                ARTIFACT_CACHE =
-                    'https://e7-optimizer-game-data.s3-accelerate.amazonaws.com/artifactdata.json?';
-            } else {
-                HERO_CACHE =
-                    'https://fribbels-epic-7-optimizer-cn.azurewebsites.net/data/cache/herodata.json?';
-                ARTIFACT_CACHE =
-                    'https://fribbels-epic-7-optimizer-cn.azurewebsites.net/data/cache/artifactdata.json?';
-            }
-        },
-    );
-} catch (e) {
-    // ignore
-}
+const _cacheUrlReady = new Promise((resolve) => {
+    try {
+        UrlExists(
+            'https://e7-optimizer-game-data.s3-accelerate.amazonaws.com/herodata.json?',
+            (status) => {
+                if (status !== 200) {
+                    HERO_CACHE =
+                        'https://fribbels-epic-7-optimizer-cn.azurewebsites.net/data/cache/herodata.json?';
+                    ARTIFACT_CACHE =
+                        'https://fribbels-epic-7-optimizer-cn.azurewebsites.net/data/cache/artifactdata.json?';
+                }
+                resolve();
+            },
+        );
+    } catch (e) {
+        resolve();
+    }
+});
 
 const HeroData = {
     initialize: async () => {
@@ -87,8 +112,15 @@ const HeroData = {
                 );
                 heroesByName = heroOverride;
             } else {
-                const heroOverride = await fetchCache(HERO_CACHE);
-                heroesByName = heroOverride;
+                await _cacheUrlReady;
+                const heroCachePath = `${Files.getDataPath()}/cache/herodata.json`;
+                const heroOverride = await fetchCacheConditional(
+                    HERO_CACHE, 'e7opt_herodata', heroCachePath,
+                );
+                // null means 304 Not Modified — heroesByName already loaded from disk above
+                if (heroOverride !== null) {
+                    heroesByName = heroOverride;
+                }
             }
         } catch (e) {
             // ignore
@@ -103,8 +135,14 @@ const HeroData = {
                 );
                 artifactsByName = artifactOverride;
             } else {
-                const artifactOverride = await fetchCache(ARTIFACT_CACHE);
-                artifactsByName = artifactOverride;
+                const artifactCachePath = `${Files.getDataPath()}/cache/artifactdata.json`;
+                const artifactOverride = await fetchCacheConditional(
+                    ARTIFACT_CACHE, 'e7opt_artifactdata', artifactCachePath,
+                );
+                // null means 304 Not Modified — artifactsByName already loaded from disk above
+                if (artifactOverride !== null) {
+                    artifactsByName = artifactOverride;
+                }
             }
         } catch (e) {
             // ignore
@@ -254,6 +292,8 @@ const HeroData = {
                 },
             };
         }
+
+        if (!heroesByName[name]) return null;
 
         const status = heroesByName[name].calculatedStatus;
         return {

@@ -1,4 +1,5 @@
-/* global Notifier, Dialog, Settings, Files, i18next, Scanner, scannerChild, itemTrackerChild, findCommandSpawn */
+/* global Notifier, Dialog, Settings, Files, i18next, Scanner */
+/* global scannerChild, itemTrackerChild, findCommandSpawn */
 
 const fs = require('fs');
 const { spawn } = require('child_process');
@@ -15,6 +16,7 @@ let errors = '';
 let killed = false;
 let initialized = false;
 let child = null;
+let activePort = 8130;
 
 const defaultJavaError = `Unable to load Java. Please check that you have the <a href='https://github.com/fribbels/Fribbels-Epic-7-Optimizer#installing-the-app'>64-bit version of Java 8</a> installed and restart your computer. If you already have Java installed, follow this guide to <a href='https://www.geeksforgeeks.org/how-to-set-java-path-in-windows-and-linux/amp/'>set your Java path.</a>`;
 
@@ -42,7 +44,7 @@ function javaversion(callback) {
 const Subprocess = {
     kill: async () => {
         try {
-            await killPortProcess(8130);
+            await killPortProcess(activePort);
         } catch (e) {
             // suppress
         }
@@ -91,10 +93,17 @@ const Subprocess = {
             },
         );
 
-        child.stdout.on('data', () => {
+        let stdoutBuffer = '';
+        child.stdout.on('data', (data) => {
+            stdoutBuffer += data.toString();
             if (!initialized) {
-                initialized = true;
-                callback();
+                const portMatch = stdoutBuffer.match(/BACKEND_PORT:(\d+)/);
+                if (portMatch) {
+                    activePort = parseInt(portMatch[1], 10);
+                    global.backendPort = activePort;
+                    initialized = true;
+                    callback();
+                }
             }
         });
 
@@ -146,9 +155,17 @@ const Subprocess = {
                 str.includes('"bonusStats":') ||
                 str.includes('"S1":[{') ||
                 str.includes('"code":"ef');  // artifact data payload
+            // Item/gear data payloads streamed via stderr by the Java backend
+            const isItemDataPayload = str.includes('"substats":') ||
+                str.includes('"augmentedStats":') ||
+                str.includes('"reforgedStats":') ||
+                str.includes('"ingameId":') ||
+                str.includes('"allowedMods":') ||
+                str.includes('"material":');
             const isJavaLoggerNoise = str.includes('com.fribbels') ||
                 /^[A-Z][a-z]+ \d/.test(str.trim()) ||
-                isHeroDataPayload;
+                isHeroDataPayload ||
+                isItemDataPayload;
             const isRealError = str.includes('Exception') || str.includes('Error:') || str.includes('\tat ');
 
             if (str.includes('aparapi')) {
@@ -172,20 +189,25 @@ const Subprocess = {
             treekill(child.pid, 'SIGTERM', () => {
                 ipc.send('closed');
             });
-            if (scannerChild) scannerChild.kill();
-            if (itemTrackerChild) itemTrackerChild.kill();
-            if (findCommandSpawn) findCommandSpawn.kill();
+            // eslint-disable-next-line no-undef
+            if (typeof scannerChild !== 'undefined' && scannerChild) scannerChild.kill();
+            // eslint-disable-next-line no-undef
+            if (typeof itemTrackerChild !== 'undefined' && itemTrackerChild) itemTrackerChild.kill();
+            // eslint-disable-next-line no-undef
+            if (typeof findCommandSpawn !== 'undefined' && findCommandSpawn) findCommandSpawn.kill();
         });
 
         window.onbeforeunload = () => {
             killed = true;
-            // mainWindow.webContents.send('app-unload');
             treekill(child.pid, 'SIGTERM', () => {
                 /* terminated */
             });
-            if (scannerChild) scannerChild.kill();
-            if (itemTrackerChild) itemTrackerChild.kill();
-            if (findCommandSpawn) findCommandSpawn.kill();
+            // eslint-disable-next-line no-undef
+            if (typeof scannerChild !== 'undefined' && scannerChild) scannerChild.kill();
+            // eslint-disable-next-line no-undef
+            if (typeof itemTrackerChild !== 'undefined' && itemTrackerChild) itemTrackerChild.kill();
+            // eslint-disable-next-line no-undef
+            if (typeof findCommandSpawn !== 'undefined' && findCommandSpawn) findCommandSpawn.kill();
             Scanner.end();
         };
 

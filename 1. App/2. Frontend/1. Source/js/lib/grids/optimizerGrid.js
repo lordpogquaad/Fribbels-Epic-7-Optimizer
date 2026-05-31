@@ -1,6 +1,6 @@
 /* global i18next, AG_GRID_LOCALE_ZH, AG_GRID_LOCALE_ZH_TW, AG_GRID_LOCALE_FR */
 /* global AG_GRID_LOCALE_JA, AG_GRID_LOCALE_KO, AG_GRID_LOCALE_RU, AG_GRID_LOCALE_EN */
-/* global Api, GridRenderer, OptimizerTab, StatPreview, Grid */
+/* global Api, GridRenderer, OptimizerTab, StatPreview, Grid, PriorityFilter */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-console */
 import tinygradient from 'tinygradient';
@@ -25,7 +25,30 @@ let gradient = lightGradient;
 
 let optimizerGrid = global.optimizerGrid || null;
 const currentAggregate = {};
+let currentTargets = {};
 let selectedRow = null;
+
+// Set by OptimizerTab after hero load so build-score column can normalise
+// gear stat gains against the hero's base stats.
+let currentBaseStats = null;
+
+// ---------------------------------------------------------------------------
+// Restored-results state — when set, the datasource serves from this local
+// array instead of calling the Java backend.  Cleared before each live run.
+// ---------------------------------------------------------------------------
+let _restoredRows = null;
+let _restoredMaximum = 0;
+
+const STAT_TARGET_MAP = {
+    atk: 'inputAtkTarget',
+    hp:  'inputHpTarget',
+    def: 'inputDefTarget',
+    spd: 'inputSpdTarget',
+    cr:  'inputCrTarget',
+    cd:  'inputCdTarget',
+    eff: 'inputEffTarget',
+    res: 'inputResTarget',
+};
 let pinnedRow = {
     atk: 0,
     def: 0,
@@ -79,10 +102,6 @@ export default {
     },
 
     refresh: () => {
-        // gridOptions
-        console.log('REFRESH');
-        // const selectedNode = optimizerGrid.gridOptions.api.getSelectedNodes()[0]
-
         optimizerGrid.gridOptions.api.refreshInfiniteCache();
         // optimizerGrid.gridOptions.api.forEachNode((node) => {
         //     console.log(node.data)
@@ -106,6 +125,41 @@ export default {
         optimizerGrid.gridOptions.api.showLoadingOverlay();
     },
 
+    refreshTargetCells: () => {
+        try {
+            currentTargets = OptimizerTab.getOptimizationRequestParams();
+            optimizerGrid.gridOptions.api.refreshCells({
+                force: true,
+                columns: [...Object.keys(STAT_TARGET_MAP), 'buildScore'],
+            });
+        } catch (e) {
+            // noop
+        }
+    },
+
+    /** Switch the grid to serve rows from a localStorage-restored result set. */
+    setRestoredSource: (rows, maximum) => {
+        _restoredRows = rows;
+        _restoredMaximum = maximum;
+        optimizerGrid.gridOptions.api.setDatasource(datasource);
+    },
+
+    /** Return to live-backend mode (called before submitting a new optimisation). */
+    clearRestoredSource: () => {
+        _restoredRows = null;
+        _restoredMaximum = 0;
+    },
+
+    isRestoredMode: () => _restoredRows !== null,
+
+    /**
+     * Set the current hero's base stats so the build-score valueGetter can
+     * normalise gear stat gains correctly.  Call after each hero load.
+     */
+    setBaseStats: (bs) => {
+        currentBaseStats = bs;
+    },
+
     getSelectedGearIds,
 
     getSelectedGearMods,
@@ -121,6 +175,9 @@ export default {
         return null;
     },
 
+    getSelectedRows: () => optimizerGrid.gridOptions.api.getSelectedRows()
+        .filter((r) => r),
+
     getSelectedNode: () => {
         const selectedNodes = optimizerGrid.gridOptions.api.getSelectedNodes();
         if (selectedNodes.length > 0) {
@@ -131,6 +188,9 @@ export default {
         }
         return null;
     },
+
+    getSelectedNodes: () => optimizerGrid.gridOptions.api.getSelectedNodes()
+        .filter((n) => n && !n.rowPinned),
 };
 
 function getSelectedGearIds() {
@@ -156,14 +216,14 @@ function getSelectedGearMods() {
     if (selectedRows.length > 0) {
         const row = selectedRows[0];
         console.log('getSelectedGearModIds SELECTED ROW', row);
-
+        const mods = row.mods || [];
         return [
-            row.mods[0],
-            row.mods[1],
-            row.mods[2],
-            row.mods[3],
-            row.mods[4],
-            row.mods[5],
+            mods[0],
+            mods[1],
+            mods[2],
+            mods[3],
+            mods[4],
+            mods[5],
         ];
     }
     return [];
@@ -183,10 +243,40 @@ const datasource = {
 
         global.optimizerGrid = optimizerGrid;
 
+        // ------------------------------------------------------------------
+        // Restored-data path: serve rows from in-memory cache instead of
+        // calling the Java backend.
+        // ------------------------------------------------------------------
+        if (_restoredRows !== null) {
+            currentTargets = OptimizerTab.getOptimizationRequestParams();
+            let rows = _restoredRows;
+            if (sortColumn && sortOrder) {
+                const dir = sortOrder === 'asc' ? 1 : -1;
+                rows = [...rows].sort((a, b) => {
+                    const av = a[sortColumn];
+                    const bv = b[sortColumn];
+                    if (typeof av === 'string' || typeof bv === 'string') {
+                        return dir * String(av ?? '').localeCompare(String(bv ?? ''));
+                    }
+                    return dir * (((av || 0) - (bv || 0)) || 0);
+                });
+            }
+            const slice = rows.slice(startRow, Math.min(endRow, rows.length));
+            aggregateCurrentHeroStats(slice);
+            optimizerGrid.gridOptions.api.hideOverlay();
+            params.successCallback(slice, _restoredMaximum);
+            const pinned = optimizerGrid.gridOptions.api.getPinnedTopRow(0);
+            if (pinned) {
+                optimizerGrid.gridOptions.api.setPinnedTopRowData([pinned.data]);
+            }
+            return;
+        }
+
         optimizerGrid.gridOptions.api.showLoadingOverlay();
         const heroId = document.getElementById('inputHeroAdd').value;
         const optimizationRequest = OptimizerTab.getOptimizationRequestParams();
         optimizationRequest.heroId = heroId;
+        currentTargets = optimizationRequest;
 
         const request = {
             startRow,
@@ -241,12 +331,20 @@ function aggregateCurrentHeroStats(heroStats) {
         'mcdmgps',
         'dmgh',
         'dmgd',
+        'hmcdmgs',
+        'dmcdmgs',
+        'hdmg',
+        'hdmgs',
+        'ddmg',
+        'ddmgs',
         's1',
         's2',
         's3',
         'score',
         'bs',
         'priority',
+        'buildScore',
+        'customScore',
     ];
 
     const count = heroStats.length;
@@ -300,6 +398,7 @@ function buildGrid(localeText) {
         defaultColDef: {
             width: 50,
             sortable: true,
+            resizable: true,
             sortingOrder: ['desc', 'asc'],
             cellStyle: columnGradient,
             // suppressNavigable: true,
@@ -338,6 +437,12 @@ function buildGrid(localeText) {
             },
             { headerName: i18next.t('dmgh'), field: 'dmgh', width: DIGITS_5 },
             { headerName: i18next.t('dmgd'), field: 'dmgd', width: DIGITS_4 },
+            { headerName: i18next.t('hmcdmgs'), field: 'hmcdmgs', width: DIGITS_4 },
+            { headerName: i18next.t('dmcdmgs'), field: 'dmcdmgs', width: DIGITS_4 },
+            { headerName: i18next.t('hdmg'), field: 'hdmg', width: DIGITS_5 },
+            { headerName: i18next.t('hdmgs'), field: 'hdmgs', width: DIGITS_4 },
+            { headerName: i18next.t('ddmg'), field: 'ddmg', width: DIGITS_5 },
+            { headerName: i18next.t('ddmgs'), field: 'ddmgs', width: DIGITS_4 },
             { headerName: i18next.t('s1'), field: 's1', width: DIGITS_5 },
             { headerName: i18next.t('s2'), field: 's2', width: DIGITS_5 },
             { headerName: i18next.t('s3'), field: 's3', width: DIGITS_5 },
@@ -348,6 +453,20 @@ function buildGrid(localeText) {
                 field: 'priority',
                 width: DIGITS_3,
             },
+            {
+                headerName: i18next.t('bscr'),
+                field: 'buildScore',
+                width: DIGITS_3,
+                valueGetter: (p) => {
+                    if (!p.data || !currentBaseStats) return null;
+                    return PriorityFilter.calculateBuildScore(
+                        p.data,
+                        currentTargets,
+                        currentBaseStats,
+                    );
+                },
+            },
+            { headerName: 'Cust', field: 'customScore', width: DIGITS_3 },
             { headerName: i18next.t('eq'), field: 'eq', width: DIGITS_2 },
             {
                 headerName: i18next.t('upg'),
@@ -364,7 +483,8 @@ function buildGrid(localeText) {
         ],
         rowHeight: 27,
         rowModelType: 'infinite',
-        rowSelection: 'single',
+        rowSelection: 'multiple',
+        rowMultiSelectWithClick: false,
         onRowClicked,
         onRowSelected,
         pagination: true,
@@ -396,6 +516,29 @@ function columnGradient(params) {
         if (!params || params.value === undefined) return undefined;
         const { colId } = params.column;
         const { value } = params;
+
+        // Target-aware progress bar coloring — read directly from DOM so
+        // restored-results mode and live target edits are always current.
+        const targetKey = STAT_TARGET_MAP[colId];
+        if (targetKey && !params.node?.rowPinned) {
+            const targetEl = document.getElementById(targetKey);
+            const target = targetEl ? parseFloat(targetEl.value) || 0 : 0;
+            if (target > 0) {
+                const ratio = value / target;
+                let barColor;
+                if (ratio >= 1.0) {
+                    barColor = 'rgba(76, 175, 80, 0.55)';  // green — target met
+                } else if (ratio >= 0.9) {
+                    barColor = 'rgba(220, 180, 40, 0.65)'; // yellow — within 10%
+                } else {
+                    barColor = 'rgba(220, 80, 60, 0.55)';  // red — below 90%
+                }
+                const barPct = Math.min(100, Math.round(ratio * 100));
+                return {
+                    background: `linear-gradient(to right, ${barColor} ${barPct}%, transparent ${barPct}%)`,
+                };
+            }
+        }
 
         const agg = currentAggregate[colId];
         if (!agg) return undefined;

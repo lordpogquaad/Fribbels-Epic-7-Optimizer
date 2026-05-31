@@ -64,4 +64,6 @@ public enum OptimizationColumn {
     BS,
     @SerializedName("priority")
     PRIORITY,
+    @SerializedName("customScore")
+    CUSTOMSCORE,
 }

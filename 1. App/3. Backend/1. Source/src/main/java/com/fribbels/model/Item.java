@@ -71,7 +71,7 @@ public class Item {
 
     private Boolean otherworldly;
 
-    public float[] tempStatAccArr;
+    public transient float[] tempStatAccArr;
 
     public String toString() {
         return GSON.toJson(this);

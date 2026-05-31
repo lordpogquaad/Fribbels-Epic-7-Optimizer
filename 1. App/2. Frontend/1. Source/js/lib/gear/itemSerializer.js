@@ -20,11 +20,18 @@ const ItemSerializer = {
     },
 
     deserialize: (str) => {
-        const arr = JSON.parse(str);
+        let arr;
+        try {
+            arr = JSON.parse(str);
+        } catch (e) {
+            console.error('ItemSerializer.deserialize: failed to parse JSON', e);
+            return [];
+        }
         return arr.map((element) => {
+            if (!element || !element.main || !element.substats) return null;
             const mainStat = buildStat(element.main);
             const subStats = element.substats.map((x) => buildStat(x));
-            return new Item(
+            const item = new Item(
                 element.gear,
                 element.rank,
                 element.set,
@@ -36,7 +43,10 @@ const ItemSerializer = {
                 element.heroName,
                 element.otherworldly
             );
-        });
+            // Preserve the original id so equipped-by links and starred builds survive a round-trip
+            if (element.id) item.id = element.id;
+            return item;
+        }).filter(Boolean);
     },
 };
 

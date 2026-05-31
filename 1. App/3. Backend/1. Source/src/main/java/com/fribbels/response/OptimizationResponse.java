@@ -13,4 +13,6 @@ public class OptimizationResponse extends Response {
 
     private long searched;
     private long results;
+    @Builder.Default
+    private boolean done = false;
 }

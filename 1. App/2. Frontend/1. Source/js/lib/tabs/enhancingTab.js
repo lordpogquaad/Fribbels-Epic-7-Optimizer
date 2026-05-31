@@ -1,15 +1,11 @@
 /* global DarkMode, Api, $, ItemSimulator, Reforge, HtmlGenerator, Utils, GearRating, i18next */
-/* global Dialog, ItemAugmenter, Notifier, ItemsGrid, Saves */
 /* eslint-disable no-console */
 import * as echarts from 'echarts';
 
 const barsCharts = [undefined, undefined, undefined, undefined];
-let guageChart;
+let gaugeChart;
 let radarChart;
 let gsChart;
-
-// The item currently displayed in the Enhancing tab
-let _currentItem = null;
 
 // Deferred initializer — echarts.init() must not be called while the
 // Enhancing tab is hidden (DOM elements have 0 width/height at that point,
@@ -17,19 +13,22 @@ let _currentItem = null;
 let _chartsReady = false;
 function _initCharts() {
     if (_chartsReady) return;
+    console.log('[EnhancingTab] _initCharts: initializing charts');
     // If the Enhancing section is not yet visible the container elements still
     // report clientWidth/clientHeight === 0.  Calling echarts.init() on them
     // logs a console.error.  Return WITHOUT setting _chartsReady so that the
     // next call (from the tab's change-event requestAnimationFrame) can
     // initialise properly once the browser has done its CSS layout pass.
     const sentinel = document.getElementById('chart1');
-    if (sentinel && sentinel.clientWidth === 0 && sentinel.clientHeight === 0)
+    if (sentinel && sentinel.clientWidth === 0 && sentinel.clientHeight === 0) {
+        console.log('[EnhancingTab] _initCharts: container not visible yet, deferring');
         return;
+    }
     _chartsReady = true;
     const theme = DarkMode.isDark() ? 'dark' : undefined;
-    guageChart = echarts.init(document.getElementById('chart1'), theme);
+    gaugeChart = echarts.init(document.getElementById('chart1'), theme);
     radarChart = echarts.init(document.getElementById('chart2'), theme);
-    gsChart = echarts.init(document.getElementById('gsChart'), theme);
+    gsChart    = echarts.init(document.getElementById('gsChart'),  theme);
     ['stat1bars', 'stat2bars', 'stat3bars', 'stat4bars'].forEach((id, i) => {
         barsCharts[i] = echarts.init(document.getElementById(id), theme);
     });
@@ -243,6 +242,7 @@ function setTheme() {
 
 const EnhancingTab = {
     initialize: async () => {
+        console.log('[EnhancingTab] initialize');
         setTheme();
 
         // Init charts only when the Enhancing tab becomes visible so that
@@ -252,42 +252,10 @@ const EnhancingTab = {
         document.getElementById('tab5').addEventListener('change', () => {
             requestAnimationFrame(() => {
                 _initCharts();
-                [guageChart, radarChart, gsChart, ...barsCharts].forEach(
-                    (chart) => {
-                        if (chart) chart.resize();
-                    },
-                );
+                [gaugeChart, radarChart, gsChart, ...barsCharts].forEach((chart) => {
+                    if (chart) chart.resize();
+                });
             });
-            // Refresh top reforge candidates whenever the Enhancing tab is opened
-            redrawTopReforgeCandidates();
-        });
-
-        // ── Phase 3.1: Action button handlers ─────────────────────────────────
-        document.getElementById('enhanceReforgeBtn')?.addEventListener('click', async () => {
-            if (!_currentItem) return;
-            const item = _currentItem;
-            if (item.level !== 85 || item.enhance !== 15) {
-                Notifier.warn('Only +15 level 85 gear can be reforged.');
-                return;
-            }
-            if (Reforge.isGaveleets(item)) {
-                Notifier.warn("Abyss lifesteal set (Gaveleet's) cannot be reforged.");
-                return;
-            }
-            ItemAugmenter.augment([item]);
-            const editedItem = await Dialog.editGearDialog(item, true, true);
-            if (!editedItem) return;
-            await Api.editItems([editedItem]);
-            Notifier.quick('Reforged item');
-            await ItemsGrid.editedItem();
-            Saves.autoSave();
-            // Refresh the enhancing view with the reforged item
-            EnhancingTab.redrawEnhanceGuide(editedItem);
-        });
-
-        document.getElementById('enhanceViewItemsBtn')?.addEventListener('click', () => {
-            // Switch to the Gear (items) tab
-            $('#tab3').trigger('click');
         });
 
         // const getAllItemsResponse = await Api.getAllItems();
@@ -338,43 +306,26 @@ const EnhancingTab = {
         _initCharts();
         // If charts are still not ready (0-size guard fired), bail out.
         // redrawEnhanceGuideFromRemoteId() re-calls us after the tab is shown.
-        if (!guageChart || !radarChart) return;
-
-        // Store the item for action button handlers
-        _currentItem = item;
-
-        // Ensure archetype scores are populated
-        ItemAugmenter.augment([item]);
-
+        if (!gaugeChart || !radarChart) return;
         const simulationResults = ItemSimulator.simulate(item);
         setTheme();
         Reforge.calculateMaxes(item);
         console.log('redraw', item);
-
-        // Show/hide action buttons
-        const actionBtns = document.getElementById('enhanceActionButtons');
-        if (actionBtns) actionBtns.style.display = 'flex';
-        const reforgeBtn = document.getElementById('enhanceReforgeBtn');
-        if (reforgeBtn) {
-            // Enable only for +15 level 85 items that are not already reforged and not Gaveleet's
-            const canReforge = item.level === 85 && item.enhance === 15 && !Reforge.isGaveleets(item);
-            reforgeBtn.disabled = !canReforge;
-            reforgeBtn.title = canReforge ? '' : 'Only +15 level 85 gear can be reforged';
-        }
+        console.log('[EnhancingTab] redrawEnhanceGuide item:', item && item.id, item && item.gear, item && item.set);
 
         const baseStats = null;
         const html = HtmlGenerator.buildItemPanel(
             item,
             'enhanceTab',
             baseStats,
-            true,
+            true
         );
         document.getElementById('enhanceTabPreview').innerHTML = html;
 
         // Guage
 
         const maxScore = Math.floor(calculateMaxPossibleScore(item));
-        const maxPerEnhance = [37, 47, 55, 65, 75, 85];
+        const maxPerEnhance = [40, 48, 56, 64, 72, 80];
         const percent = Utils.round10ths((item.reforgedWss / maxScore) * 100);
         const gaugeOption = {
             tooltip: {
@@ -408,10 +359,10 @@ const EnhancingTab = {
                         lineStyle: {
                             width: 6,
                             color: [
-                                [42.5 / 85, '#FF6E76'],
-                                [53.13 / 85, '#ffb340'],
-                                [63.77 / 85, '#FDDD60'],
-                                [74.37 / 85, '#7CFFB2'],
+                                [40 / 80, '#FF6E76'],
+                                [50 / 80, '#ffb340'],
+                                [60 / 80, '#FDDD60'],
+                                [70 / 80, '#7CFFB2'],
                                 [1, '#58D9F9'],
                             ],
                         },
@@ -445,7 +396,7 @@ const EnhancingTab = {
             ],
         };
 
-        guageChart.setOption(gaugeOption);
+        gaugeChart.setOption(gaugeOption, { notMerge: true });
 
         // Stats
 
@@ -503,53 +454,39 @@ const EnhancingTab = {
         // $('#statsLeft').html(leftText)
         // $('#statsRight').html(rightText)
 
-        // Radar — archetype scores
+        // Archetype Bar Chart
 
-        const arcScores = (item.archetypeScores && item.archetypeScores.allScores) || null;
-        if (arcScores && Object.keys(arcScores).length > 0) {
-            const entries = Object.entries(arcScores).filter(([, v]) => v.score > 0);
-            const maxScore = entries.reduce((m, [, v]) => Math.max(m, v.score), 1);
-            const radarIndicators = entries.map(([name]) => ({ name, max: maxScore }));
-            const radarValues = entries.map(([, v]) => v.score);
-
-            const radarOption = {
-                tooltip: { trigger: 'item' },
-                radar: {
-                    indicator: radarIndicators,
-                    radius: '65%',
-                    name: { fontSize: 10 },
+        const ratings = GearRating.rate(item);
+        const top10 = ratings.slice(0, 10);
+        const barOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+            },
+            grid: {
+                left: '3%',
+                right: '12%',
+                bottom: '3%',
+                top: '3%',
+                containLabel: true,
+            },
+            xAxis: { type: 'value', min: 0 },
+            yAxis: {
+                type: 'category',
+                data: top10.map((x) => x.name).reverse(),
+                axisLabel: { fontSize: 11 },
+            },
+            series: [
+                {
+                    name: i18next.t('Archetypes'),
+                    type: 'bar',
+                    data: top10.map((x) => Utils.round100ths(x.score)).reverse(),
+                    label: { show: true, position: 'right', fontSize: 10 },
                 },
-                series: [
-                    {
-                        name: i18next.t('Archetypes'),
-                        type: 'radar',
-                        areaStyle: { opacity: 0.3 },
-                        data: [
-                            {
-                                value: radarValues,
-                                name: i18next.t('Archetypes'),
-                            },
-                        ],
-                    },
-                ],
-            };
-            radarChart.setOption(radarOption);
-        } else {
-            // Fallback to old GearRating radar
-            const ratings = GearRating.rate(item);
-            ratings.forEach((x) => { x.max = 2; });
-            const radarOption = {
-                radar: { indicator: ratings },
-                tooltip: { trigger: 'item' },
-                series: [{
-                    name: 'Scores',
-                    type: 'radar',
-                    areaStyle: {},
-                    data: [{ value: ratings.map((x) => Utils.round100ths(x.score)), name: i18next.t('Archetypes') }],
-                }],
-            };
-            radarChart.setOption(radarOption);
-        }
+            ],
+        };
+
+        radarChart.setOption(barOption, true);
 
         // GS
 
@@ -573,7 +510,7 @@ const EnhancingTab = {
             }
 
             if (item.enhance >= 15) {
-                for (let i = 0; i <= yArr.length; i += 1) {
+                for (let i = 0; i < yArr.length; i += 1) {
                     if (yArr[i] === 0) {
                         yArr[i] = undefined;
                     }
@@ -639,7 +576,7 @@ const EnhancingTab = {
         }
         // Bars
 
-        function buildBars(id, showAxis, index) {
+        function buildBars(index) {
             const stat = item.substats[index];
             if (!stat) return;
 
@@ -648,23 +585,19 @@ const EnhancingTab = {
             // var missing = Utils.round100ths(1 - min - rolled);
 
             const min = Utils.round10ths(Math.floor(stat.reforgedMin));
-            // For reforgeable items (level 85, +15, not yet reforged to 90)
-            // split the 'remaining' segment into reforge bonus + true remaining
-            const isReforgeable = item.reforgeable === 1;
-            const currentVal = item.level === 85 ? stat.reforgedValue : stat.value;
-            const rolled = Utils.round10ths(currentVal - Math.floor(stat.reforgedMin));
-            const reforgeBonus = isReforgeable
-                ? Utils.round10ths(Math.max(0, stat.reforgedValue - stat.value))
-                : 0;
-            const effectiveVal = isReforgeable ? stat.reforgedValue : currentVal;
+            const rolled = Utils.round10ths(
+                (item.level === 85 ? stat.reforgedValue : stat.value) -
+                    Math.floor(stat.reforgedMin)
+            );
             const missing = Utils.round10ths(
-                Math.floor(stat.reforgedMax) - effectiveVal,
+                Math.floor(stat.reforgedMax) -
+                    (item.level === 85 ? stat.reforgedValue : stat.value)
             );
 
-            const totalCurrent = min + rolled + (isReforgeable ? reforgeBonus : 0);
-            const totalMax = min + rolled + (isReforgeable ? reforgeBonus : 0) + missing;
-            const barLabel = `    ${totalCurrent} / ${totalMax}   (${Utils.round100ths(
-                (totalCurrent / totalMax) * 100,
+            const barLabel = `    ${min + rolled} / ${
+                min + rolled + missing
+            }   (${Utils.round100ths(
+                ((min + rolled) / (min + rolled + missing)) * 100
             )} %)`;
 
             const option = {
@@ -717,6 +650,7 @@ const EnhancingTab = {
                         label: {
                             show: !(rolled < 1),
                             position: 'inside',
+                            // position: stat.type == "Health" && rolled > 50 ? 'left' : 'inside',
                             fontSize: 10,
                             overflow: 'truncate',
                         },
@@ -727,26 +661,12 @@ const EnhancingTab = {
                     },
                     {
                         type: 'bar',
-                        stack: 'total',
-                        name: i18next.t('Reforge bonus'),
-                        label: {
-                            show: reforgeBonus > 0,
-                            position: 'inside',
-                            fontSize: 10,
-                            overflow: 'truncate',
-                        },
-                        itemStyle: {
-                            color: '#7ec8e3',
-                        },
-                        data: [reforgeBonus],
-                    },
-                    {
-                        type: 'bar',
                         name: i18next.t('Missing potential stats'),
                         stack: 'total',
                         label: {
                             show: !(missing < 1),
                             position: 'inside',
+                            // position: stat.type == "Health" && missing > 50 ? 'right' : 'inside',
                             fontSize: 10,
                             overflow: 'truncate',
                         },
@@ -788,53 +708,11 @@ const EnhancingTab = {
             }
         });
 
-        buildBars('stat1bars', false, 0);
-        buildBars('stat2bars', false, 1);
-        buildBars('stat3bars', false, 2);
-        buildBars('stat4bars', true, 3);
+        buildBars(0);
+        buildBars(1);
+        buildBars(2);
+        buildBars(3);
     },
 };
-
-// ── Phase 3.2: Top reforge candidates ────────────────────────────────────────
-async function redrawTopReforgeCandidates() {
-    const listEl = document.getElementById('topReforgeCandidatesList');
-    if (!listEl) return;
-    listEl.innerHTML = '<span style="color:#aaa;font-size:11px;">Loading...</span>';
-
-    try {
-        const response = await Api.getAllItems();
-        const items = response.items;
-        ItemAugmenter.augment(items);
-
-        // Filter to items that are reforgeable now (+15 level 85) and sort by delta score
-        const candidates = items
-            .filter((x) => x.reforgeable === 1 && typeof x.reforgedWss === 'number' && typeof x.wss === 'number')
-            .map((x) => ({ item: x, delta: Math.round(x.reforgedWss - x.wss) }))
-            .filter((x) => x.delta > 0)
-            .sort((a, b) => b.delta - a.delta)
-            .slice(0, 15);
-
-        if (candidates.length === 0) {
-            listEl.innerHTML = '<span style="color:#aaa;font-size:11px;">No reforgeable candidates found.</span>';
-            return;
-        }
-
-        const rows = candidates.map(({ item, delta }) => {
-            const name = `${item.set} ${item.gear} (${item.main && item.main.type ? item.main.type.replace('Percent', '%') : ''})`;
-            const bestArch = (item.archetypeScores && item.archetypeScores.bestOfficialArchetype) || '';
-            return `<div class="topCandidateRow" style="display:flex;gap:8px;align-items:center;padding:2px 0;font-size:11px;">
-                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${name}">${name}</span>
-                <span style="color:#7ec8e3;min-width:40px;text-align:right;">+${delta} GS</span>
-                <span style="color:#aaa;min-width:70px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" title="${bestArch}">${bestArch}</span>
-                <button style="font-size:10px;padding:1px 4px;" onclick="EnhancingTab.redrawEnhanceGuideFromRemoteId('${item.id}')">View</button>
-            </div>`;
-        });
-
-        listEl.innerHTML = rows.join('');
-    } catch (e) {
-        listEl.innerHTML = '<span style="color:#f88;font-size:11px;">Error loading items.</span>';
-        console.error('redrawTopReforgeCandidates error', e);
-    }
-}
 
 export default EnhancingTab;

@@ -46,14 +46,26 @@ public class Main {
   }
 
   public static void start() throws Exception {
-    try {
-      server = HttpServer.create(new InetSocketAddress("localhost", 8130), 0);
-    } catch (BindException e) {
-      // Likely because the service already exists on that port
-      logger.info("Port 8130 already in use, exiting: " + e);
-      System.exit(0);
+    int port = 8130;
+    boolean bound = false;
+    for (int attempt = 0; attempt < 10; attempt++) {
+      try {
+        server = HttpServer.create(new InetSocketAddress("localhost", port), 0);
+        bound = true;
+        break;
+      } catch (BindException e) {
+        logger.info("Port " + port + " already in use, trying next port...");
+        port++;
+      }
+    }
+    if (!bound) {
+      logger.severe("All ports 8130-8139 are in use. Cannot start backend.");
+      System.exit(1);
       return;
     }
+    // Print chosen port as FIRST stdout line so the frontend can read it
+    System.out.println("BACKEND_PORT:" + port);
+    System.out.flush();
 
     executorService = Executors.newFixedThreadPool(THREADS);
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {

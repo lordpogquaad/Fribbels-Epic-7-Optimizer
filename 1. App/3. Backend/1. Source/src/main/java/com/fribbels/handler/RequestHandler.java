@@ -55,9 +55,12 @@ public class RequestHandler {
         final byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
         exchange.sendResponseHeaders(200, responseBytes.length);
         exchange.getResponseHeaders().put("Content-Type", ImmutableList.of("application/json"));
-        outputStream.write(responseBytes);
-        outputStream.flush();
-        outputStream.close();
+        try {
+            outputStream.write(responseBytes);
+            outputStream.flush();
+        } finally {
+            outputStream.close();
+        }
 
         logger.info("Finished " + exchange.getRequestURI().getPath());
     }

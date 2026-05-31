@@ -8,6 +8,10 @@ import EnhancingTab from './tabs/enhancingTab';
 import { Gears, Sets, Ranks, Stats, Heroes } from './enums';
 import ForceFilter from './filters/forceFilter';
 import GearRating from './gear/gearRating';
+import ArchetypeStore from './gear/archetypeStore';
+import ArchetypeScorer from './gear/archetypeScorer';
+import FlatStatCalibration from './gear/flatStatCalibration';
+import ArchetypeTab from './tabs/archetypeTab';
 import HeroData from './services/heroData';
 import HtmlGenerator from './ui/htmlGenerator';
 import Importer from './data/importer';
@@ -48,7 +52,6 @@ process.env.ELECTRON_NO_ATTACH_CONSOLE = true;
                 typeof args[0] === 'string' &&
                 args[0].includes('Failed to get pid of port')
             ) {
-                original.apply(console, args);
                 return;
             }
             original.apply(console, args);
@@ -131,6 +134,10 @@ global.Item = Item;
 global.MainStatFixer = MainStatFixer;
 
 global.GearRating = GearRating;
+global.ArchetypeStore = ArchetypeStore;
+global.ArchetypeScorer = ArchetypeScorer;
+global.ArchetypeTab = ArchetypeTab;
+global.FlatStatCalibration = FlatStatCalibration;
 global.OptimizationRequest = OptimizationRequest;
 
 global.Importer = Importer;
@@ -203,6 +210,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         HeroesTab.initialize();
         HeroesGrid.initialize();
 
+        // Load archetypes BEFORE Settings.initialize() so the _cache is populated
+        // before any legacy settingArchetypes code (now removed) could interfere.
+        ArchetypeStore.loadArchetypes(); // load from Documents/FribbelsOptimizerSaves/e7-archetypes.json
         await Settings.initialize();
         Saves.initialize();
         await Saves.loadAutoSave();
@@ -211,6 +221,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         Tooltip.initialize();
         ColorPicker.initialize();
         EnhancingTab.initialize();
+        ArchetypeTab.initialize();
     });
     Scanner.initialize();
     Updater.checkForUpdates();

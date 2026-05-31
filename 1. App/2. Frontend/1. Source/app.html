@@ -167,19 +167,13 @@
                 type="radio"
                 name="tabset"
                 id="tab10"
-                disabled
-                aria-label="GW Meta"
+                aria-label="Archetypes"
             />
             <label
                 for="tab10"
-                class="tabLabelLink"
+                class="tabLabel"
                 data-t
-                onclick="
-                    electron.shell.openExternal(
-                        'https://fribbels.github.io/e7/gw-meta.html',
-                    )
-                "
-                >GW Meta ⧉</label
+                >Archetypes</label
             >
 
             <input
@@ -219,11 +213,25 @@
             >
             <!-- Tab 10 -->
             <!--   <input type="radio" name="tabset" id="tab10" style="display: none">
-  <label for="tab10" class="tabLabel" style="display: none" data-t>Subprocess Debugger</label>
+  <label for="tab10" class="tabLabel" style="display: none" data-t>Tab 10</label>
  -->
             <div id="hoverDiv"></div>
             <div class="tab-panels">
                 <div id="optimizer-section" class="tab-panel">
+                    <div class="optimizer-bottom-tab-bar">
+                        <button
+                            class="optimizer-bottom-tab-btn active"
+                            id="bottomTabBtnGear"
+                        >
+                            Optimizer
+                        </button>
+                        <button
+                            class="optimizer-bottom-tab-btn"
+                            id="bottomTabBtnFribbels"
+                        >
+                            &#128202; Fribbels Library
+                        </button>
+                    </div>
                     <div id="optimizer-tab" class="tab">
                         <div id="optimizer-panel" class="optimizer-panel">
                             <div
@@ -314,6 +322,12 @@
                                         class="gearPreviewButton controlsPanel"
                                         id="submitOptimizerReset"
                                         data-t
+                                    />
+                                    <input
+                                        type="submit"
+                                        value="Undo Reset"
+                                        class="gearPreviewButton controlsPanel undoResetButton display-none"
+                                        id="submitOptimizerUndoReset"
                                     />
                                 </div>
                                 <div class="vertical"></div>
@@ -580,6 +594,10 @@
                                             ></div>
                                         </div>
                                     </div>
+                                    <div
+                                        id="heroModSummary"
+                                        class="heroModSummary display-none"
+                                    ></div>
                                 </div>
 
                                 <div class="vertical"></div>
@@ -627,6 +645,28 @@
                                             data-t
                                             >Use hero priority</label
                                         >
+                                    </div>
+
+                                    <div
+                                        id="heroPriorityPanel"
+                                        class="display-none"
+                                        style="
+                                            max-height: 140px;
+                                            overflow-y: auto;
+                                            border: 1px solid #555;
+                                            border-radius: 4px;
+                                            margin-top: 2px;
+                                            margin-bottom: 4px;
+                                        "
+                                    >
+                                        <ul
+                                            id="heroPriorityList"
+                                            style="
+                                                list-style: none;
+                                                margin: 0;
+                                                padding: 2px 0;
+                                            "
+                                        ></ul>
                                     </div>
 
                                     <div>
@@ -755,185 +795,6 @@
                                         id="skillOptionsButton"
                                         data-t
                                     />
-                                </div>
-
-                                <div class="vertical"></div>
-
-                                <div
-                                    id="placeholder-panel"
-                                    class="constraints-panel-col-small"
-                                >
-                                    <div class="panelLabel">
-                                        <img
-                                            src="./assets/tooltip.png"
-                                            class="tooltipImageLeft"
-                                            id="filterStatsTooltip"
-                                            alt=""
-                                        />
-                                        <div
-                                            class="panelLabelText"
-                                            id="statsLabel"
-                                            data-content=" (clear)"
-                                            data-t
-                                        >
-                                            Stat filters
-                                        </div>
-                                    </div>
-                                    <input
-                                        type="number"
-                                        id="inputMinAtkLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Min Atk"
-                                    />
-                                    <div class="inputStatLabel" data-t>Atk</div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxAtkLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Max Atk"
-                                    /><br />
-
-                                    <input
-                                        type="number"
-                                        id="inputMinDefLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Min Def"
-                                    />
-                                    <div class="inputStatLabel" data-t>Def</div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxDefLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Max Def"
-                                    /><br />
-
-                                    <input
-                                        type="number"
-                                        id="inputMinHpLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Min Hp"
-                                    />
-                                    <div class="inputStatLabel" data-t>Hp</div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxHpLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Max Hp"
-                                    /><br />
-
-                                    <input
-                                        type="number"
-                                        id="inputMinSpdLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Min Spd"
-                                    />
-                                    <div class="inputStatLabel" data-t>Spd</div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxSpdLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Max Spd"
-                                    /><br />
-
-                                    <input
-                                        type="number"
-                                        id="inputMinCrLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Min Cr"
-                                    />
-                                    <div class="inputStatLabel" data-t>
-                                        CRate
-                                    </div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxCrLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Max Cr"
-                                    /><br />
-
-                                    <input
-                                        type="number"
-                                        id="inputMinCdLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Min Cd"
-                                    />
-                                    <div class="inputStatLabel" data-t>
-                                        CDmg
-                                    </div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxCdLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Max Cd"
-                                    /><br />
-
-                                    <input
-                                        type="number"
-                                        id="inputMinEffLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Min Eff"
-                                    />
-                                    <div class="inputStatLabel" data-t>Eff</div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxEffLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Max Eff"
-                                    /><br />
-
-                                    <input
-                                        type="number"
-                                        id="inputMinResLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Min Res"
-                                    />
-                                    <div class="inputStatLabel" data-t>Res</div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxResLimit"
-                                        class="optimizer-number-input stat-number-input"
-                                        aria-label="Max Res"
-                                    /><br />
-
-                                    <input
-                                        type="number"
-                                        id="inputMinCpLimit"
-                                        class="optimizer-number-input rating-number-input"
-                                        aria-label="Min Cp"
-                                    />
-                                    <div class="inputStatLabel" data-t>Cp</div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxCpLimit"
-                                        class="optimizer-number-input rating-number-input"
-                                        aria-label="Max Cp"
-                                    /><br />
-
-                                    <input
-                                        type="number"
-                                        id="inputMinItemGSLimit"
-                                        class="optimizer-number-input rating-number-input"
-                                        aria-label="Min ItemGS"
-                                    />
-                                    <div class="inputStatLabel" data-t>
-                                        ItemGS
-                                    </div>
-                                    <input
-                                        type="number"
-                                        id="inputMaxItemGSLimit"
-                                        class="optimizer-number-input rating-number-input"
-                                        aria-label="Max ItemGS"
-                                    /><br />
-
-                                    <div class="horizontalSpace"></div>
-                                    <div class="horizontalSpace"></div>
-                                    <div class="horizontalSpace"></div>
-                                    <div class="horizontalSpace"></div>
-                                    <div class="horizontalSpace"></div>
-                                    <div
-                                        class="horizontalSpace"
-                                        style="height: 1px"
-                                    ></div>
 
                                     <div class="panelLabel">
                                         <img
@@ -995,8 +856,606 @@
                                     /><br />
                                 </div>
 
+                                <div class="vertical"></div>
+
                                 <div
                                     id="placeholder-panel"
+                                    class="constraints-panel-col-small"
+                                >
+                                    <div class="panelLabel">
+                                        <img
+                                            src="./assets/tooltip.png"
+                                            class="tooltipImageLeft"
+                                            id="filterStatsTooltip"
+                                            alt=""
+                                        />
+                                        <div
+                                            class="panelLabelText"
+                                            id="statsLabel"
+                                            data-content=" (clear)"
+                                            data-t
+                                        >
+                                            Stat filters
+                                        </div>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMinAtkLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Min Atk"
+                                    />
+                                    <div class="inputStatLabel" data-t>Atk</div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxAtkLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Max Atk"
+                                    /><br />
+                                    <input
+                                        type="number"
+                                        id="inputAtkMinTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        placeholder="↓T"
+                                        aria-label="Atk min target"
+                                    /><input
+                                        type="number"
+                                        id="inputAtkTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        style="margin-left: 46px"
+                                        placeholder="↑T"
+                                        aria-label="Atk max target"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinDefLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Min Def"
+                                    />
+                                    <div class="inputStatLabel" data-t>Def</div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxDefLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Max Def"
+                                    /><br />
+                                    <input
+                                        type="number"
+                                        id="inputDefMinTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        placeholder="↓T"
+                                        aria-label="Def min target"
+                                    /><input
+                                        type="number"
+                                        id="inputDefTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        style="margin-left: 46px"
+                                        placeholder="↑T"
+                                        aria-label="Def max target"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinHpLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Min Hp"
+                                    />
+                                    <div class="inputStatLabel" data-t>Hp</div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxHpLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Max Hp"
+                                    /><br />
+                                    <input
+                                        type="number"
+                                        id="inputHpMinTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        placeholder="↓T"
+                                        aria-label="Hp min target"
+                                    /><input
+                                        type="number"
+                                        id="inputHpTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        style="margin-left: 46px"
+                                        placeholder="↑T"
+                                        aria-label="Hp max target"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinSpdLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Min Spd"
+                                    />
+                                    <div class="inputStatLabel" data-t>Spd</div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxSpdLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Max Spd"
+                                    /><br />
+                                    <input
+                                        type="number"
+                                        id="inputSpdMinTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        placeholder="↓T"
+                                        aria-label="Spd min target"
+                                    /><input
+                                        type="number"
+                                        id="inputSpdTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        style="margin-left: 46px"
+                                        placeholder="↑T"
+                                        aria-label="Spd max target"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinCrLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Min Cr"
+                                    />
+                                    <div class="inputStatLabel" data-t>
+                                        CRate
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxCrLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Max Cr"
+                                    /><br />
+                                    <input
+                                        type="number"
+                                        id="inputCrMinTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        placeholder="↓T"
+                                        aria-label="Cr min target"
+                                    /><input
+                                        type="number"
+                                        id="inputCrTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        style="margin-left: 46px"
+                                        placeholder="↑T"
+                                        aria-label="Cr max target"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinCdLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Min Cd"
+                                    />
+                                    <div class="inputStatLabel" data-t>
+                                        CDmg
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxCdLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Max Cd"
+                                    /><br />
+                                    <input
+                                        type="number"
+                                        id="inputCdMinTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        placeholder="↓T"
+                                        aria-label="Cd min target"
+                                    /><input
+                                        type="number"
+                                        id="inputCdTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        style="margin-left: 46px"
+                                        placeholder="↑T"
+                                        aria-label="Cd max target"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinEffLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Min Eff"
+                                    />
+                                    <div class="inputStatLabel" data-t>Eff</div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxEffLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Max Eff"
+                                    /><br />
+                                    <input
+                                        type="number"
+                                        id="inputEffMinTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        placeholder="↓T"
+                                        aria-label="Eff min target"
+                                    /><input
+                                        type="number"
+                                        id="inputEffTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        style="margin-left: 46px"
+                                        placeholder="↑T"
+                                        aria-label="Eff max target"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinResLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Min Res"
+                                    />
+                                    <div class="inputStatLabel" data-t>Res</div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxResLimit"
+                                        class="optimizer-number-input stat-number-input"
+                                        aria-label="Max Res"
+                                    /><br />
+                                    <input
+                                        type="number"
+                                        id="inputResMinTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        placeholder="↓T"
+                                        aria-label="Res min target"
+                                    /><input
+                                        type="number"
+                                        id="inputResTarget"
+                                        class="optimizer-number-input stat-number-input"
+                                        style="margin-left: 46px"
+                                        placeholder="↑T"
+                                        aria-label="Res max target"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinCpLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Min Cp"
+                                    />
+                                    <div class="inputStatLabel" data-t>Cp</div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxCpLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Max Cp"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinItemGSLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Min ItemGS"
+                                    />
+                                    <div class="inputStatLabel" data-t>
+                                        ItemGS
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxItemGSLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Max ItemGS"
+                                    /><br />
+
+                                    <div class="horizontalSpace"></div>
+                                    <div
+                                        class="panelLabel"
+                                        style="cursor: pointer"
+                                        id="forceFilterToggle"
+                                    >
+                                        <div
+                                            class="panelLabelText"
+                                            id="forceFilterToggleLabel"
+                                            data-t
+                                        >
+                                            ▸ Force Substat Filter
+                                        </div>
+                                    </div>
+                                    <div
+                                        id="forceFilterSection"
+                                        style="display: none"
+                                    >
+                                        <div
+                                            style="
+                                                display: flex;
+                                                align-items: center;
+                                                margin-bottom: 2px;
+                                            "
+                                        >
+                                            <span
+                                                class="inputStatLabel"
+                                                style="
+                                                    width: auto;
+                                                    margin-right: 4px;
+                                                "
+                                                data-t
+                                                >Min passes:</span
+                                            >
+                                            <select
+                                                id="forceNumberSelect"
+                                                class="optimizer-number-input"
+                                                style="width: 50px"
+                                                title="Number of configured checks a piece must satisfy"
+                                            >
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                            </select>
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMinAtkForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min Atk Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            Atk
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxAtkForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max Atk Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinAtkPercentForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min Atk% Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            Atk%
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxAtkPercentForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max Atk% Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinHpForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min Hp Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            HP
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxHpForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max Hp Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinHpPercentForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min Hp% Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            HP%
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxHpPercentForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max Hp% Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinDefForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min Def Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            Def
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxDefForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max Def Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinDefPercentForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min Def% Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            Def%
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxDefPercentForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max Def% Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinSpdForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min Spd Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            Spd
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxSpdForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max Spd Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinCrForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min CR Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            CRate
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxCrForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max CR Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinCdForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min CD Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            CDmg
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxCdForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max CD Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinEffForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min Eff Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            Eff
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxEffForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max Eff Force"
+                                        /><br />
+
+                                        <input
+                                            type="number"
+                                            id="inputMinResForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Min Res Force"
+                                        />
+                                        <div class="inputStatLabel" data-t>
+                                            Res
+                                        </div>
+                                        <input
+                                            type="number"
+                                            id="inputMaxResForce"
+                                            class="optimizer-number-input stat-number-input"
+                                            aria-label="Max Res Force"
+                                        /><br />
+                                    </div>
+
+                                    <div class="horizontalSpace"></div>
+                                    <div
+                                        class="panelLabel"
+                                        style="cursor: pointer"
+                                        id="mustHaveSubstatToggle"
+                                    >
+                                        <div
+                                            class="panelLabelText"
+                                            id="mustHaveSubstatToggleLabel"
+                                            data-t
+                                        >
+                                            ▸ Must-Have Substat
+                                        </div>
+                                    </div>
+                                    <div
+                                        id="mustHaveSubstatSection"
+                                        style="display: none"
+                                    >
+                                        <div
+                                            style="
+                                                display: flex;
+                                                align-items: center;
+                                                flex-wrap: wrap;
+                                                gap: 4px;
+                                                margin-bottom: 4px;
+                                            "
+                                        >
+                                            <span
+                                                class="inputStatLabel"
+                                                style="
+                                                    width: auto;
+                                                    margin-right: 2px;
+                                                "
+                                                data-t
+                                                >Stat:</span
+                                            >
+                                            <select
+                                                id="mustHaveSubstatSelect"
+                                                class="optimizer-number-input"
+                                                style="width: 64px"
+                                                title="At least N pieces in the final build must have this stat as a substat"
+                                            >
+                                                <option value="">—</option>
+                                                <option value="spd">Spd</option>
+                                                <option value="cr">
+                                                    CRate
+                                                </option>
+                                                <option value="cd">CDmg</option>
+                                                <option value="atk">
+                                                    Atk%
+                                                </option>
+                                                <option value="hp">HP%</option>
+                                                <option value="def">
+                                                    Def%
+                                                </option>
+                                                <option value="eff">Eff</option>
+                                                <option value="res">Res</option>
+                                                <option value="flatatk">
+                                                    Atk
+                                                </option>
+                                                <option value="flathp">
+                                                    HP
+                                                </option>
+                                                <option value="flatdef">
+                                                    Def
+                                                </option>
+                                            </select>
+                                            <span
+                                                class="inputStatLabel"
+                                                style="
+                                                    width: auto;
+                                                    margin: 0 2px;
+                                                "
+                                                data-t
+                                                >Min pieces:</span
+                                            >
+                                            <select
+                                                id="mustHaveSubstatCount"
+                                                class="optimizer-number-input"
+                                                style="width: 46px"
+                                                title="Minimum number of gear pieces that must carry the selected substat"
+                                            >
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    id="placeholder-panel-ratings"
                                     class="constraints-panel-col-small"
                                 >
                                     <div class="panelLabel">
@@ -1124,32 +1583,128 @@
                                         type="number"
                                         id="inputMinDmgHLimit"
                                         class="optimizer-number-input rating-number-input"
-                                        aria-label="Min DmgH"
+                                        aria-label="Min HMcd"
                                     />
                                     <div class="inputStatLabel" data-t>
-                                        DmgH
+                                        HMcd
                                     </div>
                                     <input
                                         type="number"
                                         id="inputMaxDmgHLimit"
                                         class="optimizer-number-input rating-number-input"
-                                        aria-label="Max DmgH"
+                                        aria-label="Max HMcd"
                                     /><br />
 
                                     <input
                                         type="number"
                                         id="inputMinDmgDLimit"
                                         class="optimizer-number-input rating-number-input"
-                                        aria-label="Min DmgD"
+                                        aria-label="Min DMcd"
                                     />
                                     <div class="inputStatLabel" data-t>
-                                        DmgD
+                                        DMcd
                                     </div>
                                     <input
                                         type="number"
                                         id="inputMaxDmgDLimit"
                                         class="optimizer-number-input rating-number-input"
-                                        aria-label="Max DmgD"
+                                        aria-label="Max DMcd"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinHmcdmgsLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Min HMcdS"
+                                    />
+                                    <div class="inputStatLabel" data-t>
+                                        HMcdS
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxHmcdmgsLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Max HMcdS"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinDmcdmgsLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Min DMcdS"
+                                    />
+                                    <div class="inputStatLabel" data-t>
+                                        DMcdS
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxDmcdmgsLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Max DMcdS"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinHdmgLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Min HDmg"
+                                    />
+                                    <div class="inputStatLabel" data-t>
+                                        HDmg
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxHdmgLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Max HDmg"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinHdmgsLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Min HDmgS"
+                                    />
+                                    <div class="inputStatLabel" data-t>
+                                        HDmgS
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxHdmgsLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Max HDmgS"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinDdmgLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Min DDmg"
+                                    />
+                                    <div class="inputStatLabel" data-t>
+                                        DDmg
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxDdmgLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Max DDmg"
+                                    /><br />
+
+                                    <input
+                                        type="number"
+                                        id="inputMinDdmgsLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Min DDmgS"
+                                    />
+                                    <div class="inputStatLabel" data-t>
+                                        DDmgS
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="inputMaxDdmgsLimit"
+                                        class="optimizer-number-input rating-number-input"
+                                        aria-label="Max DDmgS"
                                     /><br />
 
                                     <input
@@ -1261,11 +1816,28 @@
                                         >
                                             Substat priority (clear)
                                         </div>
+                                        <input
+                                            id="presetNameInput"
+                                            type="text"
+                                            class="preset-name-input"
+                                            placeholder="Name…"
+                                            maxlength="30"
+                                            aria-label="Preset name"
+                                        />
+                                        <input
+                                            type="submit"
+                                            value="Save"
+                                            id="saveFilterPreset"
+                                            class="preset-save-btn"
+                                        />
                                     </div>
 
                                     <div class="sliderRow">
                                         <div class="sliderLabel" data-t>
-                                            Atk
+                                            Atk<span
+                                                class="priority-target-dot display-none"
+                                                id="atkSliderTargetDot"
+                                            ></span>
                                         </div>
                                         <input
                                             class="sliderInput"
@@ -1273,7 +1845,6 @@
                                             type="number"
                                             aria-label="Attack priority value"
                                             value="0"
-                                            readonly
                                         />
                                         <div class="sliderContainer">
                                             <input
@@ -1282,7 +1853,7 @@
                                                 aria-label="Attack priority"
                                                 type="range"
                                                 min="-1"
-                                                max="3"
+                                                max="6"
                                                 value="0"
                                                 step="1"
                                             />
@@ -1293,7 +1864,10 @@
 
                                     <div class="sliderRow">
                                         <div class="sliderLabel" data-t>
-                                            Def
+                                            Def<span
+                                                class="priority-target-dot display-none"
+                                                id="defSliderTargetDot"
+                                            ></span>
                                         </div>
                                         <input
                                             class="sliderInput"
@@ -1301,7 +1875,6 @@
                                             type="number"
                                             aria-label="Defense priority value"
                                             value="0"
-                                            readonly
                                         />
                                         <div class="sliderContainer">
                                             <input
@@ -1310,7 +1883,7 @@
                                                 aria-label="Defense priority"
                                                 type="range"
                                                 min="-1"
-                                                max="3"
+                                                max="6"
                                                 value="0"
                                                 step="1"
                                             />
@@ -1320,14 +1893,18 @@
                                     <div class="horizontalSpace"></div>
 
                                     <div class="sliderRow">
-                                        <div class="sliderLabel" data-t>Hp</div>
+                                        <div class="sliderLabel" data-t>
+                                            Hp<span
+                                                class="priority-target-dot display-none"
+                                                id="hpSliderTargetDot"
+                                            ></span>
+                                        </div>
                                         <input
                                             class="sliderInput"
                                             id="hpSliderInput"
                                             type="number"
                                             aria-label="HP priority value"
                                             value="0"
-                                            readonly
                                         />
                                         <div class="sliderContainer">
                                             <input
@@ -1336,7 +1913,7 @@
                                                 aria-label="HP priority"
                                                 type="range"
                                                 min="-1"
-                                                max="3"
+                                                max="6"
                                                 value="0"
                                                 step="1"
                                             />
@@ -1347,7 +1924,10 @@
 
                                     <div class="sliderRow">
                                         <div class="sliderLabel" data-t>
-                                            Spd
+                                            Spd<span
+                                                class="priority-target-dot display-none"
+                                                id="spdSliderTargetDot"
+                                            ></span>
                                         </div>
                                         <input
                                             class="sliderInput"
@@ -1355,7 +1935,6 @@
                                             type="number"
                                             aria-label="Speed priority value"
                                             value="0"
-                                            readonly
                                         />
                                         <div class="sliderContainer">
                                             <input
@@ -1364,7 +1943,7 @@
                                                 aria-label="Speed priority"
                                                 type="range"
                                                 min="-1"
-                                                max="3"
+                                                max="6"
                                                 value="0"
                                                 step="1"
                                             />
@@ -1374,14 +1953,18 @@
                                     <div class="horizontalSpace"></div>
 
                                     <div class="sliderRow">
-                                        <div class="sliderLabel" data-t>Cr</div>
+                                        <div class="sliderLabel" data-t>
+                                            Cr<span
+                                                class="priority-target-dot display-none"
+                                                id="crSliderTargetDot"
+                                            ></span>
+                                        </div>
                                         <input
                                             class="sliderInput"
                                             id="crSliderInput"
                                             type="number"
                                             aria-label="Crit Rate priority value"
                                             value="0"
-                                            readonly
                                         />
                                         <div class="sliderContainer">
                                             <input
@@ -1390,7 +1973,7 @@
                                                 aria-label="Crit Rate priority"
                                                 type="range"
                                                 min="-1"
-                                                max="3"
+                                                max="6"
                                                 value="0"
                                                 step="1"
                                             />
@@ -1400,14 +1983,18 @@
                                     <div class="horizontalSpace"></div>
 
                                     <div class="sliderRow">
-                                        <div class="sliderLabel" data-t>Cd</div>
+                                        <div class="sliderLabel" data-t>
+                                            Cd<span
+                                                class="priority-target-dot display-none"
+                                                id="cdSliderTargetDot"
+                                            ></span>
+                                        </div>
                                         <input
                                             class="sliderInput"
                                             id="cdSliderInput"
                                             type="number"
                                             aria-label="Crit Damage priority value"
                                             value="0"
-                                            readonly
                                         />
                                         <div class="sliderContainer">
                                             <input
@@ -1416,7 +2003,7 @@
                                                 aria-label="Crit Damage priority"
                                                 type="range"
                                                 min="-1"
-                                                max="3"
+                                                max="6"
                                                 value="0"
                                                 step="1"
                                             />
@@ -1427,7 +2014,10 @@
 
                                     <div class="sliderRow">
                                         <div class="sliderLabel" data-t>
-                                            Eff
+                                            Eff<span
+                                                class="priority-target-dot display-none"
+                                                id="effSliderTargetDot"
+                                            ></span>
                                         </div>
                                         <input
                                             class="sliderInput"
@@ -1435,7 +2025,6 @@
                                             type="number"
                                             aria-label="Effectiveness priority value"
                                             value="0"
-                                            readonly
                                         />
                                         <div class="sliderContainer">
                                             <input
@@ -1444,7 +2033,7 @@
                                                 aria-label="Effectiveness priority"
                                                 type="range"
                                                 min="-1"
-                                                max="3"
+                                                max="6"
                                                 value="0"
                                                 step="1"
                                             />
@@ -1455,7 +2044,10 @@
 
                                     <div class="sliderRow">
                                         <div class="sliderLabel" data-t>
-                                            Res
+                                            Res<span
+                                                class="priority-target-dot display-none"
+                                                id="resSliderTargetDot"
+                                            ></span>
                                         </div>
                                         <input
                                             class="sliderInput"
@@ -1463,7 +2055,6 @@
                                             type="number"
                                             aria-label="Effect Resistance priority value"
                                             value="0"
-                                            readonly
                                         />
                                         <div class="sliderContainer">
                                             <input
@@ -1472,13 +2063,19 @@
                                                 aria-label="Effect Resistance priority"
                                                 type="range"
                                                 min="-1"
-                                                max="3"
+                                                max="6"
                                                 value="0"
                                                 step="1"
                                             />
                                         </div>
                                     </div>
 
+                                    <div class="horizontalSpace"></div>
+                                    <div
+                                        id="priorityWeightBar"
+                                        class="priority-weight-bar"
+                                        style="display: none"
+                                    ></div>
                                     <div class="horizontalSpace"></div>
                                     <div class="horizontalSpace"></div>
                                     <div class="horizontalSpace"></div>
@@ -1490,21 +2087,20 @@
 
                                     <div class="sliderRow">
                                         <div class="sliderLabel" data-t>
-                                            Top %
+                                            Wpn %
                                         </div>
                                         <input
                                             class="sliderInput"
-                                            id="filterSliderInput"
+                                            id="weaponFilterSliderInput"
                                             type="number"
-                                            aria-label="Top percent filter value"
+                                            aria-label="Weapon top percent filter value"
                                             value="100"
-                                            readonly
                                         />
                                         <div class="sliderContainer">
                                             <input
                                                 class="slider"
-                                                id="filterSlider"
-                                                aria-label="Top percent filter"
+                                                id="weaponFilterSlider"
+                                                aria-label="Weapon top percent filter"
                                                 type="range"
                                                 min="10"
                                                 max="100"
@@ -1512,8 +2108,288 @@
                                                 step="1"
                                             />
                                         </div>
-                                        <!--
-                <div class="sliderContainer"><input class="slider" id="filterSlider" type="range" min="0" max="100" value="100" step="5"></div> -->
+                                        <span
+                                            id="weaponSliderHeatmap"
+                                            class="slider-heatmap"
+                                        ></span>
+                                    </div>
+                                    <div class="horizontalSpace"></div>
+                                    <div class="sliderRow">
+                                        <div class="sliderLabel" data-t>
+                                            Hlm %
+                                        </div>
+                                        <input
+                                            class="sliderInput"
+                                            id="helmetFilterSliderInput"
+                                            type="number"
+                                            aria-label="Helmet top percent filter value"
+                                            value="100"
+                                        />
+                                        <div class="sliderContainer">
+                                            <input
+                                                class="slider"
+                                                id="helmetFilterSlider"
+                                                aria-label="Helmet top percent filter"
+                                                type="range"
+                                                min="10"
+                                                max="100"
+                                                value="100"
+                                                step="1"
+                                            />
+                                        </div>
+                                        <span
+                                            id="helmetSliderHeatmap"
+                                            class="slider-heatmap"
+                                        ></span>
+                                    </div>
+                                    <div class="horizontalSpace"></div>
+                                    <div class="sliderRow">
+                                        <div class="sliderLabel" data-t>
+                                            Arm %
+                                        </div>
+                                        <input
+                                            class="sliderInput"
+                                            id="armorFilterSliderInput"
+                                            type="number"
+                                            aria-label="Armor top percent filter value"
+                                            value="100"
+                                        />
+                                        <div class="sliderContainer">
+                                            <input
+                                                class="slider"
+                                                id="armorFilterSlider"
+                                                aria-label="Armor top percent filter"
+                                                type="range"
+                                                min="10"
+                                                max="100"
+                                                value="100"
+                                                step="1"
+                                            />
+                                        </div>
+                                        <span
+                                            id="armorSliderHeatmap"
+                                            class="slider-heatmap"
+                                        ></span>
+                                    </div>
+                                    <div class="horizontalSpace"></div>
+                                    <div class="sliderRow">
+                                        <div class="sliderLabel" data-t>
+                                            Nkl %
+                                        </div>
+                                        <input
+                                            class="sliderInput"
+                                            id="necklaceFilterSliderInput"
+                                            type="number"
+                                            aria-label="Necklace top percent filter value"
+                                            value="100"
+                                        />
+                                        <div class="sliderContainer">
+                                            <input
+                                                class="slider"
+                                                id="necklaceFilterSlider"
+                                                aria-label="Necklace top percent filter"
+                                                type="range"
+                                                min="10"
+                                                max="100"
+                                                value="100"
+                                                step="1"
+                                            />
+                                        </div>
+                                        <span
+                                            id="necklaceSliderHeatmap"
+                                            class="slider-heatmap"
+                                        ></span>
+                                    </div>
+                                    <div class="horizontalSpace"></div>
+                                    <div class="sliderRow">
+                                        <div class="sliderLabel" data-t>
+                                            Rng %
+                                        </div>
+                                        <input
+                                            class="sliderInput"
+                                            id="ringFilterSliderInput"
+                                            type="number"
+                                            aria-label="Ring top percent filter value"
+                                            value="100"
+                                        />
+                                        <div class="sliderContainer">
+                                            <input
+                                                class="slider"
+                                                id="ringFilterSlider"
+                                                aria-label="Ring top percent filter"
+                                                type="range"
+                                                min="10"
+                                                max="100"
+                                                value="100"
+                                                step="1"
+                                            />
+                                        </div>
+                                        <span
+                                            id="ringSliderHeatmap"
+                                            class="slider-heatmap"
+                                        ></span>
+                                    </div>
+                                    <div class="horizontalSpace"></div>
+                                    <div class="sliderRow">
+                                        <div class="sliderLabel" data-t>
+                                            Bts %
+                                        </div>
+                                        <input
+                                            class="sliderInput"
+                                            id="bootsFilterSliderInput"
+                                            type="number"
+                                            aria-label="Boots top percent filter value"
+                                            value="100"
+                                        />
+                                        <div class="sliderContainer">
+                                            <input
+                                                class="slider"
+                                                id="bootsFilterSlider"
+                                                aria-label="Boots top percent filter"
+                                                type="range"
+                                                min="10"
+                                                max="100"
+                                                value="100"
+                                                step="1"
+                                            />
+                                        </div>
+                                        <span
+                                            id="bootsSliderHeatmap"
+                                            class="slider-heatmap"
+                                        ></span>
+                                    </div>
+                                    <div class="horizontalSpace"></div>
+                                    <div
+                                        style="
+                                            display: flex;
+                                            align-items: center;
+                                            gap: 4px;
+                                            flex-wrap: wrap;
+                                            margin-top: 2px;
+                                        "
+                                    >
+                                        <img
+                                            src="./assets/tooltip.png"
+                                            class="tooltipImageLeft"
+                                            id="slotFilterTooltip"
+                                            alt=""
+                                        />
+                                        <div class="sliderLabel">All %</div>
+                                        <input
+                                            id="slotFilterAllInput"
+                                            type="number"
+                                            class="sliderInput"
+                                            min="1"
+                                            max="100"
+                                            value="100"
+                                            style="width: 42px"
+                                            aria-label="Set all slot filter percent"
+                                        />
+                                        <button
+                                            id="slotFilterSetAll"
+                                            class="optimizer-btn"
+                                            title="Set all slot % sliders to this value"
+                                        >
+                                            Set All
+                                        </button>
+                                        <span class="auto-target-label" data-t
+                                            >Target:</span
+                                        >
+                                        <input
+                                            id="slotFilterAutoTarget"
+                                            type="number"
+                                            class="sliderInput"
+                                            min="0.1"
+                                            max="9999"
+                                            step="0.1"
+                                            value="3"
+                                            style="width: 42px"
+                                            aria-label="Auto target permutations in millions"
+                                        />
+                                        <span
+                                            style="font-size: 11px; color: #aaa"
+                                            >M</span
+                                        >
+                                        <button
+                                            id="slotFilterAuto"
+                                            class="optimizer-btn"
+                                            title="Auto-set slot % sliders to target the specified number of permutations"
+                                        >
+                                            Auto
+                                        </button>
+                                        <button
+                                            id="slotFilterAutoFromTargets"
+                                            class="optimizer-btn"
+                                            title="Auto-set each slot % slider to keep only items that score near the top for the current priority weights"
+                                        >
+                                            Auto from Targets
+                                        </button>
+                                    </div>
+                                    <div
+                                        id="slotFilterEstCombo"
+                                        class="slot-filter-est-combo"
+                                    ></div>
+                                    <div class="horizontalSpace"></div>
+                                    <div
+                                        id="presetList"
+                                        class="preset-list"
+                                    ></div>
+                                    <div
+                                        id="presetRenameOverlay"
+                                        class="preset-rename-overlay"
+                                        style="display: none"
+                                    >
+                                        <div class="preset-rename-modal">
+                                            <div class="preset-rename-title">
+                                                Rename preset
+                                            </div>
+                                            <input
+                                                id="presetRenameInput"
+                                                type="text"
+                                                class="preset-rename-input"
+                                                maxlength="30"
+                                                aria-label="New preset name"
+                                            />
+                                            <div class="preset-rename-actions">
+                                                <button
+                                                    id="presetRenameConfirm"
+                                                    class="optimizer-btn"
+                                                >
+                                                    OK
+                                                </button>
+                                                <button
+                                                    id="presetRenameCancel"
+                                                    class="optimizer-btn"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        id="compareBuildOverlay"
+                                        class="compare-build-overlay"
+                                        style="display: none"
+                                    >
+                                        <div class="compare-build-modal">
+                                            <div class="compare-build-header">
+                                                <span
+                                                    class="compare-build-title"
+                                                    >Build Comparison</span
+                                                >
+                                                <button
+                                                    class="compare-build-close"
+                                                    id="compareBuildClose"
+                                                    aria-label="Close"
+                                                >
+                                                    &#x2715;
+                                                </button>
+                                            </div>
+                                            <div
+                                                id="compareBuildContent"
+                                                class="compare-build-content"
+                                            ></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="vertical"></div>
@@ -1911,6 +2787,14 @@
                                             </option>
                                         </optgroup></select
                                     ><br />
+                                    <button
+                                        id="openSlotSubstatFilter"
+                                        class="optimizer-btn"
+                                        style="margin-top: 6px; width: 100%"
+                                        aria-label="Open per-slot substat filter"
+                                    >
+                                        Substat Filter
+                                    </button>
                                 </div>
                             </div>
 
@@ -2034,6 +2918,22 @@
                                                     >0</text
                                                 >
                                             </div>
+                                            <div
+                                                class="leftRightText"
+                                                id="modExpansionRow"
+                                                style="display: none"
+                                            >
+                                                <text
+                                                    class="leftRightTextContent"
+                                                    style="color: #e8a020"
+                                                    >Mod expand</text
+                                                >
+                                                <text
+                                                    id="modExpansionInfo"
+                                                    class="leftRightTextContent"
+                                                    style="color: #e8a020"
+                                                ></text>
+                                            </div>
                                             <div class="leftRightText">
                                                 <text
                                                     id="searchedText"
@@ -2154,6 +3054,44 @@
                                                     data-t
                                                 />
                                             </div>
+                                            <div id="buttonSpace"></div>
+                                            <div
+                                                class="optimizerActionButtonsRow"
+                                            >
+                                                <input
+                                                    type="submit"
+                                                    class="gearActionButton"
+                                                    value="Save Selected"
+                                                    id="gearPreviewSaveSelected"
+                                                    title="Save all Ctrl+click selected rows as builds"
+                                                />
+                                                <input
+                                                    type="submit"
+                                                    class="gearActionButton"
+                                                    value="Copy Build"
+                                                    id="gearPreviewCopyBuild"
+                                                    title="Copy build as plain text for Discord / spreadsheets"
+                                                />
+                                            </div>
+                                            <div id="buttonSpace"></div>
+                                            <div
+                                                class="optimizerActionButtonsRow"
+                                            >
+                                                <input
+                                                    type="submit"
+                                                    class="gearActionButton"
+                                                    value="Pin"
+                                                    id="gearPreviewPinCompare"
+                                                    title="Pin this build for side-by-side comparison"
+                                                />
+                                                <input
+                                                    type="submit"
+                                                    class="gearActionButton"
+                                                    value="Compare"
+                                                    id="gearPreviewCompare"
+                                                    title="Compare pinned build with the currently selected build"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -2193,6 +3131,275 @@
                                     class="gear-preview-row"
                                 ></div>
                             </div>
+                        </div>
+                    </div>
+                    <div
+                        id="fribbels-library-panel"
+                        class="fribbels-library-panel display-none"
+                    >
+                        <div class="fribbels-header">
+                            <select
+                                id="fribbelsHeroSelect"
+                                class="gearPreviewButton"
+                                aria-label="Select hero for Fribbels Library"
+                            ></select>
+                            <button
+                                id="fribbels-fetch-btn"
+                                class="fribbels-fetch-btn"
+                            >
+                                &#128202; Fetch Builds
+                            </button>
+                            <button
+                                id="fribbels-filter-btn"
+                                class="fribbels-filter-btn"
+                            >
+                                &#9881; Filter
+                            </button>
+                            <span
+                                id="fribbels-filter-badge"
+                                class="fribbels-filter-badge display-none"
+                                >Filtered</span
+                            >
+                            <button
+                                id="fribbels-summary-btn"
+                                class="fribbels-summary-btn"
+                            >
+                                &#128202; Summary
+                            </button>
+                            <div
+                                id="fribbels-filter-popup"
+                                class="fribbels-filter-popup display-none"
+                            >
+                                <div class="fribbels-filter-title">
+                                    <b>Filter Builds</b>
+                                    <button
+                                        id="fribbels-filter-close-btn"
+                                        class="fribbels-filter-close-btn"
+                                    >
+                                        &#10005;
+                                    </button>
+                                </div>
+                                <div class="fribbels-filter-section-label">
+                                    Minimum Stats
+                                </div>
+                                <div class="fribbels-filter-stats-grid">
+                                    <label
+                                        >GS
+                                        <input
+                                            id="fFilter-minGS"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >BS
+                                        <input
+                                            id="fFilter-minBS"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >SPD
+                                        <input
+                                            id="fFilter-minSPD"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >ATK
+                                        <input
+                                            id="fFilter-minATK"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >DEF
+                                        <input
+                                            id="fFilter-minDEF"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >HP
+                                        <input
+                                            id="fFilter-minHP"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >CR
+                                        <input
+                                            id="fFilter-minCR"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >CD
+                                        <input
+                                            id="fFilter-minCD"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >EFF
+                                        <input
+                                            id="fFilter-minEFF"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >RES
+                                        <input
+                                            id="fFilter-minRES"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                    <label
+                                        >EHP
+                                        <input
+                                            id="fFilter-minEHP"
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                    /></label>
+                                </div>
+                                <div class="fribbels-filter-section-label">
+                                    Required Sets
+                                </div>
+                                <div
+                                    class="fribbels-filter-sets-columns"
+                                    id="fribbels-filter-sets-container"
+                                ></div>
+                                <div class="fribbels-filter-section-label">
+                                    Required Artifact
+                                </div>
+                                <div class="fribbels-filter-artifact-wrap">
+                                    <input
+                                        type="text"
+                                        id="fFilter-artifactSearch"
+                                        placeholder="Search artifact..."
+                                        class="fribbels-filter-artifact-search"
+                                    />
+                                    <div
+                                        id="fFilter-artifactList"
+                                        class="fribbels-filter-artifact-list"
+                                    ></div>
+                                </div>
+                                <div class="fribbels-filter-actions">
+                                    <button
+                                        id="fribbels-filter-reset-btn"
+                                        class="fribbels-filter-reset-btn"
+                                    >
+                                        Reset
+                                    </button>
+                                    <button
+                                        id="fribbels-filter-apply-btn"
+                                        class="fribbels-filter-apply-btn"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            id="fribbels-summary-panel"
+                            class="fribbels-summary-panel display-none"
+                        >
+                            <div class="fribbels-summary-header">
+                                Summary:
+                                <span id="fribbels-summary-count"
+                                    >&#8212; builds</span
+                                >
+                                <button
+                                    id="fribbelsP50Priorities"
+                                    class="fribbels-action-btn"
+                                    style="margin-left: 8px; font-size: 11px"
+                                    title="Auto-set priority sliders from P50 median stats of the current filtered builds"
+                                >
+                                    P50 Priorities
+                                </button>
+                            </div>
+                            <div class="fribbels-summary-body">
+                                <table class="fribbels-summary-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Stat</th>
+                                            <th>Avg</th>
+                                            <th>P50</th>
+                                            <th>Min</th>
+                                            <th>Max</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        id="fribbels-stats-summary-tbody"
+                                    ></tbody>
+                                </table>
+                                <table class="fribbels-summary-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Set Combo</th>
+                                            <th>#</th>
+                                            <th>%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        id="fribbels-sets-summary-tbody"
+                                    ></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div
+                            id="fribbels-copy-bar"
+                            class="fribbels-copy-bar display-none"
+                        >
+                            <span
+                                id="fribbels-copy-stats"
+                                class="fribbels-copy-stats"
+                            ></span>
+                            <button
+                                id="fribbelsSetTargets"
+                                class="fribbels-action-btn"
+                            >
+                                Set as Targets
+                            </button>
+                            <button
+                                id="fribbelsSetMinLimits"
+                                class="fribbels-action-btn"
+                            >
+                                Set as Min Limits
+                            </button>
+                            <button
+                                id="fribbelsAutoPriorities"
+                                class="fribbels-action-btn"
+                                title="Auto-set the 8 stat priority sliders proportionally from this build's stat distribution"
+                            >
+                                Auto Priorities
+                            </button>
+                            <button
+                                id="fribbelsDeselectRow"
+                                class="fribbels-action-btn fribbels-deselect-btn"
+                            >
+                                &#10005;
+                            </button>
+                        </div>
+                        <div id="fribbels-status" class="fribbels-status">
+                            Select a hero then click the Fribbels Library tab to
+                            load community builds.
+                        </div>
+                        <div class="fribbels-table-wrap">
+                            <div
+                                id="fribbels-builds-grid"
+                                class="ag-theme-balham fribbels-ag-grid"
+                            ></div>
                         </div>
                     </div>
                 </div>
@@ -2310,6 +3517,10 @@
                             <div class="selectedCount" id="selectedCount">
                                 0
                             </div>
+                            <span class="gearGroupScoreLabel">Group Score:</span>
+                            <select id="archetypeGroupFilter" class="archetypeGroupFilterSelect gearPreviewButton">
+                                <option value="">— Off —</option>
+                            </select>
                         </div>
 
                         <div class="gearGridContainer">
@@ -2382,58 +3593,6 @@
                                 id="unlockGear"
                                 data-t
                             />
-                        </div>
-
-                        <!-- Item Comparison Panel (visible when exactly 2 items are selected) -->
-                        <div
-                            id="comparisonPanel"
-                            style="display: none; margin: 4px 0 6px 0"
-                        >
-                            <div class="panelLabel" style="margin-bottom: 4px">
-                                <div class="panelLabelText" data-t>
-                                    Item Comparison
-                                </div>
-                                <button
-                                    id="closeComparisonPanel"
-                                    class="gearPreviewButton"
-                                    style="
-                                        font-size: 11px;
-                                        padding: 2px 6px;
-                                        margin-left: 8px;
-                                    "
-                                    data-t
-                                >
-                                    &#10005; Close
-                                </button>
-                            </div>
-                            <div
-                                id="comparisonContent"
-                                style="
-                                    display: flex;
-                                    gap: 12px;
-                                    align-items: flex-start;
-                                    padding: 4px 0;
-                                    overflow-x: auto;
-                                "
-                            >
-                                <div
-                                    id="compItem1"
-                                    style="flex: 0 0 auto"
-                                ></div>
-                                <div
-                                    id="comparisonScoreTable"
-                                    style="
-                                        flex: 1;
-                                        min-width: 220px;
-                                        max-height: 320px;
-                                        overflow-y: auto;
-                                    "
-                                ></div>
-                                <div
-                                    id="compItem2"
-                                    style="flex: 0 0 auto"
-                                ></div>
-                            </div>
                         </div>
 
                         <div class="panelLabel">
@@ -3844,185 +5003,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- ── Archetype / Reforge filter ──────── -->
-                                    <div
-                                        class="gearTabArchetypeFilter"
-                                        style="min-width: 120px"
-                                    >
-                                        <div
-                                            class="gearTabFilterLabel"
-                                            style="cursor: default"
-                                        >
-                                            <b data-t>Archetype</b>
-                                        </div>
-                                        <div
-                                            style="
-                                                padding: 3px 2px;
-                                                display: flex;
-                                                flex-direction: column;
-                                                gap: 5px;
-                                            "
-                                        >
-                                            <div
-                                                style="
-                                                    display: flex;
-                                                    align-items: center;
-                                                    gap: 4px;
-                                                "
-                                            >
-                                                <span
-                                                    style="
-                                                        font-size: 11px;
-                                                        color: #888;
-                                                        white-space: nowrap;
-                                                    "
-                                                    data-t
-                                                    >Reforge:</span
-                                                >
-                                                <select
-                                                    id="reforgeStatusFilter"
-                                                    style="
-                                                        font-size: 11px;
-                                                        flex: 1;
-                                                        min-width: 0;
-                                                    "
-                                                >
-                                                    <option value="all" data-t>
-                                                        All
-                                                    </option>
-                                                    <option
-                                                        value="reforgeable"
-                                                        data-t
-                                                    >
-                                                        Can Reforge
-                                                    </option>
-                                                    <option
-                                                        value="reforged"
-                                                        data-t
-                                                    >
-                                                        Reforged
-                                                    </option>
-                                                    <option
-                                                        value="not_reforgeable"
-                                                        data-t
-                                                    >
-                                                        Not Reforgeable
-                                                    </option>
-                                                </select>
-                                            </div>
-                                            <div
-                                                style="
-                                                    display: flex;
-                                                    align-items: center;
-                                                    gap: 4px;
-                                                "
-                                            >
-                                                <span
-                                                    style="
-                                                        font-size: 11px;
-                                                        color: #888;
-                                                        white-space: nowrap;
-                                                    "
-                                                    data-t
-                                                    >Archetype:</span
-                                                >
-                                                <select
-                                                    id="archetypeFilter"
-                                                    style="
-                                                        font-size: 11px;
-                                                        flex: 1;
-                                                        min-width: 0;
-                                                    "
-                                                >
-                                                    <option value="" data-t>
-                                                        Any
-                                                    </option>
-                                                    <!-- populated by JS -->
-                                                </select>
-                                            </div>
-                                            <div
-                                                style="
-                                                    display: flex;
-                                                    align-items: center;
-                                                    gap: 4px;
-                                                "
-                                            >
-                                                <span
-                                                    style="
-                                                        font-size: 11px;
-                                                        color: #888;
-                                                        white-space: nowrap;
-                                                    "
-                                                    data-t
-                                                    >Min Score:</span
-                                                >
-                                                <input
-                                                    type="number"
-                                                    id="archetypeMinScore"
-                                                    value="1"
-                                                    min="1"
-                                                    max="999"
-                                                    style="
-                                                        width: 45px;
-                                                        font-size: 11px;
-                                                    "
-                                                />
-                                            </div>
-                                            <div
-                                                style="
-                                                    display: flex;
-                                                    gap: 3px;
-                                                    flex-wrap: wrap;
-                                                "
-                                            >
-                                                <button
-                                                    id="presetDpsCandidates"
-                                                    class="gearPreviewButton"
-                                                    style="
-                                                        font-size: 10px;
-                                                        padding: 2px 5px;
-                                                    "
-                                                    data-t
-                                                >
-                                                    DPS
-                                                </button>
-                                                <button
-                                                    id="presetSpeedCandidates"
-                                                    class="gearPreviewButton"
-                                                    style="
-                                                        font-size: 10px;
-                                                        padding: 2px 5px;
-                                                    "
-                                                    data-t
-                                                >
-                                                    SPD
-                                                </button>
-                                                <button
-                                                    id="presetReforgeNow"
-                                                    class="gearPreviewButton"
-                                                    style="
-                                                        font-size: 10px;
-                                                        padding: 2px 5px;
-                                                    "
-                                                    data-t
-                                                >
-                                                    Reforgeable
-                                                </button>
-                                                <button
-                                                    id="presetClearFilters"
-                                                    class="gearPreviewButton"
-                                                    style="
-                                                        font-size: 10px;
-                                                        padding: 2px 5px;
-                                                    "
-                                                    data-t
-                                                >
-                                                    Clear
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -4702,44 +5682,6 @@
                             class="gearTabPreview"
                             id="enhanceTabPreview"
                         ></div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                justify-content: flex-end;
-                                gap: 4px;
-                                padding: 4px 0 4px 8px;
-                            "
-                        >
-                            <!-- Phase 3.1: Action buttons (shown when an item is loaded) -->
-                            <div
-                                id="enhanceActionButtons"
-                                style="
-                                    display: none;
-                                    flex-direction: column;
-                                    gap: 4px;
-                                "
-                            >
-                                <button
-                                    id="enhanceReforgeBtn"
-                                    class="gearPreviewButton"
-                                    data-t
-                                    style="padding: 4px 10px; font-size: 12px"
-                                    title="Reforge the currently shown item (+15 level 85 only)"
-                                >
-                                    Reforge Item
-                                </button>
-                                <button
-                                    id="enhanceViewItemsBtn"
-                                    class="gearPreviewButton"
-                                    data-t
-                                    style="padding: 4px 10px; font-size: 12px"
-                                    title="Switch to the Gear tab"
-                                >
-                                    View in Gear Tab
-                                </button>
-                            </div>
-                        </div>
                         <div class="barsContainer">
                             <div class="bars" id="stat1bars"></div>
                             <div class="bars" id="stat2bars"></div>
@@ -4756,31 +5698,6 @@
 
                     <div class="enhanceThirdRow">
                         <div class="gsChart" id="gsChart"></div>
-                    </div>
-
-                    <!-- Phase 3.2: Top reforge candidates panel -->
-                    <div class="enhanceFourthRow" style="padding: 8px 16px">
-                        <div style="max-width: 820px">
-                            <div
-                                style="
-                                    font-size: 12px;
-                                    font-weight: bold;
-                                    margin-bottom: 4px;
-                                    color: #888;
-                                "
-                                data-t
-                            >
-                                Top Reforge Candidates
-                                <span
-                                    style="font-weight: normal; font-size: 10px"
-                                    >(by &#916;GS, +15/85 items only)</span
-                                >
-                            </div>
-                            <div
-                                id="topReforgeCandidatesList"
-                                style="min-height: 24px"
-                            ></div>
-                        </div>
                     </div>
                 </div>
 
@@ -5953,6 +6870,14 @@
                         </tr>
                     </table>
 
+                    <hr />
+                    <h3 style="padding: 0 12px">Flat Stat Calibration</h3>
+                    <div class="toggleRow">
+                        <button class="gearPreviewButton" id="calibrateFlatStatsBtn">Calibrate from Hero Data</button>
+                        <button class="gearPreviewButton" id="resetFlatStatsBtn" style="margin-left:4px">Reset to Default</button>
+                        <span id="calibrateFlatStatsResult" class="switchText" style="margin-left:12px"></span>
+                    </div>
+
                     <br />
                     <br />
                 </div>
@@ -6067,6 +6992,53 @@
                         data-t
                     />
                 </div>
+
+                <div id="archetype-section" class="tab-panel">
+                    <div class="archetypeToolbar">
+                        <button class="gearPreviewButton" id="archetypeResetDefaults">Reset Defaults</button>
+                        <button class="gearPreviewButton" id="archetypeSave">Save</button>
+                        <button class="gearPreviewButton" id="archetypeExportJson">Export JSON</button>
+                        <button class="gearPreviewButton" id="archetypeImportJson">Import JSON</button>
+                        <button class="gearPreviewButton" id="archetypeAddRow">+ Add Archetype</button>
+                        <span class="archetypeHint">
+                            Scoring: gear earns points if it matches the archetype's <strong>Sets</strong> (4pc/2pc) and <strong>Main stats</strong> (Necklace/Ring/Boots), then substats are ranked by priority <strong>S1 &gt; S2 &gt; … &gt; S6</strong> — earlier slots carry higher weight.
+                            Use <strong>Slots</strong> to override S1–S6 priorities per gear slot. Use <strong>Wts</strong> to assign custom multipliers per stat type.
+                            Leave a dropdown at <strong>Any</strong> to match any value for that slot.
+                        </span>
+                    </div>
+                    <div id="archetypeTableContainer">
+                        <table id="archetypeEditorTable" class="archetypeTable">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Group</th>
+                                    <th>Name</th>
+                                    <th>4pc Sets</th>
+                                    <th>2pc Sets</th>
+                                    <th>Necklace</th>
+                                    <th>Ring</th>
+                                    <th>Boots</th>
+                                    <th>S1</th>
+                                    <th>S2</th>
+                                    <th>S3</th>
+                                    <th>S4</th>
+                                    <th>S5</th>
+                                    <th>S6</th>
+                                    <th>Slots</th>
+                                    <th>Wts</th>
+                                    <th>Set×</th>
+                                    <th>Main×</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="archetypeTableBody">
+                                <!-- rows rendered by archetypeTab.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <input type="file" id="archetypeImportFile" accept=".json" style="display:none" />
+                </div>
+
             </div>
         </div>
         <script>

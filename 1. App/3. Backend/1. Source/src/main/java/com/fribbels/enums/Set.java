@@ -60,7 +60,7 @@ public enum Set {
     PROTECTION(16, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0 },
             new int[] { 16, 16, 16, 16 }, "ProtectionSet"),
     @SerializedName("TorrentSet")
-    TORRENT(17, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0 }, new int[] { 17, 17 },
+    TORRENT(17, 2, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0 }, new int[] { 17, 17 },
             "TorrentSet"),
     @SerializedName("ReversalSet")
     REVERSAL(18, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0 },

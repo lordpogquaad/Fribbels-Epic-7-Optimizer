@@ -92,6 +92,7 @@ com\fribbels\model\Item$ItemBuilder.class
 com\fribbels\request\ReorderRequest.class
 com\fribbels\request\GetHeroByIdRequest$GetHeroByIdRequestBuilder.class
 com\fribbels\handler\HeroesRequestHandler.class
+com\fribbels\handler\OptimizationRequestHandler$2.class
 com\fribbels\model\PassesContainer.class
 com\fribbels\request\AllDataResponse$AllDataResponseBuilder.class
 com\fribbels\request\BonusStatsRequest$BonusStatsRequestBuilder.class

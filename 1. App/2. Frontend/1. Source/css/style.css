@@ -1,3 +1,14 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+ * DARK MODE NOTICE
+ * ═══════════════════════════════════════════════════════════════════════════
+ * This app uses a SEPARATE dark-theme file: css/darktheme.css
+ * darktheme.css is loaded/disabled at runtime when the user toggles dark mode.
+ *
+ * RULE: Any CSS rule added here that sets colors, backgrounds, borders, or
+ *       other visual appearance MUST have a matching override in darktheme.css.
+ *       Omitting the override causes elements to look wrong in dark mode.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@100;300;400;700&display=swap');
 
 /* cyrillic-ext */
@@ -97,9 +108,263 @@
 .tabset > input:nth-child(9):checked ~ .tab-panels > .tab-panel:nth-child(5),
 .tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6),
 .tabset > input:nth-child(13):checked ~ .tab-panels > .tab-panel:nth-child(7),
-.tabset > input:nth-child(15):checked ~ .tab-panels > .tab-panel:nth-child(8),
-.tabset > input:nth-child(17):checked ~ .tab-panels > .tab-panel:nth-child(9) {
+.tabset > input:nth-child(15):checked ~ .tab-panels > .tab-panel:nth-child(8) {
     display: block;
+}
+.tabset > input:nth-child(19):checked ~ .tab-panels > .tab-panel:nth-child(9) {
+    display: block;
+}
+
+/* Archetype editor tab */
+.archetypeToolbar {
+    padding: 8px 6px 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+.archetypeHint {
+    font-size: 10px;
+    color: #888;
+    flex: 1 1 100%;
+    margin-top: 2px;
+}
+#archetypeTableContainer {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 90px);
+    padding: 4px 6px;
+}
+.archetypeTable {
+    border-collapse: collapse;
+    font-size: 11px;
+    white-space: nowrap;
+}
+.archetypeTable th,
+.archetypeTable td {
+    border: 1px solid #ccc;
+    padding: 2px 3px;
+}
+.archetypeTable thead th {
+    background: #e8e8e8;
+    font-weight: 600;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.archetype-cell-input {
+    width: 120px;
+    font-size: 10px;
+    border: none;
+    background: transparent;
+    padding: 1px 2px;
+}
+.archetype-cell-num {
+    width: 48px;
+}
+.archetype-cell-wide {
+    width: 150px;
+}
+.archetype-del-btn {
+    padding: 1px 5px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+/* ---- Multi-select dropdown ---- */
+.arch-ms-trigger {
+    cursor: pointer;
+    padding: 1px 4px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background: #fff;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+    min-width: 55px;
+    display: block;
+    user-select: none;
+}
+.arch-ms-trigger:hover {
+    background: #f0f0f0;
+}
+.arch-ms-panel {
+    position: fixed;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    max-height: 220px;
+    overflow-y: auto;
+    min-width: 155px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    z-index: 99999;
+    padding: 2px 0;
+}
+.arch-ms-option {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 10px;
+    white-space: nowrap;
+    color: #333;
+}
+.arch-ms-option:hover {
+    background: #e8f0fe;
+}
+.arch-ms-any {
+    font-style: italic;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 3px;
+    margin-bottom: 1px;
+}
+
+/* ---- Substat single-select ---- */
+.arch-ss {
+    width: 130px;
+    font-size: 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+    padding: 1px 2px;
+    color: #333;
+}
+
+/* ---- Drag-and-drop ---- */
+.arch-drag-handle {
+    cursor: grab;
+    color: #888;
+    text-align: center;
+    padding: 0 4px;
+    user-select: none;
+}
+.arch-drag-handle:active {
+    cursor: grabbing;
+}
+.arch-row-dragging {
+    opacity: 0.4;
+}
+.arch-row-over td {
+    box-shadow: inset 0 -2px 0 #4285f4;
+}
+
+/* ---- Stat-weights editor ---- */
+.arch-wt-trigger {
+    padding: 1px 6px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background: #fff;
+    font-size: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 32px;
+}
+.arch-wt-trigger:hover {
+    background: #f0f0f0;
+}
+.arch-wt-panel {
+    min-width: 210px;
+}
+.arch-wt-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 8px;
+    gap: 8px;
+}
+.arch-wt-label {
+    font-size: 10px;
+    flex: 1;
+    white-space: nowrap;
+    color: #333;
+}
+.arch-wt-input {
+    width: 52px;
+    font-size: 10px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 1px 4px;
+    background: #fff;
+    color: #333;
+}
+.arch-wt-any-row {
+    background: #f5f5f5;
+    border-radius: 2px;
+    font-style: italic;
+}
+.arch-wt-any-row .arch-wt-label {
+    font-weight: 600;
+}
+.arch-wt-divider {
+    border-bottom: 1px solid #ddd;
+    margin: 3px 0;
+}
+
+/* ---- Per-slot substat panel ---- */
+.arch-slot-panel {
+    min-width: 460px;
+    padding: 4px 6px;
+}
+.arch-slot-row {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 0;
+}
+.arch-slot-header {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2px;
+    font-weight: 600;
+}
+.arch-slot-name {
+    font-size: 10px;
+    width: 54px;
+    flex-shrink: 0;
+    color: #555;
+    white-space: nowrap;
+}
+.arch-slot-sel-hdr {
+    font-size: 10px;
+    width: 58px;
+    flex-shrink: 0;
+    text-align: center;
+    color: #666;
+}
+.arch-slot-sel {
+    width: 58px;
+    font-size: 10px;
+    padding: 1px 1px;
+    flex-shrink: 0;
+}
+
+/* ---- Gear tab group score bar ---- */
+.gearGroupScoreLabel {
+    font-size: 11px;
+    margin-left: 12px;
+    white-space: nowrap;
+}
+.archetypeGroupFilterSelect {
+    font-size: 11px;
+    padding: 1px 4px;
+    height: 22px;
+    cursor: pointer;
+}
+
+
+/* Optimizer section: flex column so sub-tab bar + content stack vertically */
+.tabset > input:first-child:checked ~ .tab-panels > .tab-panel:first-child {
+    display: flex;
+    flex-direction: column;
+}
+
+/* optimizer-tab fills all remaining height below the sub-tab bar */
+#optimizer-tab {
+    flex: 1;
+    min-height: 0;
+    height: auto;
 }
 
 /*
@@ -199,6 +464,16 @@ input[type='submit'] {
     width: 149px;
 }
 
+.undoResetButton {
+    background-color: #d4870b;
+    color: #fff;
+    border-color: #b36e09;
+    font-weight: bold;
+}
+.undoResetButton:hover {
+    background-color: #b36e09;
+}
+
 .importerButton {
     width: 200px;
     cursor: pointer;
@@ -222,12 +497,13 @@ input[type='submit'] {
     min-height: 340px;
     height: 100%;
     display: flex;
+    overflow-x: auto;
 }
 
 #myGrid {
     height: 100%;
     flex-grow: 2;
-    min-width: 1150px;
+    min-width: 1220px;
 }
 
 .optionsShortSelector > .ms-choice {
@@ -442,6 +718,629 @@ input {
     height: 21px;
 }
 
+.slider-heatmap {
+    font-size: 10px;
+    color: #aaa;
+    white-space: nowrap;
+    align-self: center;
+    padding-left: 5px;
+    min-width: 70px;
+    text-align: right;
+}
+
+.slider-heatmap.heatmap-high {
+    color: #6dbf6d;
+}
+
+.slider-heatmap.heatmap-mid {
+    color: #d4c050;
+}
+
+.slider-heatmap.heatmap-low {
+    color: #e07050;
+}
+
+.slot-filter-est-combo {
+    font-size: 11px;
+    color: #aaa;
+    padding: 2px 0 1px 2px;
+    min-height: 14px;
+}
+
+.slot-filter-est-combo.combo-ok {
+    color: #6dbf6d;
+}
+
+.slot-filter-est-combo.combo-warn {
+    color: #d4c050;
+}
+
+.slot-filter-est-combo.combo-high {
+    color: #e07050;
+}
+
+.auto-target-label {
+    font-size: 11px;
+    color: #aaa;
+    white-space: nowrap;
+}
+
+.preset-name-input {
+    flex: 1;
+    min-width: 50px;
+    max-width: 90px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 10px;
+    box-sizing: border-box;
+    background: var(--input-bg, #222);
+    color: inherit;
+    border: 1px solid var(--inactive-color, #555);
+    border-radius: 2px;
+    margin-left: auto;
+    margin-right: 3px;
+}
+
+.preset-rename-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preset-rename-modal {
+    background: var(--panel-bg, #2a2a2a);
+    border: 1px solid var(--inactive-color, #555);
+    border-radius: 6px;
+    padding: 14px 16px;
+    min-width: 230px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.preset-rename-title {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.preset-rename-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--input-bg, #222);
+    color: inherit;
+    border: 1px solid var(--inactive-color, #555);
+    border-radius: 3px;
+    padding: 4px 6px;
+    font-size: 12px;
+    height: 26px;
+}
+
+.preset-rename-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+
+/* ===== Build Comparison Modal ===== */
+.compare-build-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compare-build-modal {
+    background: var(--panel-bg, #2a2a2a);
+    border: 1px solid var(--inactive-color, #555);
+    border-radius: 6px;
+    padding: 16px;
+    min-width: 400px;
+    max-width: 580px;
+    max-height: 82vh;
+    overflow-y: auto;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+}
+
+.compare-build-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.compare-build-title {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.compare-build-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 3px;
+    line-height: 1;
+}
+
+.compare-build-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+.compare-build-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.compare-build-table th,
+.compare-build-table td {
+    padding: 4px 10px;
+    text-align: right;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.compare-build-table thead th {
+    color: #aaa;
+    font-weight: 600;
+    font-size: 11px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.18);
+}
+
+.compare-build-table tbody tr:hover { background: rgba(255,255,255,0.04); }
+
+.cmp-label {
+    text-align: left !important;
+    color: #bbb;
+    width: 52px;
+    font-weight: 500;
+}
+
+.cmp-a  { color: #ccc; min-width: 90px; }
+.cmp-b  { color: #ccc; min-width: 90px; }
+.cmp-delta { min-width: 70px; font-weight: 600; }
+
+.cmp-up   { color: #6fcf6f; }
+.cmp-down { color: #e07070; }
+.cmp-same { color: #666; }
+.cmp-diff { color: #f0c040; }
+
+.cmp-section-header td {
+    font-size: 10px;
+    color: #777;
+    padding-top: 10px;
+    padding-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: none;
+}
+
+.pin-active { background: rgba(40, 120, 80, 0.25) !important; color: #6fcf6f !important; }
+
+/* ===== Fribbels Library bottom tab ===== */
+.optimizer-bottom-tab-bar {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #d0d0d0;
+    background: #f0f0f0;
+    padding: 0 6px;
+    flex-shrink: 0;
+}
+
+.optimizer-bottom-tab-btn {
+    padding: 4px 14px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    background: transparent;
+    font-size: 12px;
+    color: #555;
+    font-family: inherit;
+}
+
+.optimizer-bottom-tab-btn.active {
+    border-bottom-color: #4da6ff;
+    color: #1a7acc;
+    font-weight: 600;
+}
+
+.optimizer-bottom-tab-btn:hover:not(.active) {
+    background: #e2e2e2;
+}
+
+.fribbels-library-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.fribbels-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-bottom: 1px solid #d0d0d0;
+    background: #f8f8f8;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.fribbels-fetch-btn {
+    padding: 3px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    background: #4da6ff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-family: inherit;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.fribbels-fetch-btn:hover {
+    background: #2e8de0;
+}
+
+.fribbels-copy-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    background: #dff0df;
+    border-bottom: 1px solid #aaccaa;
+    flex-shrink: 0;
+}
+
+.fribbels-copy-stats {
+    font-size: 11px;
+    color: #333;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fribbels-action-btn {
+    padding: 2px 9px;
+    font-size: 11px;
+    cursor: pointer;
+    background: #4da6ff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-family: inherit;
+    flex-shrink: 0;
+}
+
+.fribbels-action-btn:hover {
+    background: #2e8de0;
+}
+
+.fribbels-deselect-btn {
+    background: #999;
+    padding: 2px 6px;
+}
+
+.fribbels-deselect-btn:hover {
+    background: #777;
+}
+
+.fribbels-status {
+    padding: 10px 8px;
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+}
+
+.fribbels-table-wrap {
+    flex: 1;
+    min-height: 350px;
+    display: flex;
+    overflow: hidden;
+}
+
+.fribbels-ag-grid {
+    flex: 1;
+    width: 100%;
+    font-size: 11px;
+}
+
+.fribbels-ag-grid .ag-row-selected {
+    background-color: #99ccff !important;
+}
+
+.fribbels-ag-grid .ag-row-hover:not(.ag-row-selected) {
+    background-color: #cce8ff !important;
+    cursor: pointer;
+}
+
+.fribbels-set-abbrev {
+    font-size: 10px;
+    color: #555;
+}
+
+.fribbels-set-icons-cell {
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* ---- Fribbels Filter & Summary ---- */
+
+.fribbels-filter-btn,
+.fribbels-summary-btn {
+    padding: 2px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    background: #e0e0e0;
+    color: #333;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    font-family: inherit;
+    flex-shrink: 0;
+}
+
+.fribbels-filter-btn:hover,
+.fribbels-summary-btn:hover {
+    background: #cccccc;
+}
+
+.fribbels-filter-badge {
+    background: #e6820a;
+    color: #fff;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.fribbels-filter-popup {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 200;
+    background: #f8f8f8;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    padding: 10px 12px;
+    min-width: 380px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.fribbels-filter-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+.fribbels-filter-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: #777;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.fribbels-filter-close-btn:hover {
+    color: #333;
+}
+
+.fribbels-filter-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 5px 0 3px;
+}
+
+.fribbels-filter-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px 8px;
+}
+
+.fribbels-filter-stats-grid label {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.fribbels-filter-stats-grid input {
+    width: 52px;
+    padding: 1px 3px;
+    font-size: 11px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    font-family: inherit;
+}
+
+.fribbels-filter-sets-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 10px;
+    margin-bottom: 4px;
+}
+
+.fribbels-filter-sets-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.fribbels-filter-sets-col-label {
+    font-size: 9px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 1px 0 2px;
+    font-weight: 600;
+}
+
+.fribbels-filter-sets-col label {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+.fribbels-filter-sets-col label:hover {
+    background: #ececec;
+}
+
+.fribbels-filter-sets-col img {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.fribbels-filter-artifact-wrap {
+    margin-bottom: 4px;
+}
+
+.fribbels-filter-artifact-search {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 3px 5px;
+    font-size: 11px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    font-family: inherit;
+    margin-bottom: 3px;
+}
+
+.fribbels-filter-artifact-list {
+    max-height: 110px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    background: #fff;
+    padding: 2px 4px;
+}
+
+.fribbels-filter-artifact-list label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    cursor: pointer;
+    padding: 1px 0;
+    white-space: nowrap;
+}
+
+.fribbels-filter-artifact-list label:hover {
+    background: #f0f0f0;
+}
+
+.fribbels-filter-artifact-list label.hidden {
+    display: none;
+}
+
+.fribbels-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.fribbels-filter-apply-btn {
+    padding: 3px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    background: #4da6ff;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+.fribbels-filter-apply-btn:hover {
+    background: #2e8de0;
+}
+
+.fribbels-filter-reset-btn {
+    padding: 3px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    background: #aaaaaa;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: inherit;
+}
+
+.fribbels-filter-reset-btn:hover {
+    background: #888888;
+}
+
+.fribbels-summary-panel {
+    background: #f0f0f0;
+    border-bottom: 1px solid #d0d0d0;
+    padding: 6px 10px;
+    flex-shrink: 0;
+    overflow-x: auto;
+}
+
+.fribbels-summary-header {
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.fribbels-summary-body {
+    display: flex;
+    gap: 20px;
+}
+
+.fribbels-summary-table {
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.fribbels-summary-table th {
+    background: #ddd;
+    padding: 2px 8px;
+    text-align: center;
+    border: 1px solid #ccc;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.fribbels-summary-table td {
+    padding: 1px 8px;
+    text-align: center;
+    border-bottom: 1px solid #e8e8e8;
+    white-space: nowrap;
+}
+
+.fribbels-summary-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+}
+
 .gearTypeImg {
     width: 33px;
     height: 33px;
@@ -583,6 +1482,32 @@ input {
     cursor: pointer;
     padding-left: 3px;
 }
+.itemDisplayDisableModsImg {
+    height: 21px;
+    opacity: 0.12;
+    cursor: pointer;
+    padding-left: 3px;
+}
+.itemDisplayDisableModsImgActive {
+    height: 21px;
+    opacity: 0.9;
+    cursor: pointer;
+    padding-left: 3px;
+    filter: sepia(1) saturate(4) hue-rotate(310deg);
+}
+.heroModSummary {
+    margin-top: 6px;
+    padding: 4px 7px;
+    background: rgba(100, 160, 255, 0.1);
+    border-left: 3px solid #6aa0ff;
+    border-radius: 2px;
+    font-size: 11px;
+    color: #444;
+    line-height: 1.5;
+}
+.heroModSummaryText {
+    word-break: break-word;
+}
 .itemDisplaySetType {
     font-size: 13px;
     font-weight: 600;
@@ -628,6 +1553,7 @@ input {
 }
 
 .ag-header {
+    height: 24px !important;
     min-height: 24px !important;
 }
 
@@ -802,6 +1728,393 @@ input[type='number']::-webkit-outer-spin-button {
     margin-top: auto;
     margin-bottom: auto;
 }
+
+/* ── Mod dialog: slot enable/disable checkboxes ──────────────────────── */
+/* NOTE: add mod-slot-toggle dark overrides in darktheme.css */
+.modSlotCheckboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    align-items: center;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.modSlotLabel {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.modSlotLabel input[type='checkbox'] {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* ── Mod dialog: slot constraint badges on drag-list items ────────────── */
+/* NOTE: add dark overrides for modConstraintBadge in darktheme.css */
+.modConstraintBadge {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 600;
+    color: #b05050;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    user-select: none;
+    margin-left: 4px;
+    white-space: nowrap;
+}
+
+/* ── Mod drag-list items: flex layout so badge never wraps ──────────── */
+.dragOrderList .list-group-item {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding-right: 4px;
+}
+.modStatLabel {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    line-height: 30px;
+}
+
+/* ── Mod dialog: permutation estimate display ─────────────────────────── */
+.modEstimateDisplay {
+    font-size: 11px;
+    margin-top: 8px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    min-height: 18px;
+    word-break: break-word;
+}
+.modEstimateGreen { color: #3a8a3a; }
+.modEstimateYellow { color: #9a7000; }
+.modEstimateRed { color: #a02020; font-weight: 600; }
+
+/* ── Mod dialog: top action buttons row ──────────────────────────────── */
+.modTopButtonsRow {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+/* ── Mod dialog: per-slot tab bar ─────────────────────────────────────── */
+.modSlotTabBar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 4px;
+}
+
+.modSlotTab {
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    border: 1px solid transparent;
+    border-bottom: none;
+    color: var(--font-color);
+    opacity: 0.65;
+    user-select: none;
+    transition: opacity 0.15s;
+}
+
+.modSlotTab:hover {
+    opacity: 1;
+}
+
+.modSlotTabActive {
+    opacity: 1;
+    border-color: #ccc;
+    background: var(--background-color, #fff);
+    font-weight: 600;
+    border-bottom: 2px solid var(--background-color, #fff);
+    margin-bottom: -2px;
+}
+
+/* ── Mod dialog: tab content layout ──────────────────────────────────── */
+.modTabsContentRow {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.modTabsLeft {
+    flex: 0 0 480px;
+    min-width: 0;
+    overflow-y: auto;
+    max-height: 520px;
+}
+
+.modTabsRight {
+    flex: 1;
+    min-width: 0;
+    display: flow-root;  /* BFC: prevents <p> margin collapsing out, keeps vertical alignment in sync with left panel */
+}
+
+.modTabPanel {
+    display: block;
+}
+
+.modTabPanelHidden {
+    display: none !important;
+}
+
+/* ── Mod dialog: slot tab panel internals ─────────────────────────────── */
+.slotOverrideRow {
+    margin-bottom: 6px;
+}
+
+.slotOverrideLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.slotOptionsSectionLabel,
+.slotRuleSectionLabel {
+    font-size: 11px;
+    color: var(--font-color);
+    margin: 6px 0 3px;
+    opacity: 0.75;
+}
+
+.slotSectionDimmed {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.slotOptionsSection {
+    margin-bottom: 8px;
+}
+
+.slotRuleSection {
+    margin-top: 4px;
+}
+
+/* ── Mod dialog: rule list ────────────────────────────────────────────── */
+.ruleList {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    padding: 2px;
+}
+
+.ruleRow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    border: 1px solid transparent;
+    margin-bottom: 2px;
+}
+
+.ruleRow:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+.ruleRowSelected {
+    background: rgba(70, 130, 200, 0.15);
+    border-color: rgba(70, 130, 200, 0.4);
+}
+
+.ruleRowDragHandle {
+    cursor: grab;
+    opacity: 0.4;
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.ruleEnabledLabel {
+    flex-shrink: 0;
+    cursor: pointer;
+    margin: 0;
+}
+
+.ruleMainStatSelect,
+.ruleSetSelect {
+    flex: 1;
+    min-width: 0;
+    font-size: 11px;
+    padding: 2px 2px;
+    height: 22px;
+}
+
+.ruleDeleteBtn {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #a03030;
+    font-size: 14px;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.ruleListButtons {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.modListBtn {
+    flex: 1;
+    font-size: 11px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid #aaa;
+    background: var(--background-color, #fff);
+    color: var(--font-color);
+}
+
+.modListBtn:hover {
+    background: rgba(0,0,0,0.07);
+}
+
+.modListBtn.modSaveBtn {
+    border-color: #4a7a4a;
+    color: #2a5a2a;
+    font-weight: 600;
+}
+
+.modListBtn.modSaveBtn:hover {
+    background: rgba(60,160,60,0.12);
+}
+
+.modListBtn.modResetBtn {
+    border-color: #888;
+    color: #555;
+}
+
+/* ── Mod dialog: Copy-to slot picker ─────────────────────────────── */
+.copySlotPicker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    padding: 5px 6px;
+    border: 1px dashed #aaa;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.03);
+}
+
+.copySlotPickerLabel {
+    font-size: 11px;
+    color: var(--font-color);
+    opacity: 0.75;
+    white-space: nowrap;
+    margin-right: 2px;
+}
+
+.copySlotPicker .modListBtn {
+    flex: none;
+    padding: 2px 8px;
+}
+
+/* ── Mod dialog: Preset section ─────────────────────────────────── */
+.presetSection {
+    margin-top: 10px;
+    border-top: 1px solid #555;
+    padding-top: 8px;
+}
+
+.presetSectionTitle {
+    color: var(--font-color);
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+}
+
+.presetRow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 5px;
+}
+
+.presetNameInput {
+    flex: 1;
+    font-size: 11px;
+    padding: 3px 5px;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    background: var(--background-color, #fff);
+    color: var(--font-color);
+    min-width: 0;
+}
+
+.presetSelectEl {
+    flex: 1;
+    font-size: 11px;
+    padding: 3px 4px;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    background: var(--background-color, #fff);
+    color: var(--font-color);
+    min-width: 0;
+}
+
+.presetApplyLabel {
+    font-size: 11px;
+    color: var(--font-color);
+    opacity: 0.75;
+    white-space: nowrap;
+}
+
+.presetRow .modListBtn {
+    flex: none;
+    white-space: nowrap;
+}
+
+.modListBtn.presetDeleteBtn {
+    color: #c44;
+    border-color: #c44;
+}
+
+.modListBtn.presetApplyBtn {
+    border-color: #4a7a9b;
+    color: #2a5a8b;
+    font-weight: 600;
+}
+
+.modListBtn.presetApplyBtn:hover {
+    background: rgba(60,120,180,0.12);
+}
+
+/* ── Mod dialog: rule right panel header ─────────────────────────────── */
+.ruleRightHeader {
+    font-size: 12px;
+    color: var(--font-color);
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 28px;
+    background: rgba(0,0,0,0.02);
+    opacity: 0.8;
+}
+
 .editSkillLabel {
     width: 200px;
     text-align: left;
@@ -841,7 +2154,7 @@ input[type='number']::-webkit-outer-spin-button {
     min-width: 26px;
     text-align: center;
     display: inline-block;
-    font-size: 0.82em;
+    font-size: 0.9em;
     color: #888;
     cursor: default;
     user-select: none;
@@ -854,7 +2167,7 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .itemDisplaySubstatRolls {
-    font-size: 0.78em;
+    font-size: 0.9em;
     color: #888;
     cursor: default;
     user-select: none;
@@ -894,6 +2207,10 @@ input[type='number']::-webkit-outer-spin-button {
     outline: none;
     height: 20px;
 }
+.valuePadding:focus-within {
+    outline: 2px solid #005fcc;
+    outline-offset: 2px;
+}
 .blankFormSpace {
     width: 40px;
 }
@@ -911,6 +2228,10 @@ input[type='number']::-webkit-outer-spin-button {
     padding: 0;
     outline: none;
 }
+.input-holder:focus-within {
+    outline: 2px solid #005fcc;
+    outline-offset: 2px;
+}
 
 .input-holder-percent {
     border: 1px solid black;
@@ -921,6 +2242,10 @@ input[type='number']::-webkit-outer-spin-button {
     margin: 0;
     padding: 0;
     outline: none;
+}
+.input-holder-percent:focus-within {
+    outline: 2px solid #005fcc;
+    outline-offset: 2px;
 }
 .input-holder-percent:after {
     content: '%';
@@ -968,6 +2293,107 @@ input[type='number']::-webkit-outer-spin-button {
 }
 #stat-priority-panel {
     min-width: 220px;
+}
+
+.preset-save-btn {
+    margin-left: auto;
+    cursor: pointer;
+    font-size: 10px;
+    height: 16px;
+    padding: 0 5px;
+    flex-shrink: 0;
+}
+
+.preset-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 2px 0;
+    max-height: 78px;
+    overflow-y: auto;
+}
+
+.preset-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 5px;
+    border: 1px solid var(--inactive-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    line-height: 1.2;
+    max-width: 160px;
+}
+
+.preset-chip:hover {
+    border-color: var(--active-color, #666);
+}
+
+.preset-chip img {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.preset-chip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 90px;
+}
+
+.preset-chip-delete {
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0 1px;
+    margin-left: 2px;
+    flex-shrink: 0;
+    opacity: 0.6;
+}
+
+.preset-chip-delete:hover {
+    opacity: 1;
+}
+
+.preset-chip-fbadge {
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    background: #5b8dd9;
+    border-radius: 3px;
+    padding: 1px 3px;
+    line-height: 1.2;
+    flex-shrink: 0;
+    cursor: default;
+}
+
+.priority-weight-bar {
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+    gap: 1px;
+    margin: 2px 0 1px;
+}
+
+.pwb-seg {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.15s ease;
+    min-width: 2px;
+}
+
+.priority-target-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #f0c830;
+    margin-left: 2px;
+    vertical-align: middle;
+    flex-shrink: 0;
 }
 .constraints-right-panel {
     width: 210px;
@@ -1551,15 +2977,15 @@ body.dark-theme input {
 }
 .selectedCountLabel {
     display: inline-block;
-    width: 100px;
-    text-align: right;
-    position: absolute;
-    right: 75px;
+    white-space: nowrap;
+    margin-left: auto;
+    padding-right: 4px;
 }
 .selectedCount {
     display: inline-block;
-    width: 70px;
+    min-width: 24px;
     text-align: right;
+    padding-right: 8px;
 }
 #substatPriorityLabel {
     cursor: pointer;
@@ -1728,11 +3154,7 @@ body.dark-theme input {
     min-height: 350px;
     display: flex;
     resize: vertical;
-    overflow: auto;
-}
-/* Hide the 'Substats' group label row while keeping the 2-row header intact */
-.ag-header-group-cell.substats-group-header .ag-header-group-cell-label {
-    display: none;
+    overflow: hidden;
 }
 #gear-grid {
     width: 100%;
@@ -1766,6 +3188,10 @@ body.dark-theme input {
     overflow: hidden;
 }
 #heroes-table {
+    height: 100%;
+    width: 100%;
+}
+#builds-table {
     height: 100%;
     width: 100%;
 }
@@ -2002,7 +3428,10 @@ input:checked + .darkSlider:before {
     outline: none;
     font-size: 15px;
     margin-bottom: 10px;
-    outline: none !important;
+}
+.collapsible:focus-visible {
+    outline: 2px solid #005fcc;
+    outline-offset: 2px;
 }
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
@@ -2418,4 +3847,23 @@ input:checked + .darkSlider:before {
 .tippy-box p {
     font-size: 12px !important;
     margin: 4px 0;
+}
+
+/* Per-slot substat filter button */
+.optimizer-btn {
+    cursor: pointer;
+    border: 1px solid #888;
+    background: transparent;
+    color: #ccc;
+    padding: 3px 6px;
+    font-size: 12px;
+    border-radius: 3px;
+}
+.optimizer-btn:hover {
+    border-color: #aaa;
+    color: #fff;
+}
+.optimizer-btn.slot-filter-active {
+    border-color: #51A259;
+    color: #51A259;
 }

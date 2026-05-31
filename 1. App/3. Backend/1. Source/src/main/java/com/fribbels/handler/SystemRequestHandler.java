@@ -43,7 +43,6 @@ public class SystemRequestHandler extends RequestHandler implements HttpHandler 
 
     private String interrupt() {
         Main.interrupt = true;
-        OptimizationRequestHandler.inProgress = false;
         logger.info("INTERRUPT MAIN");
         return "";
     }

@@ -142,6 +142,7 @@ public class HeroesRequestHandler extends RequestHandler implements HttpHandler 
             try {
                 sendResponse(exchange, "{\"error\":\"" + e.getClass().getSimpleName() + ": " + e.getMessage() + "\"}");
             } catch (final IOException ignored) {
+                logger.warning("Failed to send error response: " + ignored.getMessage());
             }
         }
     }

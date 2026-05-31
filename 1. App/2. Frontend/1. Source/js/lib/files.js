@@ -16,7 +16,7 @@ const Files = {
         return new Promise((resolve, reject) => {
             fs.readFile(Files.path(filePath), 'utf8', function read(err, data) {
                 if (err) {
-                    reject(err);
+                    return reject(err);
                 }
 
                 resolve(data);

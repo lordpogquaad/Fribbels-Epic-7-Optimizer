@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,6 +41,12 @@ public class HeroStats {
     public int mcdmgps;
     public int dmgh;
     public int dmgd;
+    public int hmcdmgs;
+    public int dmcdmgs;
+    public int hdmg;
+    public int hdmgs;
+    public int ddmg;
+    public int ddmgs;
 
     public int s1;
     public int s2;
@@ -51,6 +58,7 @@ public class HeroStats {
     public int score;
     public int bs;
     public int priority;
+    public int customScore;
 
     public BonusStats bonusStats;
 
@@ -76,7 +84,7 @@ public class HeroStats {
                             .map(Mod::toString)
                             .collect(Collectors.joining("")));
             messageDigest.update(combinedItems.getBytes());
-            final String stringHash = new String(messageDigest.digest());
+            final String stringHash = Base64.getEncoder().encodeToString(messageDigest.digest());
 
             return stringHash;
         } catch (final Exception e) {

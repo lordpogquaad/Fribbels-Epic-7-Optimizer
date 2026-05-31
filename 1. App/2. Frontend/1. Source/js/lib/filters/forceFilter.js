@@ -1,9 +1,10 @@
 /* global $ */
+import { Gears } from '../enums';
 
 function forceDisabled(params) {
     return (
         params.inputAtkMinForce == null &&
-        params.inputAtkMinForce == null &&
+        params.inputAtkMaxForce == null &&
         params.inputAtkPercentMinForce == null &&
         params.inputAtkPercentMaxForce == null &&
         params.inputCrMinForce == null &&
@@ -34,28 +35,25 @@ function passesNumberCheck(number, min, max) {
     return passes;
 }
 
-function passesGenericCheck(item, min, max, allowedMain, allowedGear) {
+function passesGenericCheck(item, min, max, allowedMain, excludedGear) {
     if (!min && !max) return false;
+    if (!item.augmentedStats) return false;
 
     const stat = item.augmentedStats[allowedMain];
-    if (allowedGear.includes(item.gear)) {
+    if (excludedGear.includes(item.gear)) {
         return false;
     }
 
-    if (
-        (item.gear === 'Necklace' ||
-            item.gear === 'Ring' ||
-            item.gear === 'Boots') &&
-        allowedMain === item.main.type
-    ) {
-        return true;
-    }
+    // NOTE: Previously there was an early `return true` here for Necklace/Ring/Boots
+    // when the stat matched the main type — this bypassed the numeric range check,
+    // causing items to pass force filters regardless of the actual stat value.
+    // Removed: augmentedStats already includes the main stat value for accessories,
+    // so passesNumberCheck handles them correctly.
     return passesNumberCheck(stat, min, max);
 }
 
 const ForceFilter = {
-    applyForceFilters: (params, items) => {
-        const forceNumber = parseInt($('#forceNumberSelect').val(), 10);
+    applyForceFilters: (params, items, forceNumber) => {
 
         if (forceDisabled(params)) {
             return items;
@@ -68,14 +66,14 @@ const ForceFilter = {
                     params.inputAtkMinForce,
                     params.inputAtkMaxForce,
                     'Attack',
-                    ['Weapon', 'Armor']
+                    [Gears.Weapon, Gears.Armor]
                 ),
                 passesGenericCheck(
                     item,
                     params.inputAtkPercentMinForce,
                     params.inputAtkPercentMaxForce,
                     'AttackPercent',
-                    ['Armor']
+                    [Gears.Armor]
                 ),
                 passesGenericCheck(
                     item,
@@ -96,14 +94,14 @@ const ForceFilter = {
                     params.inputDefMinForce,
                     params.inputDefMaxForce,
                     'Defense',
-                    ['Weapon', 'Armor']
+                    [Gears.Weapon, Gears.Armor]
                 ),
                 passesGenericCheck(
                     item,
                     params.inputDefPercentMinForce,
                     params.inputDefPercentMaxForce,
                     'DefensePercent',
-                    ['Weapon']
+                    [Gears.Weapon]
                 ),
                 passesGenericCheck(
                     item,

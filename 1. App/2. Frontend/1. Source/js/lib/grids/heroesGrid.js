@@ -915,8 +915,8 @@ function moveInArray(arr, fromIndex, toIndex) {
 let filterActive = false;
 let sortActive = false;
 function onSortChanged() {
-    const sortModel = heroesGrid.gridOptions.api.getSortModel();
-    sortActive = sortModel && sortModel.length > 0;
+    const colState = heroesGrid.gridOptions.columnApi.getColumnState();
+    sortActive = colState && colState.some(col => col.sort != null);
     // suppress row drag if either sort or filter is active
     const suppressRowDrag = sortActive || filterActive;
     console.log(

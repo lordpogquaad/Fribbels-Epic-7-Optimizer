@@ -337,6 +337,17 @@ function editLockDisplay(item, checkboxPrefix) {
     }", "${checkboxPrefix}")'}></img>`;
 }
 
+function disableModsDisplay(item, checkboxPrefix) {
+    if (!item.disableMods) {
+        return `<img src="${Assets.getSetBlock()}" class="itemDisplayDisableModsImg" title="${i18next.t('Click to disable mods for this item')}" onclick='OptimizerTab.toggleDisableModsFromIcon("${
+            item.id
+        }", "${checkboxPrefix}")'></img>`;
+    }
+    return `<img src="${Assets.getSetBlock()}" class="itemDisplayDisableModsImgActive" title="${i18next.t('Mods disabled — click to re-enable')}" onclick='OptimizerTab.toggleDisableModsFromIcon("${
+        item.id
+    }", "${checkboxPrefix}")'></img>`;
+}
+
 function styleEnhance(enhance) {
     if (enhance !== '15') {
         return 'style="color: red;font-weight: bold;"';
@@ -673,11 +684,76 @@ const HtmlGenerator = {
       ${magnify(item)}
       ${editItemDisplay(item, checkboxPrefix)}
       ${editLockDisplay(item, checkboxPrefix)}
+      ${disableModsDisplay(item, checkboxPrefix)}
   </div>
 </div>
         `;
 
         return html;
+    },
+
+    buildHeroModSummary(hero) {
+        const statShort = {
+            Attack: 'Atk',
+            Health: 'HP',
+            Defense: 'Def',
+            CriticalHitDamagePercent: 'CD%',
+            CriticalHitChancePercent: 'CR%',
+            HealthPercent: 'HP%',
+            DefensePercent: 'Def%',
+            AttackPercent: 'Atk%',
+            EffectivenessPercent: 'Eff%',
+            EffectResistancePercent: 'Res%',
+            Speed: 'Spd',
+        };
+        const slotShort = {
+            Weapon: 'Wpn',
+            Helmet: 'Helm',
+            Armor: 'Arm',
+            Necklace: 'Neck',
+            Ring: 'Ring',
+            Boots: 'Boots',
+        };
+
+        if (!hero || !hero.keepStats || hero.keepStats.length === 0) return '';
+
+        const wantedNames = hero.keepStats.map((s) => statShort[s] || s).join(', ');
+        const parts = [`${hero.keepStats.length} wanted (${wantedNames})`];
+
+        if (hero.limitRolls && hero.limitRolls < 6) {
+            parts.push(`Limit ${hero.limitRolls} roll${hero.limitRolls !== 1 ? 's' : ''}`);
+        }
+
+        if (hero.modGrade) {
+            parts.push(hero.modGrade === 'lesser' ? 'Lesser' : 'Greater');
+        }
+
+        if (hero.modSlots && hero.modSlots.length > 0 && hero.modSlots.length < 6) {
+            parts.push(`${hero.modSlots.map((s) => slotShort[s] || s).join('+')} only`);
+        }
+
+        if (hero.maxModPieces && hero.maxModPieces < 6) {
+            parts.push(`\u2264${hero.maxModPieces} pcs`);
+        }
+
+        // Per-slot rule summary
+        if (hero.slotModConfig) {
+            const slotRuleParts = [];
+            for (const slot of ['Weapon', 'Helmet', 'Armor', 'Necklace', 'Ring', 'Boots']) {
+                const cfg = hero.slotModConfig[slot];
+                if (cfg && cfg.rules && cfg.rules.length > 0) {
+                    const enabledCount = cfg.rules.filter((r) => r.enabled !== false).length;
+                    if (enabledCount > 0) {
+                        slotRuleParts.push(`${slotShort[slot]}:${enabledCount}r`);
+                    }
+                }
+            }
+            if (slotRuleParts.length > 0) {
+                parts.push(`Rules [${slotRuleParts.join(' ')}]`);
+            }
+        }
+
+        return `<div class="heroModSummaryText">Mods: ${parts.join(' \u2502 ')}</div>`;
     },
 };
 
