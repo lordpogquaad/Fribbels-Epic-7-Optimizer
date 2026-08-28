@@ -111,6 +111,7 @@ const Settings = {
     async function _uploadCacheFile(label, destFilename) {
       const options = {
         title: `Open ${label}`,
+        defaultPath: Settings.getDefaultPath(),
         buttonLabel: 'Load',
         filters: [{ name: 'JSON', extensions: ['json'] }],
         properties: ['openFile'],

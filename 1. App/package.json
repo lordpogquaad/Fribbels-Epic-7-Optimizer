@@ -11,12 +11,13 @@
   "productName": "Pog E7 Optimizer",
   "main": "./5. Dev Only/main.dev.js",
   "author": {
-    "name": "RexQian"
+    "name": "lordpogquaad",
+    "url": "https://github.com/lordpogquaad/Fribbels-Epic-7-Optimizer"
   },
   "version": "1.12.0",
   "description": "Epic 7 gear optimizer — Electron (jQuery renderer) + Java backend",
   "engines": {
-    "node": ">=20.11.0"
+    "node": ">=24"
   },
   "scripts": {
     "build": "yarn copy-assets && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -44,21 +45,6 @@
     "start-main-dev": "cross-env START_HOT=1 NODE_ENV=development electron .",
     "start-renderer-dev": "cross-env NODE_ENV=development webpack serve --config \"4. Both/1. Webpack/webpack.config.renderer.dev.js\"",
     "typecheck": "node node_modules/tsc7/bin/tsc -p ./ --noEmit"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "cross-env NODE_ENV=development eslint --cache"
-    ],
-    "{*.json,.{babelrc,eslintrc,prettierrc,stylelintrc}}": [
-      "prettier --ignore-path .prettierignore --parser json --write"
-    ],
-    "*.{css,scss}": [
-      "stylelint --ignore-path .prettierignore --fix",
-      "prettier --ignore-path .prettierignore --single-quote --write"
-    ],
-    "*.{html,md,yml}": [
-      "prettier --ignore-path .prettierignore --single-quote --write"
-    ]
   },
   "build": {
     "productName": "PogE7Optimizer",
@@ -144,7 +130,6 @@
     "@electron/rebuild": "^4.2.0",
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.13.3",
-    "@types/webpack-env": "^1.18.8",
     "chalk": "^6.0.0",
     "concurrently": "^10.0.5",
     "core-js": "^3.50.0",
@@ -152,13 +137,11 @@
     "css-loader": "^7.1.4",
     "css-minimizer-webpack-plugin": "^8.0.0",
     "detect-port": "^2.1.0",
-    "electron": "^42.10.1",
+    "electron": "^44.0.0",
     "electron-builder": "^26.15.3",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.11.0",
-    "husky": "^9.1.7",
-    "lint-staged": "17.3.0",
     "mini-css-extract-plugin": "^2.10.2",
     "prettier": "^3.9.6",
     "style-loader": "^4.0.0",
@@ -176,14 +159,11 @@
   },
   "dependencies": {
     "electron-debug": "^4.1.0",
-    "electron-log": "^5.4.4",
-    "node-abi": "^4.34.0",
     "regenerator-runtime": "^0.14.1",
-    "source-map-support": "^0.5.21",
-    "watchpack": "^2.5.2"
+    "source-map-support": "^0.5.21"
   },
   "browserslist": [
-    "electron 42.0"
+    "electron 44.0"
   ],
   "prettier": {
     "overrides": [
@@ -211,14 +191,6 @@
       "selector-id-pattern": null,
       "no-descending-specificity": null
     }
-  },
-  "renovate": {
-    "extends": [
-      "bliss"
-    ],
-    "baseBranches": [
-      "next"
-    ]
   },
   "packageManager": "yarn@4.18.0+sha512.fcb8716fe7cd0eece141ffc18b92193a9df9204c1ba83189c288835223fc0bbe64af473bab0d5e9927a7daeb5caf2bb07eb2787cc9338ca040ea125f2a1f2f7e"
 }
