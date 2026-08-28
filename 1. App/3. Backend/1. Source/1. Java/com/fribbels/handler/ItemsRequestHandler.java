@@ -26,11 +26,14 @@ import org.apache.commons.lang3.Strings;
 import com.fribbels.model.Stat;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -384,32 +387,66 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
 
         final List<Hero> existingHeroes = heroDb.getAllHeroes();
 
+        // All in-game unit IDs present in this scan. A non-null-id optimizer hero whose
+        // ingameId is missing from this set no longer exists on the account (fed,
+        // imprinted, sold, etc. since the previous import) and is "stale".
+        final Set<String> scanIds = mergeHeroes.stream()
+                .map(MergeHero::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        // Legacy scans without ids provide no signal to distinguish "gone" from "just not
+        // in this filter" — skip pruning entirely rather than risk deleting real heroes.
+        final boolean pruneStaleHeroes = !scanIds.isEmpty();
+        if (!pruneStaleHeroes) {
+            logger.info("mergeHeroes: scan provided no ingame ids; skipping stale-hero pruning");
+        }
+
         // Optimizer heroes that already have an in-game unit ID linked
         final Map<String, Hero> existingHeroesByIngameId = new HashMap<>();
         // Optimizer heroes not yet linked — keyed by name, first per name wins
         final Map<String, Hero> existingHeroesByUnlinkedName = new HashMap<>();
         // All current optimizer hero names (used for generating unique display names)
         final Set<String> optimizerNames = new HashSet<>();
+        // Stale heroes available for relinking, queued per base name (FIFO) so N stale
+        // copies of a name correctly pair off against N new scan copies of that name.
+        final Map<String, Deque<Hero>> staleHeroesByBaseName = new HashMap<>();
+        final List<Hero> staleHeroes = new ArrayList<>();
+        final Map<Hero, String> staleHeroOriginalIngameId = new IdentityHashMap<>();
 
         for (final Hero hero : existingHeroes) {
             optimizerNames.add(hero.getName());
-            if (hero.getIngameId() != null) {
-                existingHeroesByIngameId.put(hero.getIngameId(), hero);
+            final String heroIngameId = hero.getIngameId();
+            if (heroIngameId != null && pruneStaleHeroes && !scanIds.contains(heroIngameId)) {
+                staleHeroOriginalIngameId.put(hero, heroIngameId);
+                hero.setIngameId(null);
+                staleHeroesByBaseName
+                        .computeIfAbsent(baseName(hero.getName()), k -> new ArrayDeque<>())
+                        .add(hero);
+                staleHeroes.add(hero);
+            } else if (heroIngameId != null) {
+                existingHeroesByIngameId.put(heroIngameId, hero);
             } else {
                 existingHeroesByUnlinkedName.putIfAbsent(hero.getName(), hero);
             }
         }
+        final Set<Hero> staleHeroSet = Collections.newSetFromMap(new IdentityHashMap<>());
+        staleHeroSet.addAll(staleHeroes);
 
         // Base names of all optimizer heroes (e.g. "Vivian" for both "Vivian" and
         // "Vivian #2")
         final Set<String> optimizerBaseNames = existingHeroes.stream()
                 .map(Hero::getName)
                 .filter(Objects::nonNull)
-                .map(n -> n.replaceAll("\\s#\\d+$", ""))
+                .map(ItemsRequestHandler::baseName)
                 .collect(Collectors.toSet());
 
         if (request.getHeroFilter() == HeroFilter.OPTIMIZER) {
             existingHeroes.forEach(hero -> {
+                // Stale heroes are handled solely through the stale-relink queue below so
+                // that multiple stale/new copies of one name pair off correctly.
+                if (staleHeroSet.contains(hero))
+                    return;
+
                 final String heroIngameId = hero.getIngameId();
                 final MergeHero mergeHero;
                 if (heroIngameId != null) {
@@ -444,7 +481,7 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
                     .filter(mh -> !existingHeroesByIngameId.containsKey(mh.getId()))
                     .filter(mh -> optimizerBaseNames.contains(mh.getName()))
                     .forEach(mh -> processSingleMergeHero(mh,
-                            existingHeroesByIngameId, existingHeroesByUnlinkedName,
+                            existingHeroesByIngameId, existingHeroesByUnlinkedName, staleHeroesByBaseName,
                             optimizerNames, itemsByIngameEquippedId));
         }
 
@@ -452,7 +489,7 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
             mergeHeroes.stream()
                     .filter(x -> Integer.valueOf(6).equals(x.getStars()))
                     .forEach(mergeHero -> processSingleMergeHero(mergeHero,
-                            existingHeroesByIngameId, existingHeroesByUnlinkedName,
+                            existingHeroesByIngameId, existingHeroesByUnlinkedName, staleHeroesByBaseName,
                             optimizerNames, itemsByIngameEquippedId));
         }
 
@@ -460,17 +497,58 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
             mergeHeroes.stream()
                     .filter(x -> Integer.valueOf(6).equals(x.getStars()) || Integer.valueOf(5).equals(x.getStars()))
                     .forEach(mergeHero -> processSingleMergeHero(mergeHero,
-                            existingHeroesByIngameId, existingHeroesByUnlinkedName,
+                            existingHeroesByIngameId, existingHeroesByUnlinkedName, staleHeroesByBaseName,
                             optimizerNames, itemsByIngameEquippedId));
         }
 
+        // Post-pass: any stale hero that never got relinked to a scan unit no longer
+        // exists on the account — remove it (and unequip its items) so it doesn't linger.
+        int relinkedCount = 0;
+        int prunedCount = 0;
+        for (final Hero staleHero : staleHeroes) {
+            if (staleHero.getIngameId() != null) {
+                relinkedCount++;
+                continue;
+            }
+            final String oldIngameId = staleHeroOriginalIngameId.get(staleHero);
+            logger.info("PRUNED STALE HERO: " + staleHero.getName() + " (ingameId " + oldIngameId + ")");
+            heroesRequestHandler.removeHeroById(IdRequest.builder().id(staleHero.getId()).build());
+            prunedCount++;
+        }
+        if (pruneStaleHeroes) {
+            logger.info("mergeHeroes: relinked " + relinkedCount + ", pruned " + prunedCount);
+        }
+
         return "";
+    }
+
+    // Strips the trailing " #N" duplicate-copy suffix optimizer hero names use
+    // (e.g. "Vivian #2" -> "Vivian") so heroes can be matched/queued by base name.
+    private static String baseName(final String name) {
+        if (name == null)
+            return null;
+        return name.replaceAll("\\s#\\d+$", "");
+    }
+
+    // Pops the next available stale hero of the given base name, if any, removing the
+    // queue once it's drained.
+    private static Hero popStaleHero(final String baseName, final Map<String, Deque<Hero>> staleHeroesByBaseName) {
+        if (baseName == null)
+            return null;
+        final Deque<Hero> queue = staleHeroesByBaseName.get(baseName);
+        if (queue == null || queue.isEmpty())
+            return null;
+        final Hero hero = queue.pollFirst();
+        if (queue.isEmpty())
+            staleHeroesByBaseName.remove(baseName);
+        return hero;
     }
 
     private void processSingleMergeHero(
             final MergeHero mergeHero,
             final Map<String, Hero> existingHeroesByIngameId,
             final Map<String, Hero> existingHeroesByUnlinkedName,
+            final Map<String, Deque<Hero>> staleHeroesByBaseName,
             final Set<String> optimizerNames,
             final Map<String, List<Item>> itemsByIngameEquippedId) {
 
@@ -484,42 +562,55 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
             // Already linked to this in-game unit — use directly
             hero = existingHeroesByIngameId.get(ingameHeroId);
             logger.info("EXISTING HERO BY INGAME ID: " + hero.getName());
-        } else if (existingHeroesByUnlinkedName.containsKey(baseName)) {
-            // Unlinked optimizer hero with matching name — link it now
-            // Remove from unlinked map so a second duplicate doesn't claim the same hero
-            hero = existingHeroesByUnlinkedName.remove(baseName);
-            if (ingameHeroId != null) {
-                hero.setIngameId(ingameHeroId);
-                existingHeroesByIngameId.put(ingameHeroId, hero);
-            }
-            logger.info("LINKED EXISTING HERO: " + hero.getName() + " -> " + ingameHeroId);
         } else {
-            // No matching optimizer hero — create a new one with a unique display name
-            final Hero heroData = mergeHero.getData();
-            if (heroData == null)
-                return;
+            final Hero staleHero = popStaleHero(baseName, staleHeroesByBaseName);
+            if (staleHero != null) {
+                // A previously-linked optimizer hero whose old ingameId fell out of the scan —
+                // reuse it (keeps its id/priorities/builds) and relink to the new unit.
+                hero = staleHero;
+                if (ingameHeroId != null) {
+                    hero.setIngameId(ingameHeroId);
+                    existingHeroesByIngameId.put(ingameHeroId, hero);
+                }
+                logger.info("RELINKED STALE HERO: " + hero.getName() + " -> " + ingameHeroId);
+            } else if (existingHeroesByUnlinkedName.containsKey(baseName)) {
+                // Unlinked optimizer hero with matching name — link it now
+                // Remove from unlinked map so a second duplicate doesn't claim the same hero
+                hero = existingHeroesByUnlinkedName.remove(baseName);
+                if (ingameHeroId != null) {
+                    hero.setIngameId(ingameHeroId);
+                    existingHeroesByIngameId.put(ingameHeroId, hero);
+                }
+                logger.info("LINKED EXISTING HERO: " + hero.getName() + " -> " + ingameHeroId);
+            } else {
+                // No matching optimizer hero — create a new one with a unique display name
+                final Hero heroData = mergeHero.getData();
+                if (heroData == null)
+                    return;
 
-            // Generate a "#N" suffix to avoid colliding with existing optimizer hero names
-            String displayName = baseName;
-            int copyNum = 2;
-            while (optimizerNames.contains(displayName)) {
-                displayName = baseName + " #" + copyNum++;
-            }
-            heroData.setName(displayName);
-            optimizerNames.add(displayName);
+                // Generate a "#N" suffix to avoid colliding with existing optimizer hero names
+                String displayName = baseName;
+                int copyNum = 2;
+                while (optimizerNames.contains(displayName)) {
+                    displayName = baseName + " #" + copyNum++;
+                }
+                heroData.setName(displayName);
+                optimizerNames.add(displayName);
 
-            if (ingameHeroId != null) {
-                heroData.setIngameId(ingameHeroId);
-            }
+                if (ingameHeroId != null) {
+                    heroData.setIngameId(ingameHeroId);
+                }
 
-            heroesRequestHandler.addHeroes(HeroesRequest.builder()
-                    .heroes(Collections.singletonList(heroData))
-                    .build());
-            hero = heroDb.getHeroById(heroData.getId());
-            if (hero != null && ingameHeroId != null) {
-                existingHeroesByIngameId.put(ingameHeroId, hero);
+                heroesRequestHandler.addHeroes(HeroesRequest.builder()
+                        .heroes(Collections.singletonList(heroData))
+                        .build());
+                final Hero createdHero = heroDb.getHeroById(heroData.getId());
+                if (createdHero != null && ingameHeroId != null) {
+                    existingHeroesByIngameId.put(ingameHeroId, createdHero);
+                }
+                hero = createdHero;
+                logger.info("ADDED HERO: " + displayName);
             }
-            logger.info("ADDED HERO: " + displayName);
         }
 
         if (hero == null)
