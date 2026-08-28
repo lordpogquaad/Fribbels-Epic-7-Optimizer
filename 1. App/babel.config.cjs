@@ -1,76 +1,12 @@
-/* eslint global-require: off, import/no-extraneous-dependencies: off */
-
-const developmentEnvironments = ['development', 'test'];
-
-const developmentPlugins = [];
-
-const productionPlugins = [
-    require('babel-plugin-dev-expression'),
-
-    // babel-preset-react-optimize
-    require('@babel/plugin-transform-react-constant-elements'),
-    require('@babel/plugin-transform-react-inline-elements'),
-    require('babel-plugin-transform-react-remove-prop-types'),
-];
-
-module.exports = (api) => {
-    // See docs about api at https://babeljs.io/docs/en/config-files#apicache
-
-    const development = api.env(developmentEnvironments);
-
-    return {
-        presets: [
-            // @babel/preset-env will automatically target our browserslist targets
-            require('@babel/preset-env'),
-            require('@babel/preset-typescript'),
-            [require('@babel/preset-react'), { development }],
-        ],
-        plugins: [
-            // Stage 0
-            require('@babel/plugin-proposal-function-bind'),
-
-            // Stage 1
-            require('@babel/plugin-proposal-export-default-from'),
-            require('@babel/plugin-proposal-logical-assignment-operators'),
-            [
-                require('@babel/plugin-proposal-optional-chaining'),
-                { loose: false },
-            ],
-            [
-                require('@babel/plugin-proposal-pipeline-operator'),
-                { proposal: 'minimal' },
-            ],
-            [
-                require('@babel/plugin-proposal-nullish-coalescing-operator'),
-                { loose: false },
-            ],
-            require('@babel/plugin-proposal-do-expressions'),
-
-            // Stage 2
-            [require('@babel/plugin-proposal-decorators'), { legacy: true }],
-            require('@babel/plugin-proposal-function-sent'),
-            require('@babel/plugin-proposal-export-namespace-from'),
-            require('@babel/plugin-proposal-numeric-separator'),
-            require('@babel/plugin-proposal-throw-expressions'),
-
-            // Stage 3
-            require('@babel/plugin-syntax-dynamic-import'),
-            require('@babel/plugin-syntax-import-meta'),
-            [
-                require('@babel/plugin-transform-class-properties'),
-                { loose: true },
-            ],
-            [
-                require('@babel/plugin-transform-private-methods'),
-                { loose: true },
-            ],
-            [
-                require('@babel/plugin-transform-private-property-in-object'),
-                { loose: true },
-            ],
-            require('@babel/plugin-transform-json-strings'),
-
-            ...(development ? developmentPlugins : productionPlugins),
-        ],
-    };
+/**
+ * Babel config — consumed ONLY by `node -r @babel/register`, to transpile the two ESM
+ * build-helper scripts (4. Both/2. Build/1. Scripts/CheckPortInUse.js + CheckNativeDep.js)
+ * down to CommonJS at runtime. preset-env's module transform (auto → CJS under the
+ * CommonJS caller) is all that's needed.
+ *
+ * The renderer is bundled by webpack 5 (no babel-loader) and runs in Electron's modern
+ * Chromium, so no other Babel presets/plugins are required.
+ */
+module.exports = {
+  presets: [require('@babel/preset-env')],
 };

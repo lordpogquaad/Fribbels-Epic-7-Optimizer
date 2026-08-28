@@ -1,0 +1,102 @@
+package com.fribbels.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class HeroStats {
+
+    public int atk;
+    public int hp;
+    public int def;
+    public int cr;
+    public int cd;
+    public int eff;
+    public int res;
+    public int dac;
+    public int spd;
+    public int cp;
+
+    public int ehp;
+    public int hpps;
+    public int ehpps;
+    public int dmg;
+    public int dmgps;
+    public int mcdmg;
+    public int mcdmgps;
+    public int dmgh;
+    public int dmgd;
+    public int hmcdmgs;
+    public int dmcdmgs;
+    public int hdmg;
+    public int hdmgs;
+    public int ddmg;
+    public int ddmgs;
+
+    public int s1;
+    public int s2;
+    public int s3;
+
+    public int upgrades;
+    public int conversions;
+    public int eq;
+    public int score;
+    public int bs;
+    public int priority;
+    public int customScore;
+    // Faithful per-slot/per-set-weighted + target-aware build ranking score, ×100
+    // of the
+    // displayed value. Σ(item.priorityScore) + round(targetBonus×100). This is the
+    // default ranking, the keep-best-N retention basis, and the grid's Build Score
+    // column.
+    public int buildScore;
+
+    public BonusStats bonusStats;
+
+    public int[] sets;
+
+    public String id;
+    public String name;
+    public String property;
+    public List<String> items;
+    public List<String> modIds;
+    public List<Mod> mods;
+
+    public String getBuildHash() {
+        if (items == null || items.size() != 6) {
+            return null;
+        }
+
+        try {
+            final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            final String combinedItems = String.join("", items) + (mods == null ? ""
+                    : mods.stream()
+                            .filter(Objects::nonNull)
+                            .map(Mod::toString)
+                            .collect(Collectors.joining("")));
+            messageDigest.update(combinedItems.getBytes(StandardCharsets.UTF_8));
+            final String stringHash = Base64.getEncoder().encodeToString(messageDigest.digest());
+
+            return stringHash;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}

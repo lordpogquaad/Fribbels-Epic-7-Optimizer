@@ -1,322 +1,224 @@
 {
-    "name": "pog-e7-optimizer",
-    "productName": "Pog E7 Optimizer",
-    "author": {
-        "name": "RexQian"
-    },
-    "version": "1.0.0",
-    "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
-    "scripts": {
-        "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
-        "build-dll": "cross-env NODE_ENV=development webpack --config \"./4. Both/1. Webpack/webpack.config.renderer.dev.dll.babel.js\" --colors",
-        "build-e2e": "cross-env E2E_BUILD=true yarn build",
-        "build-main": "cross-env NODE_ENV=production webpack --config \"./4. Both/1. Webpack/webpack.config.main.prod.babel.js\" --colors",
-        "build-renderer": "cross-env NODE_ENV=production webpack --config \"./4. Both/1. Webpack/webpack.config.renderer.prod.babel.js\" --colors",
-        "dev": "cross-env START_HOT=1 node -r @babel/register \"./4. Both/2. Build/scripts/CheckPortInUse.js\" && cross-env START_HOT=1 yarn start-renderer-dev",
-        "electron-rebuild": "electron-rebuild --parallel --force --types prod,dev,optional --module-dir \"2. Frontend/1. Source\"",
-        "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
-        "lint-fix": "yarn --silent lint --fix; exit 0",
-        "lint-styles": "stylelint --ignore-path .eslintignore '**/*.*(css|scss)' --syntax scss",
-        "lint-styles-fix": "yarn --silent lint-styles --fix; exit 0",
-        "package": "yarn build && electron-builder build --publish never",
-        "package-all": "yarn build && electron-builder build -mwl",
-        "package-ci": "yarn postinstall && yarn build && electron-builder --publish always",
-        "package-mac": "yarn build && electron-builder build --mac",
-        "package-linux": "yarn build && electron-builder build --linux",
-        "package-win": "yarn build && electron-builder build --win --x64",
-        "postinstall": "node -r @babel/register \"4. Both/2. Build/scripts/CheckNativeDep.js\" && electron-builder install-app-deps && yarn build-dll && opencollective-postinstall",
-        "postlint-fix": "prettier --ignore-path .eslintignore --single-quote --write '**/*.{js,jsx,json,html,css,less,scss,yml}'",
-        "postlint-styles-fix": "prettier --ignore-path .eslintignore --single-quote --write '**/*.{css,scss}'",
-        "preinstall": "node \"./4. Both/2. Build/scripts/CheckYarn.js\"",
-        "prestart": "yarn build",
-        "start": "cross-env NODE_ENV=production electron \"./2. Frontend/1. Source/main.prod.js\"",
-        "start-main-debug": "yarn start-main-dev --inspect=5858 --remote-debugging-port=9223",
-        "start-main-dev": "cross-env START_HOT=1 NODE_ENV=development electron -r \"./4. Both/2. Build/scripts/BabelRegister\" \"./2. Frontend/1. Source/main.dev.js\"",
-        "start-renderer-dev": "cross-env NODE_ENV=development webpack-dev-server --config \"4. Both/1. Webpack/webpack.config.renderer.dev.babel.js\"",
-        "test": "cross-env BABEL_DISABLE_CACHE=1 jest",
-        "test-all": "yarn lint && yarn tsc && yarn build && yarn test",
-        "test-e2e": "node -r @babel/register \"./4. Both/2. Build/scripts/CheckBuildsExist.js\" && cross-env NODE_ENV=test testcafe electron:./app ./test/e2e/HomePage.e2e.ts",
-        "test-e2e-live": "node -r @babel/register \"./4. Both/2. Build/scripts/CheckBuildsExist.js\" && cross-env NODE_ENV=test testcafe --live electron:./app ./test/e2e/HomePage.e2e.ts",
-        "test-watch": "yarn test --watch"
-    },
-    "lint-staged": {
-        "*.{js,jsx,ts,tsx}": [
-            "cross-env NODE_ENV=development eslint --cache"
-        ],
-        "{*.json,.{babelrc,eslintrc,prettierrc,stylelintrc}}": [
-            "prettier --ignore-path .eslintignore --parser json --write"
-        ],
-        "*.{css,scss}": [
-            "stylelint --ignore-path .eslintignore --syntax scss --fix",
-            "prettier --ignore-path .eslintignore --single-quote --write"
-        ],
-        "*.{html,md,yml}": [
-            "prettier --ignore-path .eslintignore --single-quote --write"
-        ]
-    },
-    "build": {
-        "productName": "PogE7Optimizer",
-        "appId": "poge7optimizer",
-        "files": [
-            "dist/",
-            "node_modules/",
-            "app.html",
-            "css/",
-            "assets/",
-            "js/",
-            "locales/",
-            "main.prod.js",
-            "main.prod.js.map",
-            "package.json"
-        ],
-        "dmg": {
-            "contents": [
-                {
-                    "x": 130,
-                    "y": 220
-                },
-                {
-                    "x": 410,
-                    "y": 220,
-                    "type": "link",
-                    "path": "/Applications"
-                }
-            ]
+  "//typescript": [
+    "Two TypeScript copies are installed on purpose here — do not tidy one away.",
+    "'tsc7' (npm alias of typescript@7) runs the 'typecheck' script. 'typescript' 6.x exists only to satisfy typescript-eslint's peer range '>=4.8.4 <6.1.0' (see @typescript-eslint/typescript-estree's SUPPORTED_TYPESCRIPT_VERSIONS, verified against 8.68.0 in this tree).",
+    "Yarn cannot nest a peer dependency, so an alias under a different package name is the only arrangement where the linter keeps TS6 while the type-checker is TS7.",
+    "Always invoke TS7 by explicit path (node node_modules/tsc7/bin/tsc) because both 'typescript' and 'tsc7' declare bin 'tsc'.",
+    "typescript-eslint only WARNS on an out-of-range TypeScript version by default (onUnsupportedTypeScriptVersion defaults to 'warn' in createParseSettings.js; it does not hard-throw) — verified in the installed 8.68.0 tree, not a hard failure mode.",
+    "To collapse once typescript-eslint supports TS7 (tracking typescript-eslint issue #10940): delete 'tsc7', set 'typescript' to ^7.x, point 'typecheck' at plain 'tsc -p ./ --noEmit'."
+  ],
+  "name": "pog-e7-optimizer",
+  "productName": "Pog E7 Optimizer",
+  "main": "./5. Dev Only/main.dev.js",
+  "author": {
+    "name": "RexQian"
+  },
+  "version": "1.12.0",
+  "description": "Epic 7 gear optimizer — Electron (jQuery renderer) + Java backend",
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "scripts": {
+    "build": "yarn copy-assets && concurrently \"yarn build-main\" \"yarn build-renderer\"",
+    "copy-assets": "node \"./4. Both/2. Build/1. Scripts/CopyAssets.js\"",
+    "build-main": "cross-env NODE_ENV=production webpack --config \"./4. Both/1. Webpack/webpack.config.main.prod.js\"",
+    "build-renderer": "cross-env NODE_ENV=production webpack --config \"./4. Both/1. Webpack/webpack.config.renderer.prod.js\"",
+    "dev": "yarn copy-assets && cross-env START_HOT=1 node -r @babel/register \"./4. Both/2. Build/1. Scripts/CheckPortInUse.js\" && cross-env START_HOT=1 yarn start-renderer-dev",
+    "electron-rebuild": "electron-rebuild --parallel --force --types prod,dev,optional --module-dir \"2. Frontend/1. Source\"",
+    "lint": "cross-env NODE_ENV=development eslint . --cache",
+    "lint-fix": "yarn --silent lint --fix; exit 0",
+    "lint-styles": "stylelint --ignore-path .prettierignore '**/*.*(css|scss)'",
+    "lint-styles-fix": "yarn --silent lint-styles --fix; exit 0",
+    "package": "yarn build && electron-builder build --publish never",
+    "package-all": "yarn build && electron-builder build -mwl",
+    "package-mac": "yarn build && electron-builder build --mac",
+    "package-linux": "yarn build && electron-builder build --linux",
+    "package-win": "yarn build && electron-builder build --win --x64",
+    "postinstall": "node -r @babel/register \"4. Both/2. Build/1. Scripts/CheckNativeDep.js\" && electron-builder install-app-deps",
+    "postlint-fix": "prettier --ignore-path .prettierignore --single-quote --write '**/*.{js,jsx,json,html,css,less,scss,yml}'",
+    "postlint-styles-fix": "prettier --ignore-path .prettierignore --single-quote --write '**/*.{css,scss}'",
+    "preinstall": "node \"./4. Both/2. Build/1. Scripts/CheckYarn.js\"",
+    "prestart": "yarn build",
+    "start": "cross-env NODE_ENV=production electron \"./2. Frontend/1. Source/main.prod.js\"",
+    "start-main-debug": "yarn start-main-dev --inspect=5858 --remote-debugging-port=9223",
+    "start-main-dev": "cross-env START_HOT=1 NODE_ENV=development electron .",
+    "start-renderer-dev": "cross-env NODE_ENV=development webpack serve --config \"4. Both/1. Webpack/webpack.config.renderer.dev.js\"",
+    "typecheck": "node node_modules/tsc7/bin/tsc -p ./ --noEmit"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "cross-env NODE_ENV=development eslint --cache"
+    ],
+    "{*.json,.{babelrc,eslintrc,prettierrc,stylelintrc}}": [
+      "prettier --ignore-path .prettierignore --parser json --write"
+    ],
+    "*.{css,scss}": [
+      "stylelint --ignore-path .prettierignore --fix",
+      "prettier --ignore-path .prettierignore --single-quote --write"
+    ],
+    "*.{html,md,yml}": [
+      "prettier --ignore-path .prettierignore --single-quote --write"
+    ]
+  },
+  "build": {
+    "productName": "PogE7Optimizer",
+    "appId": "com.lordpogquaad.poge7optimizer",
+    "files": [
+      "package.json",
+      "node_modules/**",
+      "5. Dev Only/main.dev.js",
+      "5. Dev Only/LogControl.js",
+      "2. Frontend/1. Source/package.json",
+      "2. Frontend/1. Source/main.prod.js",
+      "2. Frontend/1. Source/renderer.dev.js",
+      "2. Frontend/1. Source/1. HTML/**",
+      "2. Frontend/1. Source/2. CSS/**",
+      "2. Frontend/1. Source/3. ASSETS/**",
+      "2. Frontend/1. Source/4. JS/**",
+      "2. Frontend/1. Source/8. DIST/**",
+      "2. Frontend/1. Source/node_modules/**"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
         },
-        "win": {
-            "target": [
-                "nsis",
-                "zip"
-            ],
-            "artifactName": "${productName}-Setup-${version}.${ext}"
-        },
-        "nsis": {
-            "oneClick": false,
-            "perMachine": true,
-            "allowToChangeInstallationDirectory": true
-        },
-        "mac": {
-            "target": {
-                "target": "default",
-                "arch": [
-                    "x64",
-                    "arm64"
-                ]
-            }
-        },
-        "linux": {
-            "target": [
-                "deb",
-                "rpm",
-                "AppImage"
-            ],
-            "category": "Development"
-        },
-        "directories": {
-            "buildResources": "2. Frontend/2. Icons",
-            "output": "release"
-        },
-        "extraResources": [
-            "./2. Frontend/2. Icons/**"
-        ],
-        "extraFiles": [
-            "./1. Master/2. Data/**",
-            "./2. Frontend/1. Source/locales/**"
-        ],
-        "publish": {
-            "provider": "github",
-            "owner": "RexQian",
-            "repo": "Fribbels-Epic-7-Optimizer",
-            "private": false
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
         }
+      ]
     },
-    "jest": {
-        "testURL": "http://localhost/",
-        "moduleNameMapper": {
-            "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/4. Both/2. Build/mocks/fileMock.js",
-            "\\.(css|less|sass|scss)$": "identity-obj-proxy"
-        },
-        "moduleFileExtensions": [
-            "js",
-            "jsx",
-            "ts",
-            "tsx",
-            "json"
-        ],
-        "moduleDirectories": [
-            "node_modules",
-            "2. Frontend/1. Source/node_modules"
-        ],
-        "setupFiles": [
-            "./4. Both/2. Build/scripts/CheckBuildsExist.js"
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": {
+        "target": "default",
+        "arch": [
+          "x64",
+          "arm64"
         ]
+      }
     },
-    "devDependencies": {
-        "@amilajack/testcafe-browser-provider-electron": "^0.0.15-alpha.1",
-        "@babel/core": "^7.29.7",
-        "@babel/plugin-proposal-class-properties": "^7.18.6",
-        "@babel/plugin-proposal-decorators": "^7.29.7",
-        "@babel/plugin-proposal-do-expressions": "^7.29.7",
-        "@babel/plugin-proposal-export-default-from": "^7.29.7",
-        "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
-        "@babel/plugin-proposal-function-bind": "^7.29.7",
-        "@babel/plugin-proposal-function-sent": "^7.29.7",
-        "@babel/plugin-proposal-json-strings": "^7.18.6",
-        "@babel/plugin-proposal-logical-assignment-operators": "^7.20.7",
-        "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
-        "@babel/plugin-proposal-numeric-separator": "^7.18.6",
-        "@babel/plugin-proposal-optional-chaining": "^7.21.0",
-        "@babel/plugin-proposal-pipeline-operator": "^7.29.7",
-        "@babel/plugin-proposal-throw-expressions": "^7.29.7",
-        "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-        "@babel/plugin-syntax-import-meta": "^7.10.4",
-        "@babel/plugin-transform-react-constant-elements": "^7.29.7",
-        "@babel/plugin-transform-react-inline-elements": "^7.29.7",
-        "@babel/preset-env": "^7.29.7",
-        "@babel/preset-react": "^7.29.7",
-        "@babel/preset-typescript": "^7.29.7",
-        "@babel/register": "^7.29.7",
-        "@teamsupercell/typings-for-css-modules-loader": "^2.5.2",
-        "@types/enzyme": "^3.10.19",
-        "@types/enzyme-adapter-react-16": "^1.0.9",
-        "@types/history": "^5.0.0",
-        "@types/jest": "^30.0.0",
-        "@types/node": "25.9.1",
-        "@types/react": "^19.2.15",
-        "@types/react-dom": "^19.2.3",
-        "@types/react-redux": "^7.1.34",
-        "@types/react-router": "^5.1.20",
-        "@types/react-router-dom": "^5.3.3",
-        "@types/react-test-renderer": "^19.1.0",
-        "@types/redux-logger": "^3.0.13",
-        "@types/webpack": "^5.28.5",
-        "@types/webpack-env": "^1.18.8",
-        "@typescript-eslint/eslint-plugin": "^8.60.0",
-        "@typescript-eslint/parser": "^8.60.0",
-        "babel-eslint": "^10.1.0",
-        "babel-jest": "^30.4.1",
-        "babel-loader": "^10.1.1",
-        "babel-plugin-dev-expression": "^0.2.3",
-        "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
-        "chalk": "^5.6.2",
-        "concurrently": "^10.0.0",
-        "core-js": "^3.49.0",
-        "cross-env": "^10.1.0",
-        "css-loader": "^7.1.4",
-        "detect-port": "^2.1.0",
-        "electron": "^42.3.0",
-        "electron-builder": "^26.8.1",
-        "electron-devtools-installer": "^4.0.0",
-        "electron-installer-windows": "^3.0.0",
-        "electron-packager": "^17.1.2",
-        "electron-rebuild": "^3.2.9",
-        "enzyme": "^3.11.0",
-        "enzyme-adapter-react-16": "^1.15.8",
-        "enzyme-to-json": "^3.6.2",
-        "eslint": "^10.4.1",
-        "eslint-config-airbnb": "^19.0.4",
-        "eslint-config-airbnb-typescript": "^18.0.0",
-        "eslint-config-erb": "^4.1.0",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-import-resolver-webpack": "^0.13.11",
-        "eslint-plugin-compat": "^7.0.2",
-        "eslint-plugin-import": "^2.32.0",
-        "eslint-plugin-jest": "^29.15.2",
-        "eslint-plugin-jsx-a11y": "6.10.2",
-        "eslint-plugin-prettier": "^5.5.6",
-        "eslint-plugin-promise": "^7.3.0",
-        "eslint-plugin-react": "^7.37.5",
-        "eslint-plugin-react-hooks": "^7.1.1",
-        "eslint-plugin-testcafe": "^0.2.1",
-        "file-loader": "^6.2.0",
-        "husky": "^9.1.7",
-        "identity-obj-proxy": "^3.0.0",
-        "jest": "^30.4.2",
-        "lint-staged": "^17.0.6",
-        "mini-css-extract-plugin": "^2.10.2",
-        "sass": "^1.100.0",
-        "opencollective-postinstall": "^2.0.3",
-        "css-minimizer-webpack-plugin": "^8.0.0",
-        "prettier": "^3.8.3",
-        "react-test-renderer": "^19.2.6",
-        "redux-logger": "^3.0.6",
-        "rimraf": "^6.1.3",
-        "sass-loader": "^17.0.0",
-        "style-loader": "^4.0.0",
-        "stylelint": "^17.12.0",
-        "stylelint-config-prettier": "^9.0.5",
-        "stylelint-config-standard": "^40.0.0",
-        "terser-webpack-plugin": "^5.6.1",
-        "testcafe": "^3.7.4",
-        "testcafe-browser-provider-electron": "^0.0.21",
-        "testcafe-react-selectors": "^5.0.3",
-        "typescript": "^6.0.3",
-        "url-loader": "^4.1.1",
-        "webpack": "^5.107.2",
-        "webpack-bundle-analyzer": "^5.3.0",
-        "webpack-cli": "^7.0.3",
-        "webpack-dev-server": "^5.2.4",
-        "webpack-merge": "^6.0.1"
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "AppImage"
+      ],
+      "category": "Development"
     },
-    "dependencies": {
-        "@reduxjs/toolkit": "^2.12.0",
-        "body-parser": "^2.2.2",
-        "chokidar": "^5.0.0",
-        "connected-react-router": "^6.9.3",
-        "electron-debug": "^4.1.0",
-        "electron-log": "^5.4.4",
-        "electron-updater": "^6.8.3",
-        "find-process": "^2.1.1",
-        "history": "^5.3.0",
-        "i18next": "^26.3.0",
-        "i18next-browser-languagedetector": "^8.2.1",
-        "i18next-electron-language-detector": "^0.0.10",
-        "i18nextify": "^5.0.0",
-        "network": "^0.7.0",
-        "node-abi": "^4.31.0",
-        "python-shell": "^5.0.0",
-        "react": "^19.2.6",
-        "react-dom": "^19.2.6",
-        "react-redux": "^9.3.0",
-        "react-router-dom": "^7.16.0",
-        "redux": "^5.0.1",
-        "redux-thunk": "^3.1.0",
-        "regenerator-runtime": "^0.14.1",
-        "source-map-support": "^0.5.21",
-        "watchpack": "^2.5.1"
+    "directories": {
+      "buildResources": "2. Frontend/2. Icons",
+      "output": "release"
     },
-    "collective": {
-        "url": "https://opencollective.com/electron-react-boilerplate-594"
-    },
-    "browserslist": [],
-    "prettier": {
-        "overrides": [
-            {
-                "files": [
-                    ".prettierrc",
-                    ".babelrc",
-                    ".eslintrc",
-                    ".stylelintrc"
-                ],
-                "options": {
-                    "parser": "json"
-                }
-            }
+    "extraResources": [
+      {
+        "from": "2. Frontend/1. Source/1. HTML/assets",
+        "to": "resources"
+      }
+    ],
+    "extraFiles": [
+      "./1. Master/3. Jar/**",
+      "./2. Frontend/1. Source/6. JSON/**",
+      "./2. Frontend/1. Source/7. PY/**"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
+    "@babel/register": "^8.0.1",
+    "@electron/rebuild": "^4.2.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.13.3",
+    "@types/webpack-env": "^1.18.8",
+    "chalk": "^6.0.0",
+    "concurrently": "^10.0.5",
+    "core-js": "^3.50.0",
+    "cross-env": "^10.1.0",
+    "css-loader": "^7.1.4",
+    "css-minimizer-webpack-plugin": "^8.0.0",
+    "detect-port": "^2.1.0",
+    "electron": "^42.10.1",
+    "electron-builder": "^26.15.3",
+    "eslint": "^10.9.1",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.11.0",
+    "husky": "^9.1.7",
+    "lint-staged": "17.3.0",
+    "mini-css-extract-plugin": "^2.10.2",
+    "prettier": "^3.9.6",
+    "style-loader": "^4.0.0",
+    "stylelint": "^17.14.1",
+    "stylelint-config-standard": "^40.0.0",
+    "terser-webpack-plugin": "^5.6.1",
+    "tsc7": "npm:typescript@^7.0.2",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.68.0",
+    "webpack": "5.109.2",
+    "webpack-bundle-analyzer": "^5.3.2",
+    "webpack-cli": "^7.2.2",
+    "webpack-dev-server": "^6.0.0",
+    "webpack-merge": "^6.0.1"
+  },
+  "dependencies": {
+    "electron-debug": "^4.1.0",
+    "electron-log": "^5.4.4",
+    "node-abi": "^4.34.0",
+    "regenerator-runtime": "^0.14.1",
+    "source-map-support": "^0.5.21",
+    "watchpack": "^2.5.2"
+  },
+  "browserslist": [
+    "electron 42.0"
+  ],
+  "prettier": {
+    "overrides": [
+      {
+        "files": [
+          ".prettierrc",
+          ".babelrc",
+          ".eslintrc",
+          ".stylelintrc"
         ],
-        "singleQuote": true
-    },
-    "stylelint": {
-        "extends": [
-            "stylelint-config-standard",
-            "stylelint-config-prettier"
-        ]
-    },
-    "renovate": {
-        "extends": [
-            "bliss"
-        ],
-        "baseBranches": [
-            "next"
-        ]
+        "options": {
+          "parser": "json"
+        }
+      }
+    ],
+    "singleQuote": true,
+    "endOfLine": "auto"
+  },
+  "stylelint": {
+    "extends": [
+      "stylelint-config-standard"
+    ],
+    "rules": {
+      "selector-class-pattern": null,
+      "selector-id-pattern": null,
+      "no-descending-specificity": null
     }
+  },
+  "renovate": {
+    "extends": [
+      "bliss"
+    ],
+    "baseBranches": [
+      "next"
+    ]
+  },
+  "packageManager": "yarn@4.18.0+sha512.fcb8716fe7cd0eece141ffc18b92193a9df9204c1ba83189c288835223fc0bbe64af473bab0d5e9927a7daeb5caf2bb07eb2787cc9338ca040ea125f2a1f2f7e"
 }

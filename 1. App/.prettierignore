@@ -1,0 +1,27 @@
+# Shared ignore file for Prettier + Stylelint (referenced via --ignore-path).
+# ESLint does NOT use this file — its ignores live in eslint.config.mjs (globalIgnores).
+
+# Dependencies
+node_modules
+
+# Logs + caches
+logs
+*.log
+.eslintcache
+
+# Compiled native addons (http://nodejs.org/api/addons.html)
+build/Release
+
+# OS / IDE
+.DS_Store
+.idea
+
+# Packaged app + webpack build artifacts (kept in sync with .gitignore)
+release
+2. Frontend/1. Source/8. DIST
+2. Frontend/1. Source/renderer.dev.js
+2. Frontend/1. Source/main.prod.js
+2. Frontend/1. Source/main.prod.js.map
+
+# Intentionally not Prettier-formatted (npm/yarn + the IDE manage it)
+package.json

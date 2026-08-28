@@ -1,10 +1,18 @@
-*       text    eol=lf
-*.exe   binary
-*.png   binary
-*.jpg   binary
-*.jpeg  binary
-*.ico   binary
-*.icns  binary
+# Normalize line endings: auto-detect text vs binary, check out text files as LF.
+# `text=auto` is safer than a bare `text` — binary files are left untouched even when
+# not listed below (a bare `text` would EOL-normalize, i.e. corrupt, any unlisted binary).
+* text=auto eol=lf
 
-*.jar   binary
-*.traineddata  binary
+# Windows batch files must keep CRLF (LF can break label/goto handling).
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# Explicit binary types (belt-and-suspenders; also documents intent).
+*.exe         binary
+*.png         binary
+*.jpg         binary
+*.jpeg        binary
+*.ico         binary
+*.icns        binary
+*.jar         binary
+*.traineddata binary

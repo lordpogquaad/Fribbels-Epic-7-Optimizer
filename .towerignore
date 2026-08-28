@@ -1,0 +1,21 @@
+# Prompt Tower ignore — keeps generated context relevant.
+# gitignore syntax: one pattern per line. A pattern with no leading "/"
+# matches at ANY depth. Comments MUST be on their own line (no inline #).
+
+# === Dependencies & build output (huge, never useful as LLM context) ===
+node_modules/
+target/
+out/
+dist/
+build/
+*.min.js
+
+# === Large generated data dumps (these alone are megabytes of noise) ===
+app_folder_tree.csv
+app_folder_tree_clean.csv
+diff-report.txt
+*.log
+
+# === Tooling / private (2. Personal is already in .gitignore) ===
+.git/
+.qodo/

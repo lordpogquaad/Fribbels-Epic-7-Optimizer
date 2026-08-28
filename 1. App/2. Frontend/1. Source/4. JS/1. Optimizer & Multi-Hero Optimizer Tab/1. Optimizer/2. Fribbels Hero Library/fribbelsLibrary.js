@@ -1,5 +1,4 @@
-/* global $, Api, HeroData, Assets, DamageCalc, Settings */
-/* eslint-disable no-console */
+/* global Api, HeroData, Assets, DamageCalc, Settings */
 import FribbelsPriorityFilter from './fribbelsPriorityFilter.js';
 import FribbelsGrid, { rowKey as fribbelsRowKey } from './fribbelsGrid.js';
 
@@ -193,7 +192,7 @@ function fribbelsSelectRow(row) {
   fribbelsSelectedRow = row;
 
   const skillPart = fribbelsSkillPart(row);
-  const statsText = `ATK ${row.atk}  DEF ${row.def}  HP ${row.hp}  SPD ${row.spd}  CR ${row.chc}  CD ${row.chd}  EFF ${row.eff}  RES ${row.efr}  |  EHP ${row.ehp.toLocaleString()}  EHP/s ${row.ehps.toLocaleString()}  DMG ${row.dmg.toLocaleString()}  MCD ${row.mcd.toLocaleString()}${skillPart}  |  ${fribbelsArtifactName(row.artifactCode)}  GS ${row.gs}`;
+  const statsText = `ATK ${row.atk}  DEF ${row.def}  HP ${row.hp}  SPD ${row.spd}  CR ${row.chc}  CD ${row.chd}  EFF ${row.eff}  RES ${row.efr}  |  EHP ${(row.ehp ?? 0).toLocaleString()}  EHP/s ${(row.ehps ?? 0).toLocaleString()}  DMG ${(row.dmg ?? 0).toLocaleString()}  MCD ${(row.mcd ?? 0).toLocaleString()}${skillPart}  |  ${fribbelsArtifactName(row.artifactCode)}  GS ${row.gs}`;
   const copyStats = document.getElementById('fribbels-copy-stats');
   if (copyStats) copyStats.textContent = statsText;
 
@@ -213,7 +212,7 @@ function fribbelsRestorePresetRow(row) {
   const skillPart = [row.s1, row.s2, row.s3].some((v) => v > 0)
     ? `  S1 ${s1Str}  S2 ${s2Str}  S3 ${s3Str}`
     : '';
-  const statsText = `ATK ${row.atk}  DEF ${row.def}  HP ${row.hp}  SPD ${row.spd}  CR ${row.chc}  CD ${row.chd}  EFF ${row.eff}  RES ${row.efr}  |  EHP ${row.ehp.toLocaleString()}  EHP/s ${row.ehps.toLocaleString()}  DMG ${row.dmg.toLocaleString()}  MCD ${row.mcd.toLocaleString()}${skillPart}  |  ${fribbelsArtifactName(row.artifactCode)}  GS ${row.gs}`;
+  const statsText = `ATK ${row.atk}  DEF ${row.def}  HP ${row.hp}  SPD ${row.spd}  CR ${row.chc}  CD ${row.chd}  EFF ${row.eff}  RES ${row.efr}  |  EHP ${(row.ehp ?? 0).toLocaleString()}  EHP/s ${(row.ehps ?? 0).toLocaleString()}  DMG ${(row.dmg ?? 0).toLocaleString()}  MCD ${(row.mcd ?? 0).toLocaleString()}${skillPart}  |  ${fribbelsArtifactName(row.artifactCode)}  GS ${row.gs}`;
   const copyStats = document.getElementById('fribbels-copy-stats');
   if (copyStats) copyStats.textContent = statsText;
   const copyBar = document.getElementById('fribbels-copy-bar');
@@ -245,6 +244,7 @@ function fribbelsBuildCurrentRow(
   mults,
   targetDef,
   rageSetEnabled,
+  fervorSetEnabled,
 ) {
   if (!hero?.atk) return null;
   const sets = fribbelsBuildEquippedSets(hero.equipment);
@@ -289,7 +289,13 @@ function fribbelsBuildCurrentRow(
     createDate: null,
   };
 
-  FribbelsPriorityFilter.computeRowStats(row, mults, targetDef, rageSetEnabled);
+  FribbelsPriorityFilter.computeRowStats(
+    row,
+    mults,
+    targetDef,
+    rageSetEnabled,
+    fervorSetEnabled,
+  );
 
   if (baseStats) {
     const bsStats = FribbelsPriorityFilter.computeBsStats(
@@ -330,7 +336,7 @@ async function fribbelsLoadData() {
     fribbelsBaseStats = baseStats;
   } catch (e) {
     fribbelsSetStatus('Could not resolve hero name.');
-    console.error(e);
+    Log.error(e);
     return;
   }
 
@@ -353,12 +359,14 @@ async function fribbelsLoadData() {
       mults = DamageCalc.getMultipliers({ name: heroName });
     } catch (e) {
       if (!(e instanceof Error && e.message.includes('no skill data'))) {
-        console.warn(e);
+        Log.warn(e);
       }
     }
     const targetDef = Settings.parseNumberValue('settingPenDefense') || 1500;
     const rageSetEnabled =
       document.getElementById('settingRageSet')?.checked ?? true;
+    const fervorSetEnabled =
+      document.getElementById('settingFervorSet')?.checked ?? true;
 
     const processedRows = [];
     data.forEach((row) => {
@@ -371,15 +379,17 @@ async function fribbelsLoadData() {
       row.efr = Number.parseInt(row.efr, 10);
       row.spd = Number.parseInt(row.spd, 10);
       row.gs = Number.parseInt(row.gs, 10);
+      row.cdCapBonus = heroObj.cdCapBonus || 0;
 
       row.artifactName = fribbelsArtifactName(row.artifactCode);
       const artiStats = fribbelsGetArtiStats(row.artifactName);
       const sets = row.sets || {};
 
+      const cdCap = 350 + row.cdCapBonus;
       row.gs = Math.ceil(
         row.gs -
           Math.max(0, row.chc - 100) * 1.6 -
-          Math.max(0, row.chd - 350) * 1.14,
+          Math.max(0, row.chd - cdCap) * 1.14,
       );
 
       const bsStats = FribbelsPriorityFilter.computeBsStats(
@@ -395,6 +405,7 @@ async function fribbelsLoadData() {
         mults,
         targetDef,
         rageSetEnabled,
+        fervorSetEnabled,
       );
 
       FribbelsPriorityFilter.calculateBuildScore(row, baseStats, artiStats);
@@ -412,6 +423,7 @@ async function fribbelsLoadData() {
       mults,
       targetDef,
       rageSetEnabled,
+      fervorSetEnabled,
     );
     fribbelsAllBuilds = processedRows;
     fribbelsPopulateArtifactFilter();
@@ -419,7 +431,7 @@ async function fribbelsLoadData() {
     fribbelsLoadedHeroName = heroId;
     fribbelsHideStatus();
   } catch (e) {
-    console.error('Fribbels Library fetch error', e);
+    Log.error('Fribbels Library fetch error', e);
     fribbelsSetStatus('Failed to load builds. Check your internet connection.');
   }
 }
@@ -936,6 +948,15 @@ const FribbelsLibrary = {
   applyFilters() {
     fribbelsApplyFilters();
   },
+  /**
+   * Re-render the library grid when the shared CR-push / eff-weight inputs change
+   * on the Optimizer tab, so the FSpd/SpdEff columns update live.  Re-runs the
+   * normal filter→setData path (which re-decorates, re-aggregates and re-sorts).
+   */
+  refreshCalcColumns() {
+    if (!FribbelsGrid.isReady() || !fribbelsAllBuilds.length) return;
+    fribbelsApplyFilters();
+  },
   deselectRow() {
     fribbelsDeselectRow();
   },
@@ -951,5 +972,9 @@ const FribbelsLibrary = {
     fribbelsCurrentBuildRow = null;
   },
 };
+
+// Expose globally so OptimizerGrid.refreshCalcInputs() can trigger a live
+// refresh of the library's FSpd/SpdEff columns from the Optimizer tab's inputs.
+globalThis.FribbelsLibrary = FribbelsLibrary;
 
 export default FribbelsLibrary;

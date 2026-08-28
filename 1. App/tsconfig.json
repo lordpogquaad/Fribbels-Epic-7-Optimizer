@@ -1,35 +1,37 @@
 {
-    "compilerOptions": {
-        "target": "ES2018",
-        "module": "CommonJS",
-        "lib": ["dom", "esnext"],
-        "declaration": true,
-        "declarationMap": true,
-        "noEmit": true,
-        "jsx": "react",
-        "strict": true,
-        "pretty": true,
-        "sourceMap": true,
-        /* Additional Checks */
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        /* Module Resolution Options */
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-        "ignoreDeprecations": "6.0",
-        "forceConsistentCasingInFileNames": true,
-        "allowSyntheticDefaultImports": true,
-        "resolveJsonModule": true,
-        "allowJs": true
-    },
-    "exclude": [
-        "test",
-        "release",
-        "frontend/main.prod.js",
-        "frontend/renderer.prod.js",
-        "frontend/dist",
-        "dll"
-    ]
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "noEmit": true,
+    "strict": true,
+    "pretty": true,
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    /* Module Resolution Options */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    /* Skip type-checking of third-party .d.ts files (avoids cross-package @types drift).
+       Standard practice; does NOT relax type-checking of our own source. */
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "**/node_modules",
+    "release",
+    "2. Frontend/1. Source/8. DIST",
+    "**/renderer.dev.js",
+    "**/renderer.prod.js",
+    "**/main.prod.js",
+    "2. Personal"
+  ]
 }

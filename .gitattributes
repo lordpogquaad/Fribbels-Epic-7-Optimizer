@@ -1,0 +1,38 @@
+# Canonical line endings: LF for everything git treats as text.
+# `eol=lf` overrides core.autocrlf for matched files, so the working tree
+# stops checking out as CRLF on Windows (which was perpetually tripping
+# `prettier --check`). Prettier's endOfLine is set to "auto" to match.
+* text=auto eol=lf
+
+# Windows shell scripts must keep CRLF or they can break.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# POSIX scripts must stay LF (explicit, in case of misdetection).
+*.sh    text eol=lf
+
+# Binary assets — never normalize bytes (svg stays text: it's XML).
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.bmp   binary
+*.jar   binary
+*.exe   binary
+*.dll   binary
+*.node  binary
+*.zip   binary
+*.gz    binary
+*.7z    binary
+*.tar   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary
+*.otf   binary
+*.pdf   binary
+*.mp3   binary
+*.wav   binary
+*.mp4   binary

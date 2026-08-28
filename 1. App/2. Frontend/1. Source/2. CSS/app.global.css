@@ -1,0 +1,62 @@
+html {
+  overflow-x: hidden;
+}
+
+body {
+  position: relative;
+  height: 100vh;
+  font-family: Arial, Helvetica, 'Helvetica Neue', sans-serif;
+  overflow-y: auto;
+}
+
+h2 {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: bold;
+  letter-spacing: -0.025em;
+  color: var(--font-color, #333);
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  color: var(--link-blue);
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+a:hover {
+  opacity: 1;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.gearPanelButtonRow {
+  display: flex !important;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.gearPanelButtonRow .gearPreviewButton {
+  flex: 1 !important;
+  min-width: 80px;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+#settingsTab h2 {
+  font-size: 1.2rem;
+}
+
+/* The global `li { list-style: none }` above strips markers from every list.
+   The Importer tab's instructions are an ordered list where the step numbers
+   matter, so restore decimal numbering scoped to that panel. */
+.importerWrapper ol {
+  padding-left: 1.5em;
+}
+
+.importerWrapper ol li {
+  list-style: decimal;
+}

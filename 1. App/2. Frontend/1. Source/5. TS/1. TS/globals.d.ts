@@ -1,0 +1,63 @@
+// Declarations for the properties inputHandler.js assigns to globalThis,
+// so TypeScript / the IDE recognise them on the global object.
+declare global {
+  var Files: any;
+  var I18n: any;
+  var Assets: any;
+  var Path: any;
+  var Constants: any;
+  var Api: any;
+  var Dialog: any;
+  var Reforge: any;
+  var Utils: any;
+  var DarkMode: any;
+  var GridRenderer: any;
+  var Updater: any;
+  var StatPreview: any;
+  var Artifact: any;
+  var ColorPicker: any;
+  var HeroesTab: any;
+  var OptimizerTab: any;
+  var MultiOptimizerTab: any;
+  var ItemsTab: any;
+  var EnhancingTab: any;
+  var HeroesGrid: any;
+  var OptimizerGrid: any;
+  var ItemsGrid: any;
+  var ModificationFilter: any;
+  var Subprocess: any;
+  var Selectors: any;
+  var Settings: any;
+  var ForceFilter: any;
+  var PriorityFilter: any;
+  var electron: any;
+  var Gears: any;
+  var Sets: any;
+  var Ranks: any;
+  var Stats: any;
+  var Stat: any;
+  var Item: any;
+  var GearRating: any;
+  var OptimizationRequest: any;
+  var Importer: any;
+  var ItemAugmenter: any;
+  var Locator: any;
+  var ItemSerializer: any;
+  var Tooltip: any;
+  var HeroData: any;
+  var HtmlGenerator: any;
+  var fs: any;
+  var Notifier: any;
+  var Saves: any;
+  var Scanner: any;
+  var DamageCalc: any;
+  var ItemSimulator: any;
+  var ArchetypeStore: any;
+  var ArchetypeScorer: any;
+  var ArchetypeTab: any;
+  var FlatStatCalibration: any;
+  var HeroGearMatcher: any;
+  var createGridCompat: any;
+}
+
+export {};

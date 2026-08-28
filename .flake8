@@ -1,0 +1,7 @@
+[flake8]
+# Align flake8 with Black (the configured Python formatter): 88-col lines, and
+# ignore the two checks Black is intentionally incompatible with (E203, W503).
+# At the repo root so it's discovered regardless of the cwd flake8 runs from
+# (flake8 searches the cwd and walks upward).
+max-line-length = 88
+extend-ignore = E203, W503

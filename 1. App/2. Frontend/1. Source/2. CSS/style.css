@@ -1,0 +1,4852 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+ * DARK MODE NOTICE
+ * ═══════════════════════════════════════════════════════════════════════════
+ * This app uses a SEPARATE dark-theme file: css/darktheme.css
+ * darktheme.css is loaded/disabled at runtime when the user toggles dark mode.
+ *
+ * RULE: Any CSS rule added here that sets colors, backgrounds, borders, or
+ *       other visual appearance MUST have a matching override in darktheme.css.
+ *       Omitting the override causes elements to look wrong in dark mode.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Removed an unused remote Google Fonts 'Jost' @import here: it was never referenced
+   (no `font-family: 'Jost'` anywhere) yet fetched fonts.googleapis.com on every startup,
+   which skewed Chromium's network estimate to "slow" and triggered the font-display
+   intervention warning. All fonts are self-hosted locally via @fontsource — keep it that way. */
+
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Fira Sans Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@fontsource/fira-sans-condensed/files/fira-sans-condensed-cyrillic-ext-400-normal.woff2")
+    format('woff2');
+  unicode-range:
+    U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+/* cyrillic */
+@font-face {
+  font-family: 'Fira Sans Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@fontsource/fira-sans-condensed/files/fira-sans-condensed-cyrillic-400-normal.woff2")
+    format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* greek-ext */
+@font-face {
+  font-family: 'Fira Sans Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@fontsource/fira-sans-condensed/files/fira-sans-condensed-greek-ext-400-normal.woff2")
+    format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+
+/* greek */
+@font-face {
+  font-family: 'Fira Sans Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@fontsource/fira-sans-condensed/files/fira-sans-condensed-greek-400-normal.woff2")
+    format('woff2');
+  unicode-range: U+0370-03FF;
+}
+
+/* vietnamese */
+@font-face {
+  font-family: 'Fira Sans Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@fontsource/fira-sans-condensed/files/fira-sans-condensed-vietnamese-400-normal.woff2")
+    format('woff2');
+  unicode-range:
+    U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1,
+    U+01AF-01B0, U+1EA0-1EF9, U+20AB;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: 'Fira Sans Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@fontsource/fira-sans-condensed/files/fira-sans-condensed-latin-ext-400-normal.woff2")
+    format('woff2');
+  unicode-range:
+    U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Fira Sans Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/@fontsource/fira-sans-condensed/files/fira-sans-condensed-latin-400-normal.woff2")
+    format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
+    U+FFFD;
+}
+
+/*
+ CSS for the main interaction
+*/
+.tabset > input[type='radio'] {
+  position: absolute;
+  left: -200vw;
+}
+
+.tabset .tab-panel {
+  display: none;
+}
+
+.tabLabel {
+  user-select: none;
+}
+
+.tabLabelLink {
+  user-select: none;
+}
+
+.tabset > input:first-child:checked ~ .tab-panels > .tab-panel:first-child,
+.tabset > input:nth-child(3):checked ~ .tab-panels > .tab-panel:nth-child(2),
+.tabset > input:nth-child(5):checked ~ .tab-panels > .tab-panel:nth-child(3),
+.tabset > input:nth-child(7):checked ~ .tab-panels > .tab-panel:nth-child(4),
+.tabset > input:nth-child(9):checked ~ .tab-panels > .tab-panel:nth-child(5),
+.tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6),
+.tabset > input:nth-child(13):checked ~ .tab-panels > .tab-panel:nth-child(7),
+.tabset > input:nth-child(15):checked ~ .tab-panels > .tab-panel:nth-child(8) {
+  display: block;
+}
+
+.tabset > input:nth-child(19):checked ~ .tab-panels > .tab-panel:nth-child(9) {
+  display: block;
+}
+
+.tabset > input:nth-child(21):checked ~ .tab-panels > .tab-panel:nth-child(10) {
+  display: block;
+}
+
+/* Gear Analysis Tab */
+
+/* Enhance filter buttons — large text style matching Gear tab */
+.ga-enh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 36px;
+  padding: 0 6px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color, #555);
+  background: var(--bg-color, #2a2a2a);
+  color: var(--inactive-color, #888);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background 0.12s,
+    color 0.12s,
+    border-color 0.12s;
+}
+
+.ga-enh-btn.active {
+  background: #1565c0;
+  border-color: #1e88e5;
+  color: #fff;
+}
+
+.ga-enh-btn:hover {
+  border-color: #42a5f5;
+}
+
+.ga-set-btn.active {
+  background: #06c;
+  color: #fff;
+}
+
+#gear-analysis-controls {
+  background: var(--bg-color, #f5f5f5);
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+#gear-analysis-legend {
+  background: var(--bg-color, #efefef);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  color: var(--inactive-color, #888);
+}
+
+#gear-analysis-table thead tr {
+  background: var(--bg-color, #f5f5f5);
+}
+
+#gear-analysis-table td,
+#gear-analysis-table th {
+  border-right: 1px solid var(--border-color, #ddd);
+  border-bottom: 1px solid var(--border-color, #e8e8e8);
+  color: var(--font-color, #333);
+}
+
+#gear-analysis-tbody tr:nth-child(even) {
+  background: rgb(0 0 0 / 4%);
+}
+
+#gear-analysis-tbody tr:hover {
+  background: rgb(100 181 246 / 12%);
+}
+
+#gear-analysis-table thead th[data-col='gs'] {
+  border-right: 2px solid var(--inactive-color, #aaa);
+}
+
+/* Substat cell element classes — overridden per theme in darktheme.css */
+.ga-stat-name {
+  color: var(--inactive-color, #777);
+}
+
+.ga-stat-value {
+  color: var(--font-color, #333);
+}
+
+.ga-stat-roll {
+  font-size: 11px;
+  color: var(--inactive-color, #bbb);
+}
+
+.ga-stat-reforged {
+  color: #1565c0;
+} /* blue in light mode */
+.ga-mod-hint {
+  font-size: 11px;
+  color: var(--inactive-color, #888);
+  white-space: nowrap;
+}
+
+.ga-mod-gain {
+  font-size: 12px;
+  color: #1565c0;
+} /* blue in light mode */
+.ga-arch-invalid {
+  color: var(--border-color, #ccc);
+}
+
+.ga-mod-none {
+  font-size: 12px;
+  color: var(--border-color, #ccc);
+}
+
+/* Gear Analysis: row-level scored triage highlight */
+tr.ga-row-scored > td {
+  background-color: #d4edda;
+}
+
+tr.ga-row-unscored > td {
+  background-color: #f8d7da;
+}
+
+#gear-analysis-arch-toggles {
+  background: var(--bg-color, #fff);
+  border: 1px solid var(--inactive-color, #ccc);
+  color: var(--font-color, #333);
+}
+
+/* Archetype editor tab */
+.archetypeToolbar {
+  padding: 8px 6px 4px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.archetypeHint {
+  font-size: 10px;
+  color: #888;
+  flex: 1 1 100%;
+  margin-top: 2px;
+}
+
+#archetypeTableContainer {
+  overflow: auto;
+  max-height: calc(100vh - 90px);
+  padding: 4px 6px;
+}
+
+.archetypeTable {
+  border-collapse: collapse;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.archetypeTable th,
+.archetypeTable td {
+  border: 1px solid #ccc;
+  padding: 2px 3px;
+}
+
+.archetypeTable thead th {
+  background: #e8e8e8;
+  font-weight: 600;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.archetype-cell-input {
+  width: 120px;
+  font-size: 10px;
+  border: none;
+  background: transparent;
+  padding: 1px 2px;
+}
+
+.archetype-cell-num {
+  width: 48px;
+}
+
+.archetype-cell-wide {
+  width: 150px;
+}
+
+.archetype-del-btn {
+  padding: 1px 5px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/* ---- Multi-select dropdown ---- */
+.arch-ms-trigger {
+  cursor: pointer;
+  padding: 1px 4px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  background: #fff;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  min-width: 55px;
+  display: block;
+  user-select: none;
+}
+
+.arch-ms-trigger:hover {
+  background: #f0f0f0;
+}
+
+.arch-ms-panel {
+  position: fixed;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  max-height: 220px;
+  overflow-y: auto;
+  min-width: 155px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 18%);
+  z-index: 99999;
+  padding: 2px 0;
+}
+
+.arch-ms-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 10px;
+  white-space: nowrap;
+  color: #333;
+}
+
+.arch-ms-option:hover {
+  background: #e8f0fe;
+}
+
+.arch-ms-any {
+  font-style: italic;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 3px;
+  margin-bottom: 1px;
+}
+
+/* ---- Substat single-select ---- */
+.arch-ss {
+  width: 130px;
+  font-size: 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 1px 2px;
+  color: #333;
+}
+
+/* ---- Drag-and-drop ---- */
+.arch-drag-handle {
+  cursor: grab;
+  color: #888;
+  text-align: center;
+  padding: 0 4px;
+  user-select: none;
+}
+
+.arch-drag-handle:active {
+  cursor: grabbing;
+}
+
+.arch-row-dragging {
+  opacity: 0.4;
+}
+
+.arch-row-over td {
+  box-shadow: inset 0 -2px 0 #4285f4;
+}
+
+/* ---- Stat-weights editor ---- */
+.arch-wt-trigger {
+  padding: 1px 6px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  background: #fff;
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 32px;
+}
+
+.arch-wt-trigger:hover {
+  background: #f0f0f0;
+}
+
+.arch-wt-panel {
+  min-width: 210px;
+}
+
+.arch-wt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 8px;
+  gap: 8px;
+}
+
+.arch-wt-label {
+  font-size: 10px;
+  flex: 1;
+  white-space: nowrap;
+  color: #333;
+}
+
+.arch-wt-input {
+  width: 52px;
+  font-size: 10px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 1px 4px;
+  background: #fff;
+  color: #333;
+}
+
+.arch-wt-any-row {
+  background: #f5f5f5;
+  border-radius: 2px;
+  font-style: italic;
+}
+
+.arch-wt-any-row .arch-wt-label {
+  font-weight: 600;
+}
+
+.arch-wt-divider {
+  border-bottom: 1px solid #ddd;
+  margin: 3px 0;
+}
+
+/* ---- Per-slot substat panel ---- */
+.arch-slot-panel {
+  min-width: 460px;
+  padding: 4px 6px;
+}
+
+.arch-slot-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 0;
+}
+
+.arch-slot-header {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.arch-slot-name {
+  font-size: 10px;
+  width: 54px;
+  flex-shrink: 0;
+  color: #555;
+  white-space: nowrap;
+}
+
+.arch-slot-sel-hdr {
+  font-size: 10px;
+  width: 58px;
+  flex-shrink: 0;
+  text-align: center;
+  color: #666;
+}
+
+.arch-slot-sel {
+  width: 58px;
+  font-size: 10px;
+  padding: 1px;
+  flex-shrink: 0;
+}
+
+/* ---- Gear tab group score bar ---- */
+.gearGroupScoreLabel {
+  font-size: 11px;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+.archetypeGroupFilterSelect {
+  font-size: 11px;
+  padding: 1px 4px;
+  height: 22px;
+  cursor: pointer;
+}
+
+/* Optimizer section: flex column so sub-tab bar + content stack vertically */
+.tabset > input:first-child:checked ~ .tab-panels > .tab-panel:first-child {
+  display: flex;
+  flex-direction: column;
+}
+
+/* optimizer-tab fills all remaining height below the sub-tab bar */
+#optimizer-tab {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+
+/*
+ Styling
+*/
+body {
+  font:
+    14px/1.5em Overpass,
+    'Open Sans',
+    Helvetica,
+    sans-serif;
+  color: #333;
+  user-select: none;
+  font-weight: 300;
+}
+
+input[type='submit'] {
+  height: 23px;
+}
+
+.tabset > label {
+  position: relative;
+  display: inline-block;
+  padding: 5px 7px 10px;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tabset > label::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  bottom: 6px;
+  width: -webkit-fill-available;
+  margin-right: 14px;
+  height: 3px;
+  background: #8d8d8d;
+}
+
+.tabset > label:hover,
+.tabset > input:focus + label {
+  border-color: #ccc;
+}
+
+.tabset > label:hover::after,
+.tabset > input:focus + label::after,
+.tabset > input:checked + label::after {
+  background: #06c;
+}
+
+.tabset > input:checked + label {
+  border-color: #ccc;
+}
+
+.tab-panel {
+  padding: 4px 0;
+  border-top: 1px solid #ccc;
+  white-space: normal;
+}
+
+.optimizer-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.constraints-panel {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.tab {
+  height: 94%;
+  display: flex;
+  flex-direction: row;
+}
+
+.gearPreviewButton {
+  width: 140px;
+  cursor: pointer;
+  margin-bottom: 1px;
+  margin-left: 1px;
+  margin-right: 10px;
+}
+
+.gearPanelButtonRow {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.gearPanelButtonRow .gearPreviewButton {
+  flex: 1;
+  min-width: 80px;
+  margin: 0;
+}
+
+.controlsPanel {
+  width: 149px;
+}
+
+.undoResetButton {
+  background-color: #7a4500;
+  color: #fff;
+  border-color: #5c3300;
+  font-weight: bold;
+}
+
+.undoResetButton:hover {
+  background-color: #b36e09;
+}
+
+.importerButton {
+  width: 200px;
+  cursor: pointer;
+  margin-bottom: 1px;
+  margin-left: 1px;
+  margin-right: 5px;
+}
+
+.importer-section {
+  padding-top: 10px;
+  white-space: nowrap;
+}
+
+.importerWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.optimization-results-panel {
+  flex-grow: 2;
+  min-height: 340px;
+  height: 100%;
+  display: flex;
+  overflow-x: auto;
+}
+
+#myGrid {
+  height: 100%;
+  flex-grow: 2;
+  min-width: 1220px;
+}
+
+.optionsShortSelector > .ms-choice {
+  height: 23px;
+  font-size: 13px;
+}
+
+.gearActionButtonSmaller {
+  width: 100%;
+  cursor: pointer;
+  margin-right: 5px;
+  height: 19px;
+  margin-bottom: 3px;
+}
+
+.optimizer-equipped-section {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  min-height: 225px;
+  margin-top: 2px;
+  margin-bottom: 14px;
+}
+
+/* Mod decision-support: the "which pieces to mod" checklist under the gear preview,
+   and the permanence warning banner in the Add Substat Mods dialog. */
+.optimizer-mod-checklist {
+  margin: 2px 0 12px;
+  font-size: 12px;
+  color: var(--font-color);
+}
+
+.optimizer-mod-checklist:empty {
+  display: none;
+}
+
+.modChkHeader {
+  font-weight: 600;
+  color: #c8821f;
+  margin-bottom: 4px;
+}
+
+.modChkBudget {
+  font-weight: 700;
+}
+
+.modChkBudget.modChkAtCap {
+  color: #d04545;
+}
+
+.modChkRows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.modChkRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.modChkSlot {
+  min-width: 64px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.modChkFrom {
+  opacity: 0.7;
+}
+
+.modChkArrow {
+  opacity: 0.6;
+}
+
+.modChkTo {
+  font-weight: 600;
+  color: #2a7a3a;
+}
+
+.modChkRange {
+  opacity: 0.65;
+  font-size: 11px;
+}
+
+.modChkWarn {
+  font-size: 11px;
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.modPermanenceWarning {
+  margin: 4px 0 8px;
+  padding: 5px 8px;
+  border: 1px solid #d6a23a;
+  border-radius: 4px;
+  background: rgb(224 162 58 / 12%);
+  color: var(--font-color);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.optimizerActionButtons {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-end;
+  padding-bottom: 5px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.optimizerActionButtonsRow {
+  display: flex;
+  flex-direction: row;
+}
+
+label {
+  display: inline;
+  vertical-align: middle;
+}
+
+input {
+  vertical-align: middle;
+}
+
+.constraints-panel-col {
+  padding: 5px;
+  width: 200px;
+  flex-grow: 1;
+  line-height: 14px;
+}
+
+.constraints-panel-col-small {
+  padding: 5px 8px;
+  width: 170px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  line-height: 14px;
+  align-self: flex-start;
+}
+
+.constraints-panel-col-med {
+  padding: 5px 4px 4px;
+  width: 210px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  line-height: 14px;
+}
+
+.constraints-left-panel {
+  min-width: 130px;
+  width: 150px;
+}
+
+.gear-preview-panel {
+  display: flex;
+  flex-direction: row;
+  font-size: 12px;
+}
+
+.gear-preview-col {
+  display: flex;
+  flex-direction: column;
+}
+
+#buttonSpace {
+  width: 20px;
+  height: 4px;
+  display: inline-block;
+}
+
+.gear-preview-row {
+  padding: 12px 12px 5px;
+  font-size: 13px;
+  width: 180px;
+  height: 230px;
+  border: 1px solid var(--inactive-color);
+  margin-right: 10px;
+  border-radius: 7px;
+}
+
+.ag-body-horizontal-scroll {
+  min-height: 5px !important;
+  max-height: 5px !important;
+  height: 5px !important;
+}
+
+.ag-body-horizontal-scroll-viewport {
+  min-height: 5px !important;
+  max-height: 5px !important;
+  height: 5px !important;
+}
+
+.ag-body-horizontal-scroll-container {
+  min-height: 5px !important;
+  max-height: 5px !important;
+  height: 5px !important;
+}
+
+.ag-cell {
+  display: flex;
+  justify-content: center; /* align horizontal */
+  align-items: center;
+}
+
+/*
+ Demo purposes only
+*/
+
+#ocr-test-input-url {
+  width: 500px;
+}
+
+#exportOutputText {
+  width: 75%;
+  height: 70px;
+}
+
+#loadFromGameExportOutputText {
+  width: 75%;
+  height: 70px;
+}
+
+.tabulator-col {
+  font-size: 10px;
+}
+
+.tabulator-arrow {
+  display: none !important;
+}
+
+.tabulator-col-title {
+  white-space: nowrap !important;
+  overflow: visible !important;
+}
+
+#heroes-equipped-section {
+  display: flex;
+  flex-direction: row;
+  min-height: 250px;
+  margin-bottom: 8px;
+}
+
+.heroes-equipped-item {
+  width: 150px;
+  padding: 10px 15px;
+}
+
+.optimizer-number-input {
+  height: 15px;
+  width: 50px;
+  margin-bottom: 2px;
+}
+
+/* Target row holds three inputs (↓T min, ◎ sweet spot, ↑T max) under the 140px
+   [minLimit][label][maxLimit] header, so each is narrower than a plain input. */
+.stat-target-input {
+  width: 44px;
+}
+
+/* Flagged by validateTargets(): an inverted min/max limit or an out-of-order
+   min/sweet/max target trio. */
+.input-invalid {
+  border: 1px solid #d9534f !important;
+  background: rgb(217 83 79 / 14%) !important;
+}
+
+.inputStatLabel {
+  font-size: 12px;
+  display: inline-block;
+  width: 40px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.sliderLabel {
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  padding-top: 3px;
+}
+
+.slider-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+
+.slot-filter-count {
+  font-size: 10px;
+  color: #aaa;
+  white-space: nowrap;
+  padding-left: 4px;
+}
+
+.slot-score-summary {
+  margin-top: 6px;
+}
+
+.slot-score-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.slot-score-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 10px;
+  color: #aaa;
+  gap: 1px;
+}
+
+.slot-score-scores {
+  margin-top: 2px;
+}
+
+.slot-score-scores span {
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  color: #e8a838;
+}
+
+.sliderInput {
+  width: 30px;
+  text-align: center;
+  margin-bottom: 1px;
+}
+
+.sliderContainer {
+  display: inline-block;
+  flex-grow: 100;
+  padding-left: 10px;
+  padding-bottom: 3px;
+}
+
+.sliderRow {
+  display: flex;
+  padding-right: 5px;
+  height: 21px;
+}
+
+.slider-heatmap {
+  font-size: 13px;
+  color: #aaa;
+  white-space: nowrap;
+  align-self: center;
+  padding-left: 5px;
+  min-width: 80px;
+  text-align: right;
+}
+
+.slider-heatmap.heatmap-high {
+  color: #6dbf6d;
+}
+
+.slider-heatmap.heatmap-mid {
+  color: #d4c050;
+}
+
+.slider-heatmap.heatmap-low {
+  color: #e07050;
+}
+
+.slot-filter-est-combo {
+  font-size: 11px;
+  color: #aaa;
+  padding: 2px 0 1px 2px;
+  min-height: 14px;
+}
+
+.slot-filter-est-combo.combo-ok {
+  color: #6dbf6d;
+}
+
+.slot-filter-est-combo.combo-warn {
+  color: #d4c050;
+}
+
+.slot-filter-est-combo.combo-high {
+  color: #e07050;
+}
+
+.auto-target-label {
+  font-size: 11px;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+.preset-name-input {
+  flex: 1;
+  min-width: 50px;
+  max-width: 90px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  box-sizing: border-box;
+  background: var(--input-bg, #222);
+  color: inherit;
+  border: 1px solid var(--inactive-color, #555);
+  border-radius: 2px;
+  margin-left: auto;
+  margin-right: 3px;
+}
+
+.preset-rename-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 55%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preset-rename-modal {
+  background: var(--panel-bg, #2a2a2a);
+  border: 1px solid var(--inactive-color, #555);
+  border-radius: 6px;
+  padding: 14px 16px;
+  min-width: 230px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 50%);
+}
+
+.preset-rename-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.preset-rename-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--input-bg, #222);
+  color: inherit;
+  border: 1px solid var(--inactive-color, #555);
+  border-radius: 3px;
+  padding: 4px 6px;
+  font-size: 12px;
+  height: 26px;
+}
+
+.preset-rename-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+
+/* ===== Build Comparison Modal ===== */
+.compare-build-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 60%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compare-build-modal {
+  background: var(--panel-bg, #2a2a2a);
+  border: 1px solid var(--inactive-color, #555);
+  border-radius: 6px;
+  padding: 16px;
+  min-width: 400px;
+  max-width: 580px;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 55%);
+}
+
+.compare-build-content {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.compare-build-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.compare-build-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.compare-build-close {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.compare-build-close:hover {
+  color: #111;
+  background: rgb(255 255 255 / 25%);
+}
+
+.compare-build-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.compare-build-table th,
+.compare-build-table td {
+  padding: 4px 10px;
+  text-align: right;
+  border-bottom: 1px solid rgb(255 255 255 / 7%);
+}
+
+.compare-build-table thead th {
+  color: #aaa;
+  font-weight: 600;
+  font-size: 11px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgb(255 255 255 / 18%);
+  position: sticky;
+  top: 0;
+  background: var(--panel-bg, #2a2a2a);
+  z-index: 1;
+}
+
+.compare-build-table tbody tr:hover {
+  background: rgb(255 255 255 / 4%);
+}
+
+.cmp-label {
+  text-align: left !important;
+  color: #bbb;
+  width: 52px;
+  font-weight: 500;
+}
+
+.cmp-a {
+  color: #ccc;
+  min-width: 90px;
+}
+
+.cmp-b {
+  color: #ccc;
+  min-width: 90px;
+}
+
+.cmp-delta {
+  min-width: 70px;
+  font-weight: 600;
+}
+
+.cmp-up {
+  color: #6fcf6f;
+}
+
+.cmp-down {
+  color: #e07070;
+}
+
+.cmp-same {
+  color: #666;
+}
+
+.cmp-diff {
+  color: #f0c040;
+}
+
+.cmp-section-header td {
+  font-size: 10px;
+  color: #777;
+  padding-top: 10px;
+  padding-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: none;
+}
+
+.pin-active {
+  background: #cce8d4 !important;
+  color: #005200 !important;
+}
+
+.priority-hint {
+  font-size: 12px;
+  color: #ccc;
+  white-space: nowrap;
+  width: 52px;
+  flex-shrink: 0;
+  text-align: center;
+  align-self: center;
+  background: #1c1c1c;
+  border: 1px solid #444;
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin-left: 4px;
+  cursor: text;
+  appearance: textfield;
+}
+
+.priority-hint::-webkit-outer-spin-button,
+.priority-hint::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.priority-hint:placeholder-shown {
+  border-color: transparent;
+  background: transparent;
+}
+
+.priority-base {
+  font-size: 12px;
+  color: #999;
+  width: 48px;
+  text-align: center;
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 3px;
+  background: #1c1c1c;
+  border: 1px solid #444;
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+.priority-delta {
+  font-size: 11px;
+  min-width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 1px;
+}
+
+.priority-delta-pos {
+  color: #5a9;
+}
+
+.priority-delta-neg {
+  color: #c55;
+}
+
+.priority-spinner-row {
+  gap: 2px;
+}
+
+.priority-spinner-input {
+  width: 40px !important;
+  text-align: center;
+  padding: 1px 2px;
+}
+
+.priority-step-btn {
+  background: #2a2a2a;
+  border: 1px solid #555;
+  color: #aaa;
+  border-radius: 3px;
+  cursor: pointer;
+  flex-shrink: 0;
+  line-height: 1;
+  padding: 0;
+  user-select: none;
+}
+
+.priority-step-btn:hover {
+  background: #3d3d3d;
+  color: #fff;
+  border-color: #888;
+}
+
+.priority-step-btn:active {
+  background: #505050;
+}
+
+.priority-coarse {
+  width: 20px;
+  height: 22px;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.priority-fine {
+  width: 14px;
+  height: 22px;
+  font-size: 9px;
+}
+
+/* ===== Fribbels Library bottom tab ===== */
+.optimizer-bottom-tab-bar {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid #d0d0d0;
+  background: #f0f0f0;
+  padding: 0 6px;
+  flex-shrink: 0;
+}
+
+.optimizer-bottom-tab-btn {
+  padding: 4px 14px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  background: transparent;
+  font-size: 12px;
+  color: #555;
+  font-family: inherit;
+}
+
+.optimizer-bottom-tab-btn.active {
+  border-bottom-color: #4da6ff;
+  color: #1a7acc;
+  font-weight: 600;
+}
+
+.optimizer-bottom-tab-btn:hover:not(.active) {
+  background: #e2e2e2;
+}
+
+.fribbels-library-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fribbels-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-bottom: 1px solid #d0d0d0;
+  background: #f8f8f8;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.fribbels-fetch-btn {
+  padding: 3px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  background: #4da6ff;
+  color: #000;
+  border: none;
+  border-radius: 3px;
+  font-family: inherit;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.fribbels-fetch-btn:hover {
+  background: #2e8de0;
+}
+
+.fribbels-copy-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background: #dff0df;
+  border-bottom: 1px solid #aca;
+  flex-shrink: 0;
+}
+
+.fribbels-copy-stats {
+  font-size: 11px;
+  color: #333;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fribbels-action-btn {
+  padding: 2px 9px;
+  font-size: 11px;
+  cursor: pointer;
+  background: #004999;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.fribbels-action-btn:hover {
+  background: #2e8de0;
+}
+
+.fribbels-deselect-btn {
+  background: #999;
+  padding: 2px 6px;
+}
+
+.fribbels-deselect-btn:hover {
+  background: #777;
+}
+
+.fribbels-status {
+  padding: 10px 8px;
+  font-size: 11px;
+  color: #888;
+  text-align: center;
+}
+
+.fribbels-table-wrap {
+  flex: 1;
+  min-height: 350px;
+  display: flex;
+  overflow: hidden;
+}
+
+.fribbels-ag-grid {
+  flex: 1;
+  width: 100%;
+  font-size: 11px;
+}
+
+.fribbels-ag-grid .ag-row-selected {
+  background-color: #9cf !important;
+}
+
+.fribbels-ag-grid .ag-row-hover:not(.ag-row-selected) {
+  background-color: #cce8ff !important;
+  cursor: pointer;
+}
+
+.fribbels-set-abbrev {
+  font-size: 10px;
+  color: #555;
+}
+
+.fribbels-set-icons-cell {
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* ---- Fribbels Filter & Summary ---- */
+
+.fribbels-filter-btn,
+.fribbels-summary-btn {
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  background: #e0e0e0;
+  color: #333;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.fribbels-filter-btn:hover,
+.fribbels-summary-btn:hover {
+  background: #ccc;
+}
+
+.fribbels-filter-badge {
+  background: #e6820a;
+  color: #000;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.fribbels-filter-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 200;
+  background: #f8f8f8;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  padding: 10px 12px;
+  min-width: 380px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 18%);
+}
+
+.fribbels-filter-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.fribbels-filter-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: #777;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+.fribbels-filter-close-btn:hover {
+  color: #333;
+}
+
+.fribbels-filter-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 5px 0 3px;
+}
+
+.fribbels-filter-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px 8px;
+}
+
+.fribbels-filter-stats-grid label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.fribbels-filter-stats-grid input {
+  width: 52px;
+  padding: 1px 3px;
+  font-size: 11px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font-family: inherit;
+}
+
+.fribbels-filter-sets-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 10px;
+  margin-bottom: 4px;
+}
+
+.fribbels-filter-sets-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.fribbels-filter-sets-col-label {
+  font-size: 9px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 1px 0 2px;
+  font-weight: 600;
+}
+
+.fribbels-filter-sets-col label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+
+.fribbels-filter-sets-col label:hover {
+  background: #ececec;
+}
+
+.fribbels-filter-sets-col img {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.fribbels-filter-artifact-wrap {
+  margin-bottom: 4px;
+}
+
+.fribbels-filter-artifact-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 3px 5px;
+  font-size: 11px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font-family: inherit;
+  margin-bottom: 3px;
+}
+
+.fribbels-filter-artifact-list {
+  max-height: 110px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  background: #fff;
+  padding: 2px 4px;
+}
+
+.fribbels-filter-artifact-list label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 1px 0;
+  white-space: nowrap;
+}
+
+.fribbels-filter-artifact-list label:hover {
+  background: #f0f0f0;
+}
+
+.fribbels-filter-artifact-list label.hidden {
+  display: none;
+}
+
+.fribbels-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.fribbels-filter-apply-btn {
+  padding: 3px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  background: #4da6ff;
+  color: #000;
+  border: none;
+  border-radius: 3px;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.fribbels-filter-apply-btn:hover {
+  background: #2e8de0;
+}
+
+.fribbels-filter-reset-btn {
+  padding: 3px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  background: #aaa;
+  color: #000;
+  border: none;
+  border-radius: 3px;
+  font-family: inherit;
+}
+
+.fribbels-filter-reset-btn:hover {
+  background: #888;
+}
+
+.fribbels-summary-panel {
+  background: #f0f0f0;
+  border-bottom: 1px solid #d0d0d0;
+  padding: 6px 10px;
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+
+.fribbels-summary-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.fribbels-summary-body {
+  display: flex;
+  gap: 20px;
+}
+
+.fribbels-summary-table {
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.fribbels-summary-table th {
+  background: #ddd;
+  padding: 2px 8px;
+  text-align: center;
+  border: 1px solid #ccc;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fribbels-summary-table td {
+  padding: 1px 8px;
+  text-align: center;
+  border-bottom: 1px solid #e8e8e8;
+  white-space: nowrap;
+}
+
+.fribbels-summary-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+}
+
+.gearTypeImg {
+  width: 33px;
+  height: 33px;
+  border-radius: 8px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.itemDisplayHeader {
+  display: flex;
+  flex-direction: row;
+  height: 30px;
+  justify-content: space-between;
+}
+
+.itemDisplayHeaderData {
+  display: flex;
+  flex-direction: column;
+  width: 44px;
+  line-height: 16px;
+  padding-right: 0;
+}
+
+.itemDisplayHeaderDataTop {
+  text-align: center;
+  display: inline-block;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: space-between;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.itemDisplayGearRank {
+  font-weight: 700;
+}
+
+.itemDisplayEquippedHero {
+  height: 45px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.itemDisplayEquippedHeroWrap {
+  position: relative;
+  display: inline-block;
+  height: 45px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.itemDisplayEquippedHeroWrap .itemDisplayEquippedHero {
+  top: 0;
+  transform: none;
+}
+
+.itemDisplayEquippedHeroBadge {
+  position: absolute;
+  bottom: 0;
+  right: -2px;
+  background: rgb(0 0 0 / 78%);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 1px 2px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.itemDisplayMainStat {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-top: solid 1px;
+  border-bottom: solid 1px;
+  margin-top: 12px;
+  padding-top: 5px;
+  padding-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.itemDisplaySubstats {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+  padding-top: 2px;
+  padding-bottom: 4px;
+  height: 110px;
+}
+
+.itemDisplaySubstat {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  line-height: 22px;
+}
+
+.itemDisplayFooter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+
+.vertical {
+  border-left: 1px solid #e8e8e8;
+  height: 90%;
+  margin-top: 15px;
+  border-color: #2d313600 !important;
+}
+
+.shortVertical {
+  border-left: 1px solid #e8e8e8;
+  height: 65%;
+  margin-top: 15px;
+}
+
+.horizontalSpace {
+  height: 3px;
+}
+
+.horizontalLine {
+  min-height: 0;
+  border-top: 1px solid #d2d2d2;
+  margin-top: 4px;
+  margin-bottom: 3px;
+}
+
+.horizontalLineWithMoreSpace {
+  min-height: 0;
+  border-top: 1px solid #d2d2d2;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.itemDisplayFooterSet {
+  margin-top: 3px;
+  height: 30px;
+}
+
+.itemDisplaySetImg {
+  height: 28px;
+}
+
+.itemDisplayEditImg {
+  height: 23px;
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 0 3px;
+}
+
+.itemDisplayLockImg {
+  height: 21px;
+  opacity: 0.75;
+  cursor: pointer;
+  padding-left: 3px;
+}
+
+.itemDisplayLockImgTransparent {
+  height: 21px;
+  opacity: 0.5;
+  cursor: pointer;
+  padding-left: 3px;
+}
+
+.itemDisplayDisableModsImg {
+  height: 21px;
+  opacity: 0.12;
+  cursor: pointer;
+  padding-left: 3px;
+}
+
+.itemDisplayDisableModsImgActive {
+  height: 21px;
+  opacity: 0.9;
+  cursor: pointer;
+  padding-left: 3px;
+  filter: sepia(1) saturate(4) hue-rotate(310deg);
+}
+
+.heroModSummary {
+  margin-top: 6px;
+  padding: 4px 7px;
+  background: rgb(100 160 255 / 10%);
+  border-left: 3px solid #6aa0ff;
+  border-radius: 2px;
+  font-size: 11px;
+  color: #222;
+  line-height: 1.5;
+}
+
+.heroModSummaryText {
+  overflow-wrap: break-word;
+}
+
+.itemDisplaySetType {
+  font-size: 13px;
+  font-weight: 600;
+  padding-left: 7px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.ag-theme-balham .ag-header-cell,
+.ag-theme-balham .ag-header-group-cell {
+  padding-left: 2px;
+  padding-right: 2px;
+  font-family:
+    Calibri,
+    Candara,
+    Segoe,
+    "Segoe UI",
+    Optima,
+    Arial,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.ag-header-cell {
+  padding-top: 2px !important;
+}
+
+.ag-header-cell::after {
+  top: 5% !important;
+}
+
+.ag-header-cell-label {
+  align-items: baseline !important;
+}
+
+/* AG Grid 32+: selection-column header — centre the circle icon.
+   Same margin:auto trick as the body cells. */
+#gear-grid .ag-column-first.ag-header-cell .ag-header-cell-label > *,
+.ag-column-select-header .ag-header-cell-label > * {
+  margin: auto !important;
+}
+
+/* Selection-column body cells: ag-cell-wrapper fills the full 28 px cell
+   and its direct child (the checkbox div) defaults to flex-start.
+   margin:auto on that child distributes leftover space equally on both sides. */
+#gear-grid .ag-column-first .ag-cell-wrapper > * {
+  margin: auto !important;
+}
+
+.ag-icon {
+  line-height: 14px !important;
+  font-weight: 400 !important;
+}
+
+.ag-header-row .ag-header-row-column {
+  height: 24px !important;
+}
+
+.ag-header {
+  height: 24px !important;
+  min-height: 24px !important;
+}
+
+.ag-theme-balham .ag-paging-panel {
+  height: 24px !important;
+}
+
+.ag-header-label-icon {
+  margin-left: -3px !important;
+}
+
+.ag-paging-button {
+  opacity: 1 !important;
+  position: unset !important;
+}
+
+.ag-header-cell-text {
+  overflow: initial;
+  text-overflow: initial;
+  min-width: unset !important;
+}
+
+.ag-header-cell-label,
+.ag-header-group-cell-label {
+  justify-content: space-around;
+  text-overflow: clip;
+  width: 40px;
+}
+
+.ag-theme-balham .ag-icon {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.ag-cell-value {
+  font-weight: 400;
+  text-align: center;
+  font-family:
+    "Segoe UI",
+    Frutiger,
+    "Frutiger Linotype",
+    "Dejavu Sans",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-size: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ag-theme-balham .ag-overlay-loading-wrapper {
+  background-color: var(
+    --ag-modal-overlay-background-color,
+    hsl(0deg 0% 100% / 5%)
+  );
+}
+
+.optgroup {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.gear-preview-panel-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.gearPreviewActions {
+  padding-left: 40px;
+}
+
+.image {
+  width: 40px;
+  height: 40px;
+}
+
+.onImage {
+  opacity: 1 !important;
+}
+
+.offImage {
+  opacity: 0.5 !important;
+}
+
+.imageLabel {
+  display: none !important;
+}
+
+.pretty.p-toggle .state.p-on {
+  background: gray !important;
+  border-radius: 10%;
+}
+
+.inputSetFilterSelect {
+  min-width: 200px;
+  width: 100%;
+  user-select: none;
+  padding: 1px;
+  height: 26px;
+}
+
+.inputGearFilterSelect {
+  min-width: 200px;
+  width: 100%;
+  user-select: none;
+  padding: 1px;
+  height: 26px;
+}
+
+.ms-choice > div.icon-close::before {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+/* Disable arrows on number inputs */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.optimizerSetIcon {
+  height: 29px;
+  vertical-align: middle;
+}
+
+.shrinkSets {
+  height: 26px;
+  vertical-align: middle;
+}
+
+.optimizerStarIcon {
+  height: 18px;
+  vertical-align: middle;
+}
+
+.heroIcon {
+  height: 50px;
+}
+
+.editGearFormRow {
+  display: flex;
+  flex-direction: row;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  gap: 4px;
+}
+
+.editGearFormHalf {
+  width: 50%;
+}
+
+.editGearFormVertical {
+  border-left: 1px solid #e8e8e8;
+  height: 400px;
+  margin: 10px 40px;
+}
+
+.editGearFormVerticalShort {
+  border-left: 1px solid #e8e8e8;
+  height: 20px;
+  margin: 10px 40px;
+}
+
+.editGearFormVerticalMed {
+  border-left: 1px solid #e8e8e8;
+  height: 300px;
+  margin: 10px 40px;
+}
+
+.editGearStatLabel {
+  width: 140px;
+  text-align: left;
+  margin-top: auto;
+  margin-bottom: auto;
+  flex-shrink: 0; /* don't let the row label flex-squeeze to zero width */
+}
+
+/* ── Mod dialog: option selects (keepStatOptions, maxModPieces, etc.) ─── */
+.globalModSelect,
+.slotOptionSelect {
+  height: 28px;
+  width: 140px;
+  font-size: 12px;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* ── Mod dialog: slot enable/disable checkboxes ──────────────────────── */
+
+/* NOTE: add mod-slot-toggle dark overrides in darktheme.css */
+.modSlotCheckboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.modSlotLabel {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.modSlotLabel input[type='checkbox'] {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ── Mod dialog: slot constraint badges on drag-list items ────────────── */
+
+/* NOTE: add dark overrides for modConstraintBadge in darktheme.css */
+.modConstraintBadge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: #b05050;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  user-select: none;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+/* ── Mod drag-list items: flex layout so badge never wraps ──────────── */
+.dragOrderList .list-group-item {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding-right: 4px;
+}
+
+.modStatLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  line-height: 30px;
+}
+
+/* ── Mod dialog: permutation estimate display ─────────────────────────── */
+.modEstimateDisplay {
+  font-size: 11px;
+  margin-top: 8px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  min-height: 18px;
+  overflow-wrap: break-word;
+}
+
+.modEstimateGreen {
+  color: #3a8a3a;
+}
+
+.modEstimateYellow {
+  color: #9a7000;
+}
+
+.modEstimateRed {
+  color: #a02020;
+  font-weight: 600;
+}
+
+/* ── Mod dialog: top action buttons row ──────────────────────────────── */
+.modTopButtonsRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+/* ── Mod dialog: per-slot tab bar ─────────────────────────────────────── */
+.modSlotTabBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 4px;
+}
+
+.modSlotTab {
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  color: var(--font-color);
+  opacity: 0.65;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.modSlotTab:hover {
+  opacity: 1;
+}
+
+.modSlotTabActive {
+  opacity: 1;
+  border-color: #ccc;
+  background: var(--background-color, #fff);
+  font-weight: 600;
+  border-bottom: 2px solid var(--background-color, #fff);
+  margin-bottom: -2px;
+}
+
+/* ── Mod dialog: tab content layout ──────────────────────────────────── */
+.modTabsContentRow {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.modTabsLeft {
+  flex: 0 0 480px;
+  min-width: 0;
+  overflow-y: auto;
+  max-height: 520px;
+}
+
+.modTabsRight {
+  flex: 1;
+  min-width: 0;
+  display: flow-root; /* BFC: prevents <p> margin collapsing out, keeps vertical alignment in sync with left panel */
+}
+
+.modTabPanel {
+  display: block;
+}
+
+.modTabPanelHidden {
+  display: none !important;
+}
+
+/* ── Mod dialog: slot tab panel internals ─────────────────────────────── */
+.slotOverrideRow {
+  margin-bottom: 6px;
+}
+
+.slotOverrideLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.slotOptionsSectionLabel,
+.slotRuleSectionLabel {
+  font-size: 11px;
+  color: var(--font-color);
+  margin: 6px 0 3px;
+  opacity: 0.75;
+}
+
+.slotSectionDimmed {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.slotOptionsSection {
+  margin-bottom: 8px;
+}
+
+.slotRuleSection {
+  margin-top: 4px;
+}
+
+/* ── Mod dialog: rule list ────────────────────────────────────────────── */
+.ruleList {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  padding: 2px;
+}
+
+.ruleRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  border: 1px solid transparent;
+  margin-bottom: 2px;
+}
+
+.ruleRow:hover {
+  background: rgb(0 0 0 / 5%);
+}
+
+.ruleRowSelected {
+  background: rgb(70 130 200 / 15%);
+  border-color: rgb(70 130 200 / 40%);
+}
+
+.ruleRowDragHandle {
+  cursor: grab;
+  opacity: 0.4;
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.ruleEnabledLabel {
+  flex-shrink: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.ruleMainStatSelect,
+.ruleSetSelect {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  padding: 2px;
+  height: 22px;
+}
+
+.ruleDeleteBtn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #a03030;
+  font-size: 14px;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+.ruleListButtons {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.modListBtn {
+  flex: 1;
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid #aaa;
+  background: var(--background-color, #fff);
+  color: var(--font-color);
+}
+
+.modListBtn:hover {
+  background: rgb(0 0 0 / 7%);
+}
+
+.modListBtn.modSaveBtn {
+  border-color: #4a7a4a;
+  color: #2a5a2a;
+  font-weight: 600;
+}
+
+.modListBtn.modSaveBtn:hover {
+  background: rgb(60 160 60 / 12%);
+}
+
+.modListBtn.modResetBtn {
+  border-color: #888;
+  color: #555;
+}
+
+/* ── Mod dialog: Copy-to slot picker ─────────────────────────────── */
+.copySlotPicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 5px 6px;
+  border: 1px dashed #aaa;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 3%);
+}
+
+.copySlotPickerLabel {
+  font-size: 11px;
+  color: var(--font-color);
+  opacity: 0.75;
+  white-space: nowrap;
+  margin-right: 2px;
+}
+
+.copySlotPicker .modListBtn {
+  flex: none;
+  padding: 2px 8px;
+}
+
+/* ── Mod dialog: Preset section ─────────────────────────────────── */
+.presetSection {
+  margin-top: 10px;
+  border-top: 1px solid #555;
+  padding-top: 8px;
+}
+
+.presetSectionTitle {
+  color: var(--font-color);
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.presetRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 5px;
+}
+
+.presetNameInput {
+  flex: 1;
+  font-size: 11px;
+  padding: 3px 5px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  background: var(--background-color, #fff);
+  color: var(--font-color);
+  min-width: 0;
+}
+
+.presetSelectEl {
+  flex: 1;
+  font-size: 11px;
+  padding: 3px 4px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  background: var(--background-color, #fff);
+  color: var(--font-color);
+  min-width: 0;
+}
+
+.presetApplyLabel {
+  font-size: 11px;
+  color: var(--font-color);
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.presetRow .modListBtn {
+  flex: none;
+  white-space: nowrap;
+}
+
+.modListBtn.presetDeleteBtn {
+  color: #c44;
+  border-color: #c44;
+}
+
+.modListBtn.presetApplyBtn {
+  border-color: #4a7a9b;
+  color: #2a5a8b;
+  font-weight: 600;
+}
+
+.modListBtn.presetApplyBtn:hover {
+  background: rgb(60 120 180 / 12%);
+}
+
+/* ── Mod dialog: rule right panel header ─────────────────────────────── */
+.ruleRightHeader {
+  font-size: 12px;
+  color: var(--font-color);
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-height: 28px;
+  background: rgb(0 0 0 / 2%);
+  opacity: 0.8;
+}
+
+.editSkillLabel {
+  width: 200px;
+  text-align: left;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.editSkillSelect {
+  height: 100%;
+  text-align: left;
+  padding-left: 4px !important;
+  width: 80px !important;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.editEeStatLabel {
+  width: 200px;
+  text-align: left;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.editGearStatSelect {
+  flex: 1;
+  min-width: 100px;
+  text-align: left;
+  margin-right: 5px;
+}
+
+.editGearStatNumber {
+  width: 80px;
+}
+
+.editGearRollBadge {
+  min-width: 26px;
+  text-align: center;
+  display: inline-block;
+  font-size: 0.9em;
+  color: #888;
+  cursor: default;
+  user-select: none;
+}
+
+.itemDisplaySubstatValueGroup {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.itemDisplaySubstatRolls {
+  font-size: 0.9em;
+  color: #888;
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.draggableColumnLabel {
+  height: 45px;
+  margin-top: auto;
+  margin-bottom: auto;
+  line-height: 45px;
+}
+
+/* https://stackoverflow.com/questions/50862009/how-to-disable-selection-of-cells-in-ag-grid */
+
+.ag-floating-top {
+  border-bottom: solid #828282 2px !important;
+}
+
+.valuePadding {
+  border: 1px inset #ccc;
+  font-size: 15px;
+  height: 100%;
+}
+
+.valuePadding input {
+  border: none;
+  padding: 0;
+  outline: none; /* a11y-ignore: parent .valuePadding:focus-within provides the focus ring */
+  height: 20px;
+}
+
+.valuePadding:focus-within {
+  outline: 2px solid #005fcc;
+  outline-offset: 2px;
+}
+
+.blankFormSpace {
+  width: 40px;
+}
+
+.smallBlankFormSpace {
+  width: 10px;
+}
+
+.input-holder {
+  border: 1px solid black;
+  display: inline-block;
+}
+
+.input-holder > input {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  outline: none; /* a11y-ignore: parent .input-holder:focus-within provides the focus ring */
+}
+
+.input-holder:focus-within {
+  outline: 2px solid #005fcc;
+  outline-offset: 2px;
+}
+
+.input-holder-percent {
+  border: 1px solid black;
+  display: inline-block;
+}
+
+.input-holder-percent > input {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  outline: none; /* a11y-ignore: parent .input-holder-percent:focus-within provides the focus ring */
+}
+
+.input-holder-percent:focus-within {
+  outline: 2px solid #005fcc;
+  outline-offset: 2px;
+}
+
+.input-holder-percent::after {
+  content: '%';
+}
+
+.bonusStatInput {
+  height: 100%;
+  text-align: left;
+  padding-left: 4px !important;
+  width: 80px !important;
+}
+
+.bonusStatSelect {
+  /* 2 px extra for border */
+  width: 102px;
+  border: 1px solid black;
+}
+
+.bonusStatInputPercent {
+  height: 100%;
+  text-align: left;
+  padding-left: 4px !important;
+  width: 55px !important;
+}
+
+.gridLeftPanel {
+  width: 165px;
+}
+
+.gridRightPanel {
+  width: 275px;
+  display: flex;
+  flex-direction: row;
+}
+
+.panelLabel {
+  line-height: 15px;
+  display: flex;
+  flex-direction: row;
+}
+
+.ms-drop ul > li {
+  line-height: 24px;
+  padding: 0 8px;
+}
+
+.ms-drop ul > li.hide-radio label {
+  padding: 0 8px;
+}
+
+#stat-priority-panel {
+  min-width: 220px;
+}
+
+.preset-save-btn {
+  margin-left: auto;
+  cursor: pointer;
+  font-size: 10px;
+  height: 16px;
+  padding: 0 5px;
+  flex-shrink: 0;
+}
+
+.preset-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 2px 0;
+  max-height: 78px;
+  overflow-y: auto;
+}
+
+.preset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 5px;
+  border: 1px solid var(--inactive-color);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1.2;
+  max-width: 160px;
+}
+
+.preset-chip:hover {
+  border-color: var(--active-color, #666);
+}
+
+.preset-chip img {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.preset-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 90px;
+}
+
+.preset-chip-delete {
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  padding: 0 1px;
+  margin-left: 2px;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.preset-chip-delete:hover {
+  opacity: 1;
+}
+
+.preset-chip-fbadge {
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background: #2d5a9b;
+  border-radius: 3px;
+  padding: 1px 3px;
+  line-height: 1.2;
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.preset-section-label {
+  width: 100%;
+  font-size: 10px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 2px 0 0;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.preset-chip-template {
+  opacity: 0.75;
+  border-style: dashed;
+}
+
+.preset-chip-template:hover {
+  opacity: 1;
+}
+
+.priority-weight-bar {
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  gap: 1px;
+  margin: 2px 0 1px;
+}
+
+.pwb-seg {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.15s ease;
+  min-width: 2px;
+}
+
+.priority-target-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #f0c830;
+  margin-left: 2px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.constraints-right-panel {
+  width: 210px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.inputHeroImage {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  position: relative;
+  top: 0;
+  right: -35px;
+}
+
+.inputArtifactImage {
+  padding-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 45px;
+  left: 0;
+}
+
+.inputImprintImage {
+  padding-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  position: absolute;
+  top: 0;
+  height: 25px;
+  width: auto;
+  left: 0;
+  margin-top: 65px;
+}
+
+.inputHeroImageContainer {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+}
+
+.leftRightText {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  line-height: 20px;
+}
+
+.leftRightTextContent {
+  font-family:
+    "Segoe UI",
+    Frutiger,
+    "Frutiger Linotype",
+    "Dejavu Sans",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-size: 1em;
+  font-weight: 400;
+}
+
+.heroesTabButtonRow {
+  padding-bottom: 4px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.tooltipImageLeft {
+  height: 14px;
+  margin-top: auto;
+  margin-bottom: 4px;
+  margin-right: 7px;
+  opacity: 0.5;
+}
+
+.tooltipImageRight {
+  height: 14px;
+  margin-top: auto;
+  margin-bottom: 4px;
+  margin-left: 7px;
+  opacity: 0.5;
+}
+
+.itemPreviewCheckbox {
+  height: 18px;
+  width: 18px;
+  cursor: pointer;
+}
+
+.itemDisplayFooterIconContainer {
+  display: flex;
+  align-items: center;
+}
+
+.optimizer-checkbox {
+  cursor: pointer;
+  margin-bottom: 1px;
+}
+
+.gearActionButton {
+  width: 102px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+#buildsSelector {
+  width: 167px;
+}
+
+.ag-watermark {
+  display: none !important;
+}
+
+.ag-theme-balham .ag-row:not(.ag-row-first) {
+  border: none;
+}
+
+.ag-theme-balham .ag-row-odd {
+  background-color: #f7f7f7;
+}
+
+.ag-theme-balham .ag-row-hover {
+  background-color: #daf1ff;
+}
+
+.ag-theme-balham .ag-row-selected {
+  background-color: #b7e4ff;
+}
+
+body.dark-theme {
+  color: #eee;
+  background: #121212;
+}
+
+body.dark-theme a {
+  color: #809fff;
+}
+
+body.dark-theme input {
+  background: #616161;
+  border-color: #7d7d7d;
+}
+
+.ms-choice.dark-theme {
+  background: #616161;
+  border-color: #7d7d7d;
+}
+
+.ms-parent.dark-theme {
+  background: #616161;
+  border-color: #7d7d7d;
+}
+
+.vertical.dark-theme {
+  border-left: 1px solid #696969;
+}
+
+.gearPreviewButton.dark-theme {
+  background: #616161;
+  border-color: #7d7d7d;
+}
+
+.rangeslider__fill__bg.dark-theme {
+  background: #616161;
+  border-color: #7d7d7d;
+}
+
+.rangeslider__handle.dark-theme {
+  border: solid 2px #000;
+}
+
+.gearTabWeaponButton {
+  width: 36px;
+  height: 36px;
+}
+
+.gearTabFilters {
+  height: 370px;
+  margin-left: 10px;
+}
+
+.gearTabIcon {
+  display: block;
+  min-width: 3px;
+  min-height: 3px;
+  width: 30px;
+  height: 30px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 6px;
+  top: 4px;
+  left: 2px;
+}
+
+.gearTabModifyIcon {
+  min-width: 3px;
+  min-height: 3px;
+  width: 45px;
+  height: 45px;
+  margin-top: -2px;
+  margin-bottom: 0;
+}
+
+.gearTabIconSet {
+  display: block;
+  min-width: 26px !important;
+  width: 26px !important;
+  height: 26px !important;
+  position: relative;
+  top: 1px;
+  left: -2px;
+}
+
+.gearTabLongButton {
+  width: 135px;
+  min-width: 135px;
+  height: 40px;
+}
+
+.gearTabMediumButton {
+  width: 100px;
+  min-width: 100px;
+  height: 40px;
+}
+
+.gearTabSquareButton {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  margin-right: 3px;
+}
+
+.gearTabSquareButtonSet {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  margin-right: 2px;
+}
+
+.gearTabButton {
+  /* Table/Selection B */
+  background: #f8f8f8;
+  border-radius: 5px;
+  margin-right: 3px;
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  min-width: 42px;
+  height: 42px;
+  border: solid 1px #ececec;
+}
+
+.gearTabButtonSet {
+  /* Table/Selection B */
+  background: #f8f8f8;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  width: 32px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  border: solid 1px #ececec;
+}
+
+.clearAllFilterButton:active {
+  background: #e1f4ff;
+  box-shadow: inset 1px 1px 3px rgb(0 0 0 / 25%);
+}
+
+.clearSubstatsFilterButton:active {
+  background: #e1f4ff;
+  box-shadow: inset 1px 1px 3px rgb(0 0 0 / 25%);
+}
+
+.gearTabButtonSelected {
+  background: #e1f4ff; /* #b7e4ff */
+  box-shadow: inset 1px 1px 3px rgb(0 0 0 / 25%);
+  border: 1px solid #fff0;
+}
+
+.gearTabGearFilterIconsRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.gearTabGearFilter {
+  min-width: 290px;
+  width: 290px;
+}
+
+.gearTabSetFilter {
+  width: 750px;
+}
+
+.gearTabSetFilterIconsRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.gearTabGearSetFiltersRow {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+}
+
+.gearTabOtherFiltersRow {
+  width: 900px;
+  display: flex;
+  flex-direction: row;
+}
+
+.gearTabMainStatFilter {
+  width: 300px;
+  margin-right: 20px;
+}
+
+.gearTabSubstatFilter {
+  width: 300px;
+  margin-right: 35px;
+}
+
+.gearTabFilterLongRow {
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: row;
+}
+
+.gearTabButtonLabel {
+  margin: auto auto auto 3px;
+  font-family: 'Fira Sans Condensed', sans-serif;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: 0.4px;
+  color: #6b6b6b;
+}
+
+.gearTabShortButton {
+  width: 50px;
+  min-width: 50px;
+  height: 40px;
+}
+
+.shortLabel {
+  margin-left: auto;
+}
+
+.gearTabLevelFilter {
+  width: 80px;
+  min-width: 80px;
+  margin-right: 10px;
+}
+
+.gearTabEnhanceFilter {
+  width: 130px;
+  min-width: 130px;
+  margin-right: 10px;
+}
+
+.gearTabDuplicateFilter {
+  width: 145px;
+  min-width: 145px;
+  margin-right: 30px;
+}
+
+.gearTabModifyFilter {
+  width: 145px;
+  min-width: 145px;
+  margin-right: 10px;
+}
+
+.gearTabRankFilter {
+  width: 85px;
+  min-width: 85px;
+  margin-right: 10px;
+}
+
+.rankEpic {
+  color: #d4af37;
+  font-weight: bold;
+}
+
+.rankHeroic {
+  color: #b45aff;
+  font-weight: bold;
+}
+
+.rankRare {
+  color: #5ab4ff;
+  font-weight: bold;
+}
+
+.rankGood {
+  color: #4acd4a;
+  font-weight: bold;
+}
+
+.rankNormal {
+  color: #aaa;
+}
+
+.gearTabHorizontalSpace {
+  width: 40px;
+  height: 1px;
+}
+
+.gearTabFilterLabel {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.reforgeSwitch {
+  min-width: 180px;
+  float: right;
+  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+}
+
+.reforgeSwitchLabel {
+  margin-right: 5px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  vertical-align: bottom;
+  margin-right: 10px;
+}
+
+.switch-input {
+  display: none;
+}
+
+.switch-label {
+  display: block;
+  width: 48px;
+  height: 24px;
+  text-indent: -150%;
+  color: transparent;
+  user-select: none;
+  /* NOTE: do NOT add `clip-path: inset(50%)` here. The toggle pill is drawn by
+     .switch-label::before/::after, which are this label's generated content — a
+     clip-path on the label clips those pseudo-elements away too, making the whole
+     switch invisible AND un-clickable (the settings toggles all looked missing). */
+}
+
+.switch-label::before,
+.switch-label::after {
+  content: '';
+  display: block;
+  position: absolute;
+  cursor: pointer;
+}
+
+.switch-label::before {
+  width: 100%;
+  height: 100%;
+  background-color: #dedede;
+  border-radius: 9999em;
+  transition: background-color 0.25s ease;
+}
+
+.switch-label::after {
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 2px rgb(0 0 0 / 45%);
+  transition: left 0.25s ease;
+}
+
+.switch-input:checked + .switch-label::before {
+  background-color: #78c5f5;
+}
+
+.switch-input:checked + .switch-label::after {
+  left: 24px;
+}
+
+.heroesTabTopButtonRowLeft {
+  height: 20px;
+  display: inline-block;
+  margin-right: auto;
+}
+
+.heroSearchRow {
+  height: auto;
+  margin-top: 4px;
+  position: relative;
+}
+
+.heroSearchInput {
+  width: 200px;
+  height: 22px;
+  font-size: 12px;
+  padding: 2px 6px;
+  box-sizing: border-box;
+}
+
+.heroSearchDropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 220px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #2d2d2d;
+  border: 1px solid #555;
+  border-top: none;
+  z-index: 9999;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 50%);
+}
+
+.heroSearchDropdown.open {
+  display: block;
+}
+
+.heroSearchDropdownItem {
+  padding: 5px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ddd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.heroSearchDropdownItem:hover {
+  background: #444;
+  color: #fff;
+}
+
+/* ── Bonus Stats dialog tabs ───────────────────────────────── */
+.bonusStatsTabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid #555;
+  margin-bottom: 10px;
+  padding-bottom: 0;
+}
+
+.bonusStatsTab {
+  padding: 4px 16px;
+  cursor: pointer;
+  background: none;
+  border: 1px solid #666;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  color: var(--font-color, #333);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.bonusStatsTab.active {
+  background: var(--accent-red, #d63c38);
+  color: #fff;
+  border-color: var(--accent-red, #d63c38);
+}
+
+.bonusStatsTabPanel {
+  overflow: hidden;
+}
+
+/* ── Base Stats table ───────────────────────────────────────── */
+.baseStatsTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+  color: var(--font-color, #333);
+}
+
+.baseStatsTable th {
+  text-align: right;
+  padding: 5px 12px;
+  border-bottom: 1px solid #555;
+  font-weight: 600;
+  color: var(--font-color, #333);
+}
+
+.baseStatsTable td {
+  padding: 5px 12px;
+  border-bottom: 1px solid rgb(128 128 128 / 20%);
+}
+
+.baseStatLabel {
+  font-weight: 500;
+  text-align: left;
+}
+
+.baseStatsTable th.baseStatLabel {
+  text-align: left;
+}
+
+.baseStatValue {
+  text-align: right;
+}
+
+.baseStatChanged {
+  color: var(--accent-green, #00be9b);
+  font-weight: bold;
+}
+
+.heroLastRankDisplay {
+  display: inline-block;
+  width: 140px;
+  margin-bottom: 1px;
+  margin-left: 1px;
+  margin-right: 10px;
+  padding: 1px 6px;
+  font-size: 13px;
+  color: var(--font-color, ButtonText);
+  background-color: var(--input-color, ButtonFace);
+  border: 1px solid #888;
+  border-radius: 2px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  vertical-align: middle;
+  line-height: normal;
+  cursor: default;
+}
+
+.heroLastRankDisplay.dark-theme {
+  background: #616161;
+  border-color: #7d7d7d;
+  color: #eee;
+}
+
+.heroesTabTopButtonRowRight {
+  height: 30px;
+  display: inline-block;
+  margin-right: 25px;
+}
+
+.heroTabButton {
+  height: 32px;
+}
+
+.gearTabTopPanelLabel {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.gearTabTopPanelLabelLeft {
+  display: flex;
+  flex-direction: row;
+}
+
+.selectedCountLabel {
+  display: inline-block;
+  white-space: nowrap;
+  margin-left: auto;
+  padding-right: 4px;
+}
+
+.selectedCount {
+  display: inline-block;
+  min-width: 24px;
+  text-align: right;
+  padding-right: 8px;
+}
+
+#substatPriorityLabel {
+  cursor: pointer;
+}
+
+#substatPriorityLabel:hover::after {
+  cursor: pointer;
+}
+
+#statsLabel {
+  cursor: pointer;
+}
+
+#statsLabel:hover::after {
+  cursor: pointer;
+  content: attr(data-content);
+}
+
+#ratingsLabel {
+  cursor: pointer;
+}
+
+#ratingsLabel:hover::after {
+  cursor: pointer;
+  content: attr(data-content);
+}
+
+#forceLabel {
+  cursor: pointer;
+}
+
+#forceLabel:hover::after {
+  cursor: pointer;
+  content: attr(data-content);
+}
+
+#optionsLabel {
+  cursor: pointer;
+}
+
+#optionsLabel:hover::after {
+  cursor: pointer;
+  content: attr(data-content);
+}
+
+#accessorySetsLabel {
+  cursor: pointer;
+}
+
+#accessorySetsLabel:hover::after {
+  cursor: pointer;
+  content: attr(data-content);
+}
+
+.gearTabBottomPanel {
+  display: flex;
+  flex-direction: row;
+  height: 400px;
+}
+
+.gearTabPreview {
+  min-width: 210px;
+  padding: 30px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+.optionsExcludeGearFrom {
+  width: 150px;
+}
+
+.toggleRow {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.toggleRowSpace {
+  height: 1px;
+  width: 10px;
+}
+
+.switchText {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.settingsNumber {
+  height: 18px;
+  width: 80px;
+  margin-right: 10px;
+}
+
+.statPreviewContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.statPreviewRow {
+  height: 25px;
+  font-family:
+    "Segoe UI",
+    Frutiger,
+    "Frutiger Linotype",
+    "Dejavu Sans",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-size: 1em;
+  font-weight: 400;
+}
+
+.statPreviewImg {
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+
+.statPreviewBefore {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: left;
+  width: 45px;
+}
+
+.statPreviewArrow {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: right;
+  width: 15px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.statPreviewAfter {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: left;
+  width: 40px;
+}
+
+.statPreviewDiff {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: right;
+  width: 60px;
+}
+
+.setPreviewBefore {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: left;
+  min-width: 77px;
+}
+
+.setPreviewAfter {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: left;
+  width: 100px;
+}
+
+.setPreviewArrow {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: right;
+  width: 15px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.statPreviewDiff.up {
+  color: #00be9b;
+
+  /* color: #00adff; blue */
+}
+
+.statPreviewDiff.down {
+  color: #dc391e;
+}
+
+.addHeroesSelector {
+  width: 170px;
+  display: inline-block;
+}
+
+.previewSet {
+  height: 25px;
+  vertical-align: middle;
+}
+
+.gearGridContainer {
+  flex-grow: 2;
+  min-height: 350px;
+  display: flex;
+  resize: vertical;
+  overflow: hidden;
+}
+
+#gear-grid {
+  width: 100%;
+}
+
+.gearSectionContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 95%;
+}
+
+.heroesSectionContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.heroesTableContainer {
+  min-height: 360px;
+  height: 360px;
+  flex-grow: 1;
+  margin-top: 6px;
+  resize: vertical;
+  overflow: hidden;
+}
+
+.buildsTableContainer {
+  min-height: 163px;
+  height: 163px;
+  flex-grow: 0.2;
+  resize: vertical;
+  overflow: hidden;
+}
+
+#heroes-table {
+  height: 100%;
+  width: 100%;
+}
+
+#builds-table {
+  height: 100%;
+  width: 100%;
+}
+
+.itemDisplayMaterial {
+  height: 34px;
+  padding-right: 12px;
+}
+
+/* START dark mode toggle */
+
+.donateIcon {
+  cursor: pointer;
+  height: 30px;
+  border-radius: 6px;
+  margin-right: 20px;
+}
+
+.badgeIcon {
+  cursor: pointer;
+  height: 60px;
+  border-radius: 6px;
+}
+
+.darkModeToggleContainer {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  position: absolute;
+  top: 12px;
+  right: 15px;
+}
+
+.coffeeContainer {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  position: absolute;
+  top: 7px;
+  right: 80px;
+}
+
+.coffeeContainerImage {
+  height: 32px;
+  cursor: pointer;
+}
+
+/* The switch - the box around the slider */
+.darkSwitch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 20px;
+}
+
+/* Hide default HTML checkbox */
+.darkSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.darkSlider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+}
+
+.darkSlider::before {
+  position: absolute;
+  content: '';
+  height: 30px;
+  width: 30px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  box-shadow: 0 0 15px #2020203d;
+  background: white url('../3. ASSETS/1. PNG/1. App/3. Misc/sunny.png');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+input:checked + .darkSlider {
+  background-color: #444;
+}
+
+input:focus + .darkSlider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .darkSlider::before {
+  transform: translateX(22px);
+  background: #ddbeff url('../3. ASSETS/1. PNG/1. App/3. Misc/night2.png');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Rounded sliders */
+.darkSlider.round {
+  border-radius: 34px;
+}
+
+.darkSlider.round::before {
+  border-radius: 50%;
+}
+
+/* END dark mode toggle */
+
+.itemDisplaySubstatValueAndConversion {
+  display: flex;
+}
+
+.substatConvertedImage {
+  height: 20px;
+  width: 20px;
+  margin-left: 5px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.languageToggle {
+  margin-left: 5px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.rangeslider {
+  height: 18px !important;
+}
+
+.ag-row {
+  border-bottom-style: unset !important;
+}
+
+.swal2-success-circular-line-left {
+  display: none;
+}
+
+.swal2-success-circular-line-right {
+  display: none;
+}
+
+.swal2-success-fix {
+  display: none;
+}
+
+.swal2-actions {
+  z-index: 0 !important;
+}
+
+.editGearSwalHtml {
+  overflow: visible !important;
+  text-align: left !important;
+  padding: 0 12px !important;
+}
+
+.groupContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.groupColumn {
+  width: 160px;
+  margin-right: 15px;
+}
+
+.list-group-item {
+  cursor: move;
+  cursor: grabbing;
+  background-color: var(--inactive-color);
+  color: var(--font-color);
+  border-radius: 1rem;
+  border-radius: 5px;
+  margin-top: 5px;
+  height: 30px;
+  text-align: left;
+  padding-left: 6px;
+  line-height: 30px;
+}
+
+.dragOrderList {
+  font-size: 14px;
+  border: 1px solid;
+  border-radius: 10px;
+  padding: 2px 6px 6px;
+  background: var(--input-color);
+  min-height: 430px;
+  width: 120px;
+}
+
+.draggableMovableContainer {
+  height: 380px;
+}
+
+:root {
+  --input-color: #e0e0e0;
+  --inactive-color: #cacaca;
+  --bg-color: #fff;
+  --font-color: #333;
+  --link-blue: #0d6efd;
+}
+
+/* Collapse */
+
+/* Style the button that is used to open and close the collapsible content */
+
+.collapsible {
+  background-color: #e0e0e0;
+  color: #333;
+  cursor: pointer;
+  padding: 20px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none; /* a11y-ignore: :focus-visible rule below provides the focus ring */
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.collapsible:focus-visible {
+  outline: 2px solid #005fcc;
+  outline-offset: 2px;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active,
+.collapsible:hover {
+  background-color: #cacaca;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+}
+
+.thankYouContainer {
+  width: 646px;
+}
+
+#aboutTab {
+  padding-left: 10px;
+}
+
+#settingsTab {
+  padding-left: 10px;
+}
+
+#heroLibraryTab {
+  padding-left: 10px;
+}
+
+#gwMetaTab {
+  padding-left: 10px;
+}
+
+.newFeatures {
+  text-align: left;
+  line-height: 28px;
+}
+
+.awn-toast.awn-toast-warning {
+  color: #8e4b00 !important;
+}
+
+.subModCheckbox {
+  margin-left: 20px;
+}
+
+.subPinModCheckbox {
+  margin-right: 6px;
+  accent-color: #e6a817;
+  cursor: pointer;
+}
+
+.editGearModTargetsRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 0 4px 6px;
+  background: rgb(230 168 23 / 7%);
+  border-left: 2px solid #e6a817;
+  border-radius: 0 4px 4px 0;
+  margin-bottom: 3px;
+}
+
+.editGearModTargets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.modTargetLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.modTargetLabel input[type='checkbox'] {
+  accent-color: #e6a817;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* Two-panel edit gear dialog layout */
+.editGearDialogLayout {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.editGearLeft {
+  flex: 0 0 460px;
+  min-width: 0;
+}
+
+.editGearDialogDivider {
+  width: 1px;
+  background: rgb(255 255 255 / 12%);
+  align-self: stretch;
+  margin: 0 14px;
+  flex-shrink: 0;
+}
+
+.editGearRight {
+  flex: 1 1 0;
+  min-width: 0;
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Mod targets right panel */
+.modTargetsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modTargetsPanelTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e6a817;
+  border-bottom: 1px solid rgb(230 168 23 / 30%);
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+}
+
+.modTargetsSummaryBox {
+  background: rgb(0 0 0 / 20%);
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+}
+
+.modTargetsSummaryLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.5;
+  margin-bottom: 4px;
+}
+
+.modTargetsSummary {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.modSumLine {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.modSumStat {
+  font-weight: 600;
+  color: #e6a817;
+  min-width: 40px;
+}
+
+.modSumArrow {
+  opacity: 0.5;
+  margin: 0 4px;
+}
+
+.modSumSubs {
+  color: #aad4f5;
+  font-size: 11px;
+}
+
+.modTargetsSubBlock {
+  background: rgb(230 168 23 / 5%);
+  border-left: 2px solid rgb(230 168 23 / 40%);
+  border-radius: 0 4px 4px 0;
+  padding: 6px 8px 5px;
+}
+
+.modTargetsSubHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.modTargetsSubName {
+  font-size: 12px;
+  flex: 1;
+  opacity: 0.85;
+}
+
+.modTargetsPinBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 8%);
+  color: rgb(255 255 255 / 25%);
+  flex-shrink: 0;
+}
+
+.modTargetsPinBadge.active {
+  background: rgb(230 168 23 / 22%);
+  color: #e6a817;
+}
+
+.modTargetsCbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.modTargetsNoPinNote {
+  font-size: 10px;
+  color: rgb(255 190 90 / 45%);
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.editGearCycle {
+  margin-left: 16px;
+  height: 20px;
+}
+
+#enhanceTabPreview {
+  width: 200px;
+  margin-left: 50px;
+}
+
+.enhanceChart {
+  width: 270px;
+  height: 290px;
+  margin-left: 30px;
+  padding-top: 10px;
+}
+
+.enhanceContainer {
+  display: flex;
+  flex-direction: row;
+  height: 270px;
+}
+
+.bars {
+  width: 1000px;
+  height: 60px;
+}
+
+.radarChart {
+  margin-left: 50px;
+  width: 400px;
+  height: 250px;
+}
+
+.gsChart {
+  width: 820px;
+  height: 300px;
+}
+
+.enhanceSecondRow {
+  display: flex;
+  flex-direction: row;
+  height: 260px;
+}
+
+.enhanceThirdRow {
+  display: flex;
+  flex-direction: row;
+  height: 200px;
+}
+
+.stats {
+  min-width: 150px;
+  display: flex;
+  flex-direction: row;
+}
+
+#statsRight {
+  min-width: 30px;
+}
+
+#statsLeft {
+  margin-left: 10px;
+  min-width: 200px;
+}
+
+.barsContainer {
+  margin-top: 30px;
+  margin-left: 70px;
+}
+
+#detectorStatus {
+  display: flex;
+  flex-direction: row;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  margin-left: 60px;
+}
+
+#startCompanion {
+  margin-left: 60px;
+}
+
+#statusSymbol {
+  width: 25px;
+  height: 25px;
+  background-color: red;
+  border: 1px;
+  border-radius: 25px;
+}
+
+#statusText {
+  line-height: 26px;
+  margin-left: 10px;
+}
+
+.colorPickerText {
+  margin-top: auto;
+  margin-bottom: auto;
+  cursor: pointer;
+}
+
+.colorPickerText:hover::after {
+  cursor: pointer;
+  content: attr(data-content);
+}
+
+.selectorSetImage {
+  height: 26px;
+  margin-right: 4px;
+  margin-left: -2px;
+}
+
+.selectorSetText {
+  height: 26px;
+}
+
+.selectorSetContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.selectorSetCount {
+  margin-left: auto;
+  padding-left: 6px;
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.mainStatRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.mainStatCount {
+  padding-left: 8px;
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.importerRadioLabel {
+  margin-right: 20px;
+}
+
+#globalFilterControls {
+  border-bottom-color: #ddd;
+}
+
+#globalSliderSection {
+  border-top-color: #ddd;
+  border-bottom-color: #ddd;
+}
+
+#globalSlotFilterValue {
+  color: #444;
+}
+
+.multiInfoPanel {
+  padding: 5px 8px;
+  width: 142px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  line-height: 14px;
+  margin-right: 5px;
+  border-radius: 7px;
+}
+
+.multiTopRow {
+  display: flex;
+  flex-direction: row;
+  height: 310px;
+}
+
+.multiGrid {
+  min-width: 1200px;
+  flex-grow: 1;
+  margin-right: 15px;
+}
+
+.editFiltersDialog {
+  display: flex;
+  flex-direction: row;
+  text-align: left;
+  font-size: 14px;
+}
+
+.injectedSummaryRow {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.injectedSummaryComponent {
+  width: 200px;
+}
+
+.multiSpace {
+  height: 1px;
+  display: block;
+}
+
+.multiOptimizerControlPanel {
+  display: flex;
+  flex-direction: row;
+  margin-left: 8px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.inactiveColorBorder {
+  border-color: var(--inactive-color);
+}
+
+.enhanceGuide {
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.thankList {
+  line-height: 1em;
+}
+
+.locatorTip {
+  width: 113px;
+  font-size: 12.5px;
+  line-height: 17px;
+}
+
+/* Tabs */
+
+.tabsWrapperBody {
+  text-align: center;
+}
+
+.tabsWrapper {
+  margin: auto;
+  border-radius: 10px;
+}
+
+.tabsButtonWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.tab-button {
+  letter-spacing: 3px;
+  border: none;
+  padding: 10px;
+  background-color: var(--inactive-color);
+  color: var(--font-color);
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.tab-button:hover {
+  background-color: var(--bg-color);
+}
+
+.tab-button.active {
+  background-color: var(--bg-color);
+}
+
+.tabsContent {
+  display: none;
+  padding: 10px 20px;
+  margin-top: 0;
+}
+
+.tabsContent.active {
+  display: block;
+}
+
+.skillTypeSelect {
+  width: 250px !important;
+}
+
+/* Utility classes extracted from inline styles */
+.display-none {
+  display: none;
+}
+
+.display-block {
+  display: block;
+}
+
+.horizontal-space-thin {
+  height: 1px;
+}
+
+.panelLabel-centered {
+  margin: auto;
+}
+
+.icon-faded-high {
+  opacity: 0.8;
+}
+
+.icon-faded-medium {
+  opacity: 0.7;
+}
+
+.gearTabButtonLabel-spaced {
+  margin-right: 5px;
+}
+
+.settings-color-cell {
+  padding-right: 60px;
+  min-width: 300px;
+}
+
+.version-label {
+  text-align: left;
+  float: left;
+}
+
+.version-divider {
+  clear: both;
+  visibility: hidden;
+}
+
+.tabset {
+  white-space: nowrap;
+}
+
+/* ─── Hero Gear Matcher ─────────────────────────────────────────────────────── */
+
+.heroMatcherPanelLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 6px;
+  border-top: 1px solid rgb(0 0 0 / 15%);
+}
+
+.heroMatcherToggle {
+  padding: 2px 8px;
+  font-size: 0.8em;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.heroMatcherPanel {
+  padding: 5px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: rgb(0 0 0 / 3%);
+  border-top: 1px solid rgb(0 0 0 / 8%);
+}
+
+.heroMatcherRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.heroMatcherLabel {
+  font-size: 0.82em;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.heroMatcherSectionLabel {
+  margin-right: 2px;
+  min-width: 60px;
+}
+
+.heroMatcherSpacer {
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.heroMatcherPrioLabel {
+  font-size: 0.78em;
+  font-weight: bold;
+  text-align: right;
+  min-width: 28px;
+}
+
+.heroMatcherHeroSelect {
+  min-width: 140px;
+  max-width: 200px;
+  font-size: 0.9em;
+}
+
+.heroMatcherPrioInput {
+  width: 40px;
+  text-align: center;
+  font-size: 0.9em;
+  padding: 1px 3px;
+}
+
+.heroMatcherMainSelect {
+  width: 90px;
+  font-size: 0.9em;
+}
+
+.heroMatcherSetSelect {
+  width: 160px;
+  font-size: 0.9em;
+}
+
+/* ─── Tippy tooltip overrides ───────────────────────────────────────────────── */
+
+.tippy-box {
+  font-size: 12px !important;
+}
+
+.tippy-box p {
+  font-size: 12px !important;
+  margin: 4px 0;
+}
+
+/* Per-slot substat filter button */
+.optimizer-btn {
+  cursor: pointer;
+  border: 1px solid #888;
+  background: transparent;
+  color: #ccc;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 3px;
+}
+
+.optimizer-btn:hover {
+  border-color: #aaa;
+  color: #fff;
+}
+
+.optimizer-btn.slot-filter-active {
+  border-color: #51a259;
+  color: #51a259;
+}
+
+/* select elements need an explicit background — transparent shows OS chrome */
+select.optimizer-btn {
+  background: #2a2a2a;
+}
+
+.slot-heatmap-select {
+  cursor: pointer;
+  border: 1px solid #888;
+  background: #2a2a2a;
+  color: #ccc;
+  padding: 2px 4px;
+  font-size: 12px;
+  border-radius: 3px;
+}
+
+.slot-heatmap-select:hover {
+  border-color: #aaa;
+  color: #fff;
+}
+
+/* ── Accessibility: keyboard focus indicators ─────────────────────────────── */
+.fribbels-action-btn:focus-visible,
+.gearPreviewButton:focus-visible,
+.optimizer-btn:focus-visible,
+input[type='submit']:focus-visible,
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:not([tabindex='-1']):focus-visible {
+  outline: 2px solid #005fcc;
+  outline-offset: 2px;
+}
+
+/* Skip link — visually hidden until focused (WCAG 2.4.1) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  padding: 8px 16px;
+  background: #000;
+  color: #fff;
+  z-index: 9999;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Screen-reader-only utility (WCAG 1.3.1) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Respect reduced-motion preference for dark mode toggle animation (WCAG 2.3.3) */
+@media (prefers-reduced-motion: no-preference) {
+  .darkSlider,
+  .darkSlider::before {
+    transition: 0.4s;
+  }
+}

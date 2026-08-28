@@ -1,0 +1,90 @@
+js/lib/
+│
+├── 📁 shared/                        ← used by 2+ tabs / app-wide
+│   ├── models/
+│   │   ├── item.js
+│   │   ├── stat.js
+│   │   └── optimizationRequest.js
+│   ├── services/
+│   │   ├── api.js
+│   │   ├── artifact.js
+│   │   ├── damageCalc.js
+│   │   ├── heroData.js
+│   │   └── subprocess.js
+│   ├── ui/
+│   │   ├── assets.js
+│   │   ├── colorPicker.js
+│   │   ├── darkmode.js
+│   │   ├── dialog.js
+│   │   ├── htmlGenerator.js
+│   │   ├── notifier.js
+│   │   ├── selectors.js
+│   │   ├── settings.js
+│   │   ├── statPreview.js
+│   │   ├── tooltip.js
+│   │   └── updater.js
+│   ├── i18n/
+│   │   └── i18n.js
+│   ├── renderer/
+│   │   └── gridRenderer.js
+│   ├── constants.js
+│   ├── enums.js
+│   ├── files.js
+│   ├── globals.d.ts
+│   ├── init.js
+│   ├── inputHandler.js
+│   ├── logger.js
+│   └── utils.js
+├── 📁 optimizer/
+│   ├── 📁 optimizerTab/
+│   │   ├── optimizerTab.js
+│   │   ├── optimizerGrid.js
+│   │   ├── priorityFilter.js
+│   │   └── rollDivisors.js
+│   └── 📁 multiOptimizerTab/
+│       └── multiOptimizerTab.js
+├── 📁 items/
+│   ├── 📁 itemsTab/
+│   │   ├── itemsTab.js
+│   │   ├── itemsGrid.js
+│   │   ├── forceFilter.js
+│   │   ├── locator.js
+│   │   ├── modificationFilter.js
+│   │   ├── modificationFilter.js
+│   │   ├── heroGearMatcher.js
+│   │   └── modificationFilter.js 
+│   └── 📁 enhancingTab/
+│   │   ├── enhancingTab.js
+│   │   ├── itemSimulator.js
+│   │   └── gearRating.js
+│   ├── 📁 gear/                         
+│   │   ├── itemAugmenter.js
+│   │   ├── itemSerializer.js
+│   │   ├── mainStatFixer.js
+│   │   ├── reforge.js
+│   │   ├── flatStatCalibration.js
+│   │   └── reforgeConstants.js
+├── 📁 heroes/
+│   └── 📁 heroesTab/
+│       ├── heroesTab.js
+│       └── heroesGrid.js
+├── 📁 optimizer/
+│   ├── 📁 optimizerTab/
+│   │   ├── optimizerTab.js
+│   │   ├── optimizerGrid.js
+│   │   ├── priorityFilter.js
+│   │   └── rollDivisors.js
+│   └── 📁 multiOptimizerTab/
+│       └── multiOptimizerTab.js
+├── 📁 archetypes/
+│   └── 📁 archetypeTab/
+│       ├── archetypeTab.js
+│       ├── archetypeScorer.js
+│       ├── archetypeStore.js
+│       └── defaultArchetypes.js
+└── 📁 importer/
+    └── 📁 importerTab/
+        ├── importerTab.js
+        ├── importer.js
+        ├── saves.js
+        └── scanner.js

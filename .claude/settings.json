@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "plansDirectory": "./.claude/plans",
+  "autoMemoryDirectory": "F:/Epic Seven Screenshots Only/New folder/Gear simulator files/Fribbels-Epic-7-Optimizer/.claude/memory",
+  "permissions": {
+    "allow": [
+      "Bash(yarn lint*)",
+      "Bash(yarn typecheck*)",
+      "Bash(yarn build*)",
+      "Bash(yarn copy-assets*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git ls-files*)",
+      "Bash(git check-ignore*)",
+      "Bash(node --version)",
+      "Bash(yarn --version)",
+      "Bash(mvn --version)"
+    ],
+    "ask": [
+      "Bash(git push*)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-package-root.mjs\"",
+            "timeout": 10,
+            "statusMessage": "package-root check…"
+          }
+        ]
+      }
+    ]
+  }
+}
