@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: ae12964a-a779-473a-b06c-7e3b2491cb82
-  modified: 2026-08-28T11:44:31.324Z
+  modified: 2026-08-28T15:29:11.315Z
 ---
 
 # Overhaul plan (started 2026-08-28)
@@ -31,10 +31,13 @@ stale dependencies are the debt. Marcus's words: "stuff is not what it should be
    verified live (denies `npm install` in `1. App`). Decisions: `.claude/memory/` IS committed (the
    GitHub remote `lordpogquaad/...` is private); no `additionalDirectories` — the other E7 folders in
    Marcus's workspace are personal and unrelated.
-4. GitHub sync and push. Before it: a checkpoint commit of the uncommitted numbered-folder reorg
-   (~1.9k renames + dep refresh + `.claude/` scaffold sit on top of Copilot-era `2a6011d`); needs
-   `git rm -r --cached` of the now-ignored `3. Backend/1. Source/target/` + `.settings/`, and Marcus's
-   calls on `.github/_archive/` and the root Copilot leftovers.
+4. GitHub sync and push. Done 2026-08-28: checkpoint commit `7de13d8` (3,865 files) pushed to
+   `origin/main` as a fast-forward over Copilot-era `2a6011d`. Decisions baked in: `target/` +
+   `.settings/` untracked; `2. Frontend/1. Source/1. HTML/assets/` gitignored as build output
+   (verified an exact flattened copy of `3. ASSETS/1. PNG/`, nothing lived only there);
+   `.github/_archive/` and the root Copilot leftovers committed AS-IS pending the audit Marcus wants
+   before any deletion; `app_folder_tree.csv` (13 MB analysis dump) deliberately left untracked —
+   delete or ignore it in the reorg step. `backend.jar` (31 MB) stays tracked as before.
 
 Then the larger reorganization (numbered-folder layout, whether to collapse the two-manifest split).
 
@@ -73,10 +76,16 @@ Then the larger reorganization (numbered-folder layout, whether to collapse the 
   manifest pin and a comment in `inputHandler.js` changed; gate green. Runtime check of every grid
   tab + dark mode is Marcus's to do — a legacy-theme regression shows as unstyled/misaligned grids
   or an `Invalid Grid Option`/`Module` console error, not a crash.
-- Still deferred to their own units, each with its own gate: `electron` 42→44 (native rebuild +
-  packaging — and the outer manifest's `browserslist: ["electron 42.0"]` must move to the new major,
-  with `yarn up -R caniuse-lite electron-to-chromium` so Babel's target DB knows the new Electron;
-  the 2026-06 bump to 42 failed silently until that refresh), replacing deprecated `string-similarity`.
+- `electron` 42→44 DONE 2026-08-28 (own unit): 42/43/44 all embed Node 24.18.1 and the inner tree has
+  no native modules, so it was a Chromium 148→152 jump only. Recipe that worked (reuse for 45+):
+  `yarn up "electron@^N.0.0"` → `browserslist` → `"electron N.0"` → `yarn up -R caniuse-lite
+  electron-to-chromium` → confirm `require('electron-to-chromium/versions')['N.0']` is defined (the
+  2026-06 bump to 42 failed silently until that refresh) → gate → `yarn electron-builder build --win
+  --x64 --dir` smoke. Breaking-changes 43/44 reviewed against the tree: only hit was Electron 43's
+  "dialogs default to Downloads" — `settings.js` `_uploadCacheFile` was the one dialog without a
+  `defaultPath`, fixed. `@electron/remote` 2.1.3 peer is `>=13`, fine. Note for the next major: an
+  unpacked `--dir` build emits no `version` file; read the electron version from the build log.
+- Still deferred to its own unit: replacing deprecated `string-similarity`.
 
 **Units landed 2026-08-28 (uncommitted, gates green first-hand):**
 
@@ -120,6 +129,44 @@ Then the larger reorganization (numbered-folder layout, whether to collapse the 
   `Improvements/` (`New Improvements.md`, `Change Logs.md`) folders came from `~/.claude/plans/` into
   `.claude/plans/`. They are the project's fix/decision history — read `Existing Bugs.md` before
   re-proposing the contextIsolation refactor or CPU partial-sum pruning (both deliberately deferred).
+- **Port-kill rewrite + DEP0190** 2026-08-28 (found during Marcus's first runtime pass): `kill-port-process`
+  → pid-port → execa 9 threw `setMaxListeners … Received an instance of AbortSignal` in the
+  nodeIntegration renderer (Chromium's `AbortController`, not Node's), so `Subprocess.kill()` had been a
+  silent no-op and orphaned backend `java` processes could pile up on 8130–8139. Replaced with a
+  dependency-free `netstat -ano`/`taskkill` (win32) or `lsof`/SIGTERM path in `subprocess.js`
+  (`parseListeningPids` is pure for testing); dep + its execa tree dropped from the inner manifest.
+  Java spawn now `shell: false` with unquoted argv; the dev config's `npm run start-main-dev` spawn is a
+  single command string — both Node 24 DEP0190 warnings gone. `LogControl.js`'s "benign first-launch
+  noise" filter removed (it was masking this defect). Lesson: anything execa-based cannot run in this
+  renderer; spawn via `node:child_process` directly.
+- **Outer-manifest audit + cleanup** 2026-08-28: all deps verified current except deliberate holds
+  (TS 6/7 split; `@types/node` stays on the 24.x line because it tracks the runtime Node major — do
+  not "update" it to 26). Removed dead `electron-log` (orphaned by the updater removal), `node-abi`,
+  `watchpack`, `@types/webpack-env`, and the never-wired `husky`+`lint-staged` pair (the `.git/hooks`
+  shims were husky **v4** from 2026-05 with no v4 config, so lint-staged had never run; 19 shim files
+  deleted, `*.sample` kept) — the acceptance gate is lint→typecheck→build on the tree, no pre-commit
+  hook by choice. `renovate` block dropped; `engines.node` → `>=24`; `author` → lordpogquaad on both
+  manifests (Learn More / auto-importer links still point at Rex's README on purpose); dead
+  `E7_MAIN_LOG_LEVEL` line stripped from `start-dev.bat`. Still waiting on Yarn's 24 h quarantine:
+  restore `webpack@^5.110.1` after 2026-08-28 20:04 UTC; `css-loader` 7.1.5 / `webpack-cli` 7.2.3
+  (published 2026-08-28) land with a plain `yarn up` from 2026-08-29.
+- **Merge-import prunes stale heroes** 2026-08-28 (bug Marcus hit on the runtime pass: 399 → 410
+  heroes after importing a 398-unit scan): `ItemsRequestHandler.mergeHeroes` was purely additive.
+  Now: optimizer heroes linked to an in-game id absent from the scan are queued per base name and
+  relinked to a same-name scan unit first (keeps priorities/builds — fixes the phantom `Name #2`
+  creation), otherwise deleted via `removeHeroById` (items unequipped); heroes with no `ingameId`
+  (manual/what-if) are never touched; a scan with no ids skips pruning. Logs `RELINKED STALE HERO`,
+  `PRUNED STALE HERO`, `mergeHeroes: relinked N, pruned M`. `ItemsRequestHandlerMergeTest` (5 cases)
+  + a real-data replay of Marcus's export vs `test.txt` (410 → 398, 12 pruned, 0 relinked).
+  Replay recipe (scratch `merge-e2e.mjs`): start the jar, POST `/items/setItems` + `/heroes/setHeroes`
+  from an optimizer export, POST `/items/mergeHeroes` with `MergeHero{id,name,stars,data}` built from
+  the scan — pass `items: []` unless you run the renderer's `ItemAugmenter` first (raw scan items
+  NPE in `mergeItems` on a null `AugmentedStats`). ⚠️ Bash `$!`/`taskkill //PID` in MSYS targets the
+  MSYS pid, not the Windows pid — orphaned jars survive; kill via `Get-CimInstance Win32_Process`.
+- **File log + scanner code→name fallback** 2026-08-28: the app now writes
+  `1. App/5. Dev Only/logs/latest.log` from both processes ([[runtime-log-file]]); and the scanner
+  names units whose code the decoder Lambda doesn't know from Rex's hero data
+  ([[scan-decoder-lambda]]) — Lisette imported, save at 399 heroes = in-game count.
 - **Marcus's runtime checks still pending** for: ag-grid 36 grids, new heroes/icons from Rex,
   Fervor ×1.2 on CPU + GPU + Hero Library, 400% cap.
 

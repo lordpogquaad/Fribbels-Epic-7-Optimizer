@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: ae12964a-a779-473a-b06c-7e3b2491cb82
-  modified: 2026-08-28T10:41:16.065Z
+  modified: 2026-08-28T13:15:04.228Z
 ---
 
 # GPU backend successor (future plan, Marcus 2026-08-28)
@@ -36,6 +36,21 @@ perf headroom of a hand-tuned kernel (cf. Rex's `feat/offline` "perf/rtx5090-uti
 - **JCuda / CUDA** — NVIDIA-only, needs CUDA toolkit; excludes AMD/Intel. Only if perf demands PTX.
 - **CPU-only Vector API + threads** — no GPU; Vector API still incubating on JDK 25
   (`--add-modules jdk.incubator.vector`). Fallback thinking only.
+
+**Measured 2026-08-28 — the dev machine has no usable OpenCL at all:** ASUS desktop, i5-4670K,
+Intel HD Graphics 4600 only (no discrete GPU), Intel driver 20.19.15.4531 (2016). The Intel ICD
+(`IntelOpenCL64.dll`, registered under `HKLM\SOFTWARE\Khronos\OpenCL\Vendors`) is present, but the
+Khronos ICD **loader** `OpenCL.dll` is missing from System32/SysWOW64/DriverStore, so Aparapi's
+`OpenCLLoader` logs `SEVERE: … failed to locate opencl native library` and the backend logs
+`Disabling GPU acceleration: Non CL device detected`, falling back to the CPU path. Reproduced
+outside Electron with both the HEAD jar and the freshly built jar — not caused by any code change
+(re-run: `java --enable-native-access=ALL-UNNAMED -jar backend.jar`, POST `/system/setSettings`
+with `settingGpu:true`, read stderr). Consequences: every optimizer run on this box is the
+pure-Java CPU path regardless of the GPU toggle; the June "GPU works on JDK 25" note in
+[[jdk25-migration-fixes]] cannot be re-verified here. A GPU successor (JOCL etc.) buys nothing on
+this hardware — the trigger for that unit is a machine with a real GPU. If Marcus wants the Intel
+path back: reinstall Intel's last Haswell graphics package (which ships `OpenCL.dll`) or install a
+standalone Khronos ICD loader; an HD 4600 will not beat the 4-core CPU by much on this workload.
 
 **How to apply:** when this unit is scheduled, step 1 is the cheap experiment — dump Aparapi's
 generated OpenCL for both kernels and read it — before committing to a rewrite; keep the three-path

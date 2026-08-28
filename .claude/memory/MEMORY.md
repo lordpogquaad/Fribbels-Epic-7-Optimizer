@@ -11,6 +11,7 @@ what happened before 2026-08-28). One line per memory; bodies live in the siblin
 - [Fervor / Weakening set effects](set-effects-fervor-weakening.md) — official 2026-06-04 effect text, what is/isn't modeled, and the three damage-model implementations (CPU Java, GPU kernel, JS) that must change together.
 - [GPU backend successor](gpu-backend-successor.md) — Aparapi is frozen; TornadoVM vs JOCL+OpenCL C vs JCuda weighed 2026-08-28, JOCL recommended, trigger = JDK/driver break or perf need.
 - [Two manifests, two package managers](two-manifests-two-package-managers.md) — `1. App` is Yarn 4; `2. Frontend/1. Source` is npm via `install_frontend.ps1` with no lockfile; backend is Java/Maven, not a package.json at all.
+- [Scan decoder is fribbels' Lambda](scan-decoder-lambda.md) — scans are decoded remotely by an unmaintained AWS endpoint; new heroes come back nameless, so `convertUnits` now names them by code from Rex's hero data (Lisette, 2026-08-28); no local decoder exists anywhere yet.
 - [E7 mod permanence](e7-mod-permanence.md) — Epic Seven gear mods are permanent/irreversible, which is why the optimizer's auto-config archetype logic must be conservative about suggesting mods.
 
 ## Feedback
@@ -25,6 +26,7 @@ what happened before 2026-08-28). One line per memory; bodies live in the siblin
 - [JDK 25 migration fixes](jdk25-migration-fixes.md) — the three code-level fixes the Java 21→25 migration needed (Lombok annotation-processor path, aparapi native-access flag, aparapi-stderr false-positive matcher), all verified still in place.
 - [Java build](java-build.md) — exact command/fallback to rebuild the backend jar, where it's actually deployed, and the `-Dmaven.test.skip` vs `-DskipTests` gotcha.
 - [Java dual source tree](java-dual-source-tree.md) — numbered folders are real, `com/fribbels/*` subpackages are directory symlinks to them; `Main.java` lives only in `0. Main` and is compiled from there (the hardlink that shipped a stale Main was retired 2026-08-28).
+- [Runtime log file](runtime-log-file.md) — the app writes `1. App/5. Dev Only/logs/latest.log` (+5 rotations; packaged builds → userData) from both processes — read it instead of asking for console pastes; line format, levels, useful greps.
 - [Log control](log-control.md) — all renderer logging routes through `LogControl.js` / `globalThis.Log`; backend via `-Dcom.fribbels.level`; other processes via `E7_*` env vars.
 - [AG-Grid setup](ag-grid-setup.md) — single integration point in `inputHandler.js`; v33+ dropped `node.selected` for `isSelected()`; never reintroduce the discontinued scoped `@ag-grid-community/*` packages.
 - [Frontend dev server](frontend-dev-server.md) — the app runs from source via a hot-reload dev server (`start-dev.bat` → `yarn dev` → webpack-dev-server writes `renderer.dev.js` and auto-launches Electron); a source edit just needs a relaunch.

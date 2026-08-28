@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: ae12964a-a779-473a-b06c-7e3b2491cb82
-  modified: 2026-08-28T11:44:36.574Z
+  modified: 2026-08-28T14:22:20.785Z
 ---
 
 # Repo lineage (Marcus, 2026-08-28)
@@ -44,7 +44,13 @@ metadata:
   "align" indices to upstream. Other upstream code changes need per-patch manual review, not merge.
 - Runtime data path: the bundled `6. JSON/2. CACHE/cache/` IS `Files.getCachePath()`; at launch
   `heroData.js` conditionally refetches (ETag) from Fribbels' S3 bucket, which is still updated but lags
-  Rex's git by ~a patch. Rex's raw GitHub URL for the JSON returns an ETag, so it is a drop-in source.
+  Rex's git by ~a patch. Rex's raw GitHub URL for the JSON returns an ETag, so it is a drop-in source
+  (switched to Rex-first 2026-08-28). ⚠️ The Settings toggle `settingUseLocalCache` short-circuits
+  that refresh entirely — the launch log then says `[HeroData] Using local cache for hero data`.
+  Marcus had it ticked from the Fribbels-feed-is-dead era, which is why a freshly released hero
+  (Lisette, patch 2026-08-28) was "missing" on his first runtime pass; it should stay unticked now
+  that the source is live again. Symptom to recognise: a hero present in `herodata.json` on disk /
+  in Rex's repo but absent from the Hero Library and from the importer's merge.
 
 **How to apply:** treat `upstream` as the source of game-data patches (JSON + images), `origin` as
 private personal work; never assume upstream's publish/updater/identity config is meant for this fork;

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: ae12964a-a779-473a-b06c-7e3b2491cb82
-  modified: 2026-08-28T11:14:08.027Z
+  modified: 2026-08-28T12:48:36.921Z
 ---
 
 # Central logging (LogControl.js) — verified present 2026-08-28
@@ -39,9 +39,11 @@ fixed the same day (pom compiles `0. Main` directly, jar verified to contain `co
 see [[java-dual-source-tree]].
 
 **Other processes** (can't read renderer flags — set as env vars in
-`1. Master/1. BAT/start-dev.bat`, documented in LogControl's own header): `E7_MAIN_LOG_LEVEL`
-(main.dev.js electron-log), `E7_BUILD_QUIET` (build-script/webpack routine chatter; errors still
-show), `E7_SCANNER_DEBUG` (scanner.py `_dbg()` → stderr only; stdout is the data protocol).
+`1. Master/1. BAT/start-dev.bat`, documented in LogControl's own header): `E7_BUILD_QUIET`
+(build-script/webpack routine chatter; errors still show), `E7_SCANNER_DEBUG` (scanner.py `_dbg()`
+→ stderr only; stdout is the data protocol). `E7_MAIN_LOG_LEVEL` is gone (2026-08-28): its only
+consumer was `electron-log`, which existed for `electron-updater`; both were removed with the
+auto-updater, and the main process has no file logger now — add one deliberately if ever needed.
 
 **How to apply:** when adding a logger anywhere, use `Log.*` (renderer) or the matching env var
 (other processes) — don't invent a new scattered toggle.
