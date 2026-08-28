@@ -2,14 +2,12 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { spawn } = require('node:child_process');
+const { spawn, execFile } = require('node:child_process');
 const treekill = require('tree-kill');
 
 const electron = require('electron');
 
 const ipc = electron.ipcRenderer;
-
-const { killPortProcess } = require('kill-port-process');
 
 let errors = '';
 let killed = false;
@@ -29,6 +27,66 @@ function getJavaBin() {
 }
 
 const defaultJavaError = `Unable to load Java 25+. Please install the <a href='https://adoptium.net/'>64-bit Java 25 JRE</a>, set JAVA_HOME, and restart your computer.`;
+
+// Parses `netstat -ano` output and returns the deduped PIDs of processes
+// LISTENING on `port` (IPv4 or IPv6 local address). Module-private; kept pure
+// and synchronous so it can be unit-tested without spawning anything.
+function parseListeningPids(netstatOutput, port) {
+  const suffix = `:${port}`;
+  const pids = new Set();
+  for (const line of netstatOutput.split('\n')) {
+    const cols = line.trim().split(/\s+/);
+    if (cols.length < 4 || cols[0] !== 'TCP') continue;
+    const [, localAddr, , state, pid] = cols;
+    if (state !== 'LISTENING') continue;
+    const lastColon = localAddr.lastIndexOf(':');
+    if (lastColon === -1 || localAddr.slice(lastColon) !== suffix) continue;
+    const pidNum = Number.parseInt(pid, 10);
+    if (pidNum > 0) pids.add(pidNum);
+  }
+  return [...pids];
+}
+
+// Finds and kills whatever is LISTENING on `port` (Windows: netstat + taskkill,
+// non-Windows: lsof + SIGTERM). Replaces the old kill-port-process dependency,
+// which threw under Electron's renderer (execa 9 calling
+// events.setMaxListeners on a DOM AbortSignal instead of an EventEmitter).
+// Best-effort: swallows all errors, never throws.
+function killPort(port) {
+  return new Promise((resolve) => {
+    if (process.platform === 'win32') {
+      execFile('netstat', ['-ano'], { maxBuffer: 16 * 1024 * 1024 }, (err, stdout) => {
+        if (err || !stdout) return resolve();
+        const pids = parseListeningPids(stdout, port);
+        if (pids.length === 0) return resolve();
+        let remaining = pids.length;
+        for (const pid of pids) {
+          execFile('taskkill', ['/F', '/T', '/PID', String(pid)], (killErr) => {
+            if (killErr) {
+              globalThis.Log?.debug?.(`[Subprocess] taskkill /PID ${pid} failed: ${killErr.message}`);
+            }
+            if (--remaining === 0) resolve();
+          });
+        }
+      });
+    } else {
+      execFile('lsof', ['-ti', `:${port}`], (err, stdout) => {
+        if (err || !stdout) return resolve();
+        for (const line of stdout.split('\n')) {
+          const pid = Number.parseInt(line.trim(), 10);
+          if (pid > 0) {
+            try {
+              process.kill(pid, 'SIGTERM');
+            } catch (killErr) {
+              globalThis.Log?.debug?.(`[Subprocess] SIGTERM pid ${pid} failed: ${killErr.message}`);
+            }
+          }
+        }
+        resolve();
+      });
+    }
+  });
+}
 
 function javaversion(callback) {
   const javaSpawn = spawn(getJavaBin(), ['-version']);
@@ -54,7 +112,7 @@ function javaversion(callback) {
 const Subprocess = {
   kill: async () => {
     try {
-      await killPortProcess(activePort);
+      await killPort(activePort);
     } catch {
       // suppress
     }
@@ -98,7 +156,8 @@ const Subprocess = {
     ];
     // Backend log verbosity, chosen centrally in 5. Dev Only/LogControl.js
     // (backendJavaLevel -> globalThis.__backendJavaLevel). Default INFO -> no flag.
-    // Token is a JUL level name (letters only) so it is shell-safe under shell:true.
+    // Token is a JUL level name (letters only), validated above; passed as its own argv
+    // entry (no shell) so no escaping is needed either way.
     const VALID_JAVA_LEVELS = [
       'OFF', 'SEVERE', 'WARNING', 'INFO', 'FINE', 'FINER', 'FINEST', 'ALL',
     ];
@@ -108,10 +167,10 @@ const Subprocess = {
     if (VALID_JAVA_LEVELS.includes(javaLevel) && javaLevel !== 'INFO') {
       jvmArgs.push(`-Dcom.fribbels.level=${javaLevel}`);
     }
-    jvmArgs.push('-jar', `"${Files.getJarPath()}/backend.jar"`);
+    jvmArgs.push('-jar', `${Files.getJarPath()}/backend.jar`);
 
-    child = spawn(`"${getJavaBin()}"`, jvmArgs, {
-      shell: true,
+    child = spawn(getJavaBin(), jvmArgs, {
+      shell: false,
       stdio: ['pipe', 'pipe', 'pipe'],
       detached: false,
     });

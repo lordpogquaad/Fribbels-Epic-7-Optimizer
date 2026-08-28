@@ -151,7 +151,7 @@ module.exports = merge(baseConfig, {
             // pure Node mode (set by Claude Code CLI and similar Electron hosts).
             const spawnEnv = { ...process.env };
             delete spawnEnv.ELECTRON_RUN_AS_NODE;
-            mainProcess = spawn('npm', ['run', 'start-main-dev'], {
+            mainProcess = spawn('npm run start-main-dev', {
               shell: true,
               env: spawnEnv,
               stdio: 'inherit',

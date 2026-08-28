@@ -1,4 +1,4 @@
-/* global Files, Dialog, Notifier, i18next, ItemSerializer, Utils, Stat, Constants */
+/* global Files, Dialog, Notifier, i18next, ItemSerializer, Utils, Stat, Constants, HeroData */
 const childProcess = require('node:child_process');
 
 // Diagnostic logging uses the central Log utility (Log.debug, gated by window.__optDebug; see 5. Dev Only/LogControl.js).
@@ -262,10 +262,35 @@ function convertItems(rawItems, scanType) {
   return filteredItems;
 }
 
+// The decoder Lambda (fribbels' AWS endpoint, see `api` above) names units from
+// ITS OWN hero list, which is no longer maintained — a newly released hero comes
+// back with a `code` but no `name`. Resolve the name from the Rex-synced hero
+// data instead of silently dropping the unit (2026-08-28: Lisette, c2186).
+let heroNameByCode = null;
+function heroNameForCode(code) {
+  if (!heroNameByCode) {
+    heroNameByCode = new Map();
+    Object.values(HeroData.getAllHeroData()).forEach((hero) => {
+      if (hero.code && hero.name) heroNameByCode.set(hero.code, hero.name);
+    });
+  }
+  return heroNameByCode.get(code) || null;
+}
+
 function convertUnits(rawUnits) {
+  const namedByCode = [];
+  const dropped = [];
   rawUnits.forEach((rawUnit) => {
     try {
+      if (!rawUnit.name && rawUnit.code) {
+        const resolved = heroNameForCode(rawUnit.code);
+        if (resolved) {
+          rawUnit.name = resolved;
+          namedByCode.push(`${resolved} (${rawUnit.code})`);
+        }
+      }
       if (!rawUnit.name || !rawUnit.id) {
+        dropped.push({ id: rawUnit.id, code: rawUnit.code, name: rawUnit.name });
         return;
       }
 
@@ -275,6 +300,12 @@ function convertUnits(rawUnits) {
       Log.error('Error converting unit:', e);
     }
   });
+
+  Log.info(
+    `[Scanner] units: ${rawUnits.length} decoded, ${namedByCode.length} named by code, ${dropped.length} dropped`,
+  );
+  if (namedByCode.length) Log.info('[Scanner] named by code:', namedByCode);
+  if (dropped.length) Log.warn('[Scanner] dropped units (no resolvable name/id):', dropped);
 
   return rawUnits.filter((x) => !!x.name);
 }
