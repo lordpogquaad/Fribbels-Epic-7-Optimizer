@@ -10,6 +10,12 @@ const path = require('node:path');
 
 const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
 
+// Relative require: webpack bundles this straight into main.prod.js for the
+// packaged build (this file is its entry point), so no separate resolution
+// concern here -- unlike LogControl.js, which loads raw and can't rely on
+// __dirname (see that file's FILE LOG init comment).
+const FileLog = require('./FileLog.js');
+
 // In dev __dirname is '5. Dev Only/' (1 level below app root).
 // In prod webpack compiles this to '2. Frontend/1. Source/main.prod.js' (2 levels below).
 const appRoot =
@@ -219,10 +225,73 @@ app.on('window-all-closed', () => {
   }
 });
 
+// File log: rotates 5. Dev Only/logs/latest.log -> prev-1..prev-5 and starts a
+// fresh latest.log. Runs BEFORE createWindow so the renderer (LogControl.js,
+// which only appends) never races the rotation. Off switch: E7_FILE_LOG=0
+// (the renderer's own switch, FLAGS.fileLog in LogControl.js, can't be read
+// from here -- see 1. Master/1. BAT/start-dev.bat). Tees console.log/info/
+// warn/error plus uncaught errors into the same file with a "[main]" prefix;
+// the terminal still gets everything too.
+function initFileLog() {
+  if (process.env.E7_FILE_LOG === '0') return;
+  try {
+    const dir = FileLog.resolveLogDir({
+      appPath: app.getAppPath(),
+      userDataPath: app.getPath('userData'),
+      isPackaged: app.isPackaged,
+    });
+    const filePath = FileLog.rotateLogs(dir);
+    FileLog.writeHeader(filePath, {
+      timestamp: new Date().toISOString(),
+      appVersion: app.getVersion(),
+      electron: process.versions.electron,
+      chrome: process.versions.chrome,
+      node: process.versions.node,
+      platform: process.platform,
+      logDir: dir,
+      flagsJson: JSON.stringify({ E7_FILE_LOG: process.env.E7_FILE_LOG || null }),
+    });
+
+    ['log', 'info', 'warn', 'error'].forEach((method) => {
+      const original = console[method].bind(console);
+      console[method] = (...a) => {
+        original(...a);
+        FileLog.appendLine(
+          filePath,
+          FileLog.formatLine(`[main] ${method.toUpperCase()}`, a),
+        );
+      };
+    });
+
+    process.on('uncaughtException', (err) => {
+      FileLog.appendLine(
+        filePath,
+        FileLog.formatLine('[main] UNCAUGHT', [err]),
+      );
+    });
+    process.on('unhandledRejection', (reason) => {
+      FileLog.appendLine(
+        filePath,
+        FileLog.formatLine('[main] UNHANDLED-REJECTION', [reason]),
+      );
+    });
+
+    console.log(`[main] file log: ${filePath}`);
+  } catch (e) {
+    console.warn('[main] file logging disabled -- failed to initialize:', e);
+  }
+}
+
 if (process.env.E2E_BUILD === 'true') {
-  app.whenReady().then(createWindow);
+  app.whenReady().then(() => {
+    initFileLog();
+    createWindow();
+  });
 } else {
-  app.on('ready', createWindow);
+  app.on('ready', () => {
+    initFileLog();
+    createWindow();
+  });
 }
 
 app.on('activate', () => {

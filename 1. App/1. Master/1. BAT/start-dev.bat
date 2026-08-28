@@ -6,9 +6,12 @@ set "JAVA_HOME=F:\VSCode-Data\jdk\jdk-25.0.3+9"
 
 REM --- Separate-process logging controls. The renderer switchboard is 5. Dev Only\LogControl.js;
 REM     these env vars control the processes that cannot read it. Defaults = current behavior. ---
-set "E7_MAIN_LOG_LEVEL=info"
 set "E7_BUILD_QUIET="
 set "E7_SCANNER_DEBUG="
+REM     E7_FILE_LOG=0 disables the main process's half of the 5. Dev Only\logs\latest.log
+REM     file sink (5. Dev Only\FileLog.js); the renderer's half is FLAGS.fileLog in
+REM     LogControl.js. Default (unset) = ON, unlike the two switches above.
+set "E7_FILE_LOG="
 
 REM --- Preflight: fail loudly (with a fixable message) if a pinned prerequisite is missing ---
 if not exist "package.json" (

@@ -54,6 +54,7 @@
       "node_modules/**",
       "5. Dev Only/main.dev.js",
       "5. Dev Only/LogControl.js",
+      "5. Dev Only/FileLog.js",
       "2. Frontend/1. Source/package.json",
       "2. Frontend/1. Source/main.prod.js",
       "2. Frontend/1. Source/renderer.dev.js",
