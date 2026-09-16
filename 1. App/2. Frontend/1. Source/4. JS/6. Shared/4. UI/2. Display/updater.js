@@ -63,7 +63,7 @@ const Updater = {
   },
 
   // This fork has no auto-updater (private repo, no publish feed — see
-  // .claude/memory/repo-lineage.md). Only populates the "Current version" label;
+  // project memory repo-lineage.md). Only populates the "Current version" label;
   // updates arrive by pulling upstream game data and rebuilding.
   displayVersion: () => {
     const version = document.getElementById('version');

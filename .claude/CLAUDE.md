@@ -8,14 +8,9 @@ what is specific to this repo.
 
 ## Memory
 
-Project memory index:
-
-```text
-@./memory/MEMORY.md
-```
-
-Bodies are under `.claude/memory/`; read the relevant one on demand. `autoMemoryDirectory` in
-`.claude/settings.json` points here so this project no longer writes into the user-scope store.
+Project memory lives outside this repo, in the folder `autoMemoryDirectory` in
+`.claude/settings.json` names (the config dir's `Project-Memory/Fribbels Epic 7 Optimizer/`). Claude
+Code loads its `MEMORY.md` index as auto memory; read the relevant body on demand.
 
 ## Layout (numbered folders — quote every path; they contain spaces and dots)
 

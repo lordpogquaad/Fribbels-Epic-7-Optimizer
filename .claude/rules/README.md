@@ -5,6 +5,6 @@ always loaded; a `paths:`-scoped Rule loads only when a matching file is read.
 
 What belongs here: always-on, project-specific directives — the real command surface, the
 two-manifest / Yarn-vs-npm split, path-quoting traps from the numbered-folder layout, gates to run
-before claiming a change works. Evidence and history belong in `.claude/memory/`, not here.
+before claiming a change works. Evidence and history belong in project memory (the `autoMemoryDirectory` folder), not here.
 
 One fact → one home. Do not duplicate a Rule's body into `CLAUDE.md` or a memory.
