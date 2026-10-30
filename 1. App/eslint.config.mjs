@@ -10,7 +10,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
   // ---- Ignored paths (ESLint's own ignores; the deprecated .eslintignore file is
-  // gone — Prettier/Stylelint use .prettierignore via --ignore-path) ----
+  // gone — Prettier uses ../.prettierignore via --ignore-path) ----
   globalIgnores([
     '**/node_modules/**',
     '2. Frontend/1. Source/node_modules/**',
@@ -20,8 +20,6 @@ export default defineConfig([
     '2. Frontend/1. Source/8. DIST/**', // prod build output
     'release/**', // electron-builder output
     '3. Backend/**', // Java backend
-    '2. Personal/**', // trash / personal
-    '_pre-modernize-backup/**', // pre-change manifest backups
     '**/*.min.js',
   ]),
 
@@ -30,13 +28,13 @@ export default defineConfig([
     files: ['**/*.{js,jsx,mjs,cjs}'],
     extends: [js.configs.recommended],
     languageOptions: {
-      ecmaVersion: 2024,
+      ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
         ...globals.browser,
         ...globals.node,
         // Do NOT add globals.jquery here: the source files already declare `$`/`jQuery`
-        // via per-file `/* global $ */` comments (~15 files), and declaring them here too
+        // via per-file `/* global $ */` comments, and declaring them here too
         // makes no-redeclare fire in every one of those files. no-undef is off anyway, so
         // jQuery does not need a central global declaration.
       },
@@ -56,15 +54,12 @@ export default defineConfig([
     files: ['**/*.{ts,tsx}'],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     languageOptions: {
-      ecmaVersion: 2024,
+      ecmaVersion: 'latest',
       sourceType: 'module',
       globals: { ...globals.browser, ...globals.node },
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_' },
-      ],
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },

@@ -64,8 +64,6 @@ release
 .project
 .classpath
 .settings/
-3. Backend/1. Source/3. XML/bin/
-3. Backend/1. Source/3. XML/*.prefs
 
 # Served hero-image dir is build output: CopyAssets.js flattens 3. ASSETS/1. PNG/** into it on
 # every `yarn build` / `yarn dev`. The canonical source tree is 3. ASSETS/ (tracked). 2026-08-28.

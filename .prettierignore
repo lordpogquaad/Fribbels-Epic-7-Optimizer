@@ -29,12 +29,16 @@ target
 renderer.dev.js
 main.prod.js
 main.prod.js.map
+LINT-STRICT-REPORT.*
+SONAR-REPORT.*
+TYPECHECK-REPORT.*
 *.min.js
 
 # Generated or synced data, and vendored stylesheets: diff before replacing, never reformat
 2. CACHE
 2. CSS
 assets
+translation.missing.json
 
 # Backend: nothing Prettier owns, and its stray IDE folders can hold long paths
 3. Backend

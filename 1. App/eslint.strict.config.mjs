@@ -9,22 +9,19 @@ import base from './eslint.config.mjs';
 // triaged by hand, so every rule here may be noisy on a given day.
 //
 // Layers: the base config, type-aware typescript-eslint rules over JS (type info from
-// tsconfig.json: allowJs + strict, checkJs off), eslint-plugin-regexp, eslint-plugin-promise,
+// jsconfig.strict.json: allowJs + strict, checkJs off), eslint-plugin-regexp, eslint-plugin-promise,
 // eslint-plugin-n (Node/Electron code only) and a few core rules the base set leaves off. The
-// no-unsafe-* family is left out because untyped JS is `any` everywhere.
+// no-unsafe-* family is left out because untyped JS is `any` everywhere. The base config keeps
+// no-undef off and exempts unused arguments and empty catch blocks; this lane turns those back on,
+// so it shows what the gating lint hides.
 // Report-only: the config repo keeps its strict rules at 'warn' and omits --max-warnings, so ESLint
 // exits 0. Here the recommended presets ship some 'error' rules, so the export demotes them all.
 const jsFiles = ['**/*.{js,mjs,cjs}'];
 
 // Node/Electron code: eslint-plugin-n fits here. The renderer is a bundled jQuery app that runs in
 // a browser-like window; Node resolution rules would only report bundler-resolved imports there.
-const nodeFiles = [
-  '1. Master/**/*.{js,mjs,cjs}',
-  '4. Both/**/*.{js,mjs,cjs}',
-  '5. Dev Only/**/*.{js,mjs,cjs}',
-  '2. Frontend/1. Source/4. JS/**/main*.{js,mjs,cjs}',
-  '*.{js,mjs,cjs}',
-];
+const electronMainFiles = ['5. Dev Only/**/*.{js,mjs,cjs}'];
+const nodeFiles = ['4. Both/**/*.{js,mjs,cjs}', ...electronMainFiles, '*.{js,mjs,cjs}'];
 
 const typeAwareRules = {
   '@typescript-eslint/await-thenable': 'warn',
@@ -53,7 +50,7 @@ const layers = [
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: ['./tsconfig.json'],
+        project: ['./jsconfig.strict.json'],
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -80,9 +77,14 @@ const layers = [
   },
   { ...promise.configs['flat/recommended'], files: jsFiles },
   { ...nodePlugin.configs['flat/recommended-module'], files: nodeFiles },
+  // These files run on Electron's Node, not the tooling Node that `engines` describes.
+  { files: electronMainFiles, settings: { n: { version: '>=24.22.0' } } },
   {
     files: jsFiles,
     rules: {
+      'no-undef': 'warn',
+      'no-unused-vars': ['warn', { args: 'after-used', varsIgnorePattern: '^_' }],
+      'no-empty': ['warn', { allowEmptyCatch: false }],
       'array-callback-return': 'warn',
       'no-self-compare': 'warn',
       'no-unmodified-loop-condition': 'warn',
@@ -90,10 +92,7 @@ const layers = [
       'require-atomic-updates': 'warn',
       // `(res)`/`(ok)` for resolve is a naming style, not a bug.
       'promise/param-names': 'off',
-      'promise/catch-or-return': [
-        'warn',
-        { allowThen: true, allowFinally: true },
-      ],
+      'promise/catch-or-return': ['warn', { allowThen: true, allowFinally: true }],
       'promise/always-return': ['warn', { ignoreLastCallback: true }],
     },
   },
@@ -104,8 +103,7 @@ const layers = [
 ];
 
 const demoteSetting = (setting) => {
-  if (Array.isArray(setting))
-    return [demoteSetting(setting[0]), ...setting.slice(1)];
+  if (Array.isArray(setting)) return [demoteSetting(setting[0]), ...setting.slice(1)];
   return setting === 'error' || setting === 2 ? 'warn' : setting;
 };
 
@@ -115,10 +113,7 @@ export default layers.map((entry) =>
     ? {
         ...entry,
         rules: Object.fromEntries(
-          Object.entries(entry.rules).map(([name, setting]) => [
-            name,
-            demoteSetting(setting),
-          ]),
+          Object.entries(entry.rules).map(([name, setting]) => [name, demoteSetting(setting)]),
         ),
       }
     : entry,

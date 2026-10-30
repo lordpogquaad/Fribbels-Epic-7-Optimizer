@@ -6,6 +6,37 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-30
 
+- `[Repo]` **Config audit: nothing hides a problem now.** `/audit-fix` over every config, read against
+  the installed tools. Fixed: `lint-fix` and `lint-styles-fix` ran nothing and exited 0 (`yarn --silent`
+  is invalid in Yarn 4); `prestart` never ran (no `prestart` in Yarn 4's bundle), so `start` now builds
+  first; `.prettierignore` missed `translation.missing.json`; `.markdownlint-cli2.jsonc` read
+  `.remember/` and could not resolve its `extends` from VS Code. Removed dead ignores and globs, and the
+  bare `report/` ignore that could have hidden a future folder. Dead `codeQL`, `kilo-code` and nodemon
+  keys left `.vscode/settings.json`; `eslint.workingDirectories`, `probe` and `validate` were added so
+  ESLint stops failing on Markdown. `lint:strict` now turns `no-undef`, full `no-unused-vars` and
+  `no-empty` back on, 577 to 936 warnings, and uses Node 24 rules for `5. Dev Only`.
+  `yarn typecheck:strict:report` is new: 5,997 errors the passing gate does not show (F10). Kept on
+  purpose: `endOfLine: auto`, because `sync-upstream-data.ps1` writes CRLF; the chat settings in
+  `.vscode/settings.json`, which are personal but harmless. knip ignores only the four packages webpack
+  names by string; other noise stays in reports to be judged case by case (Marcus).
+- `[Backend]` **B3 closed: `pom.xml` moved to `1. Source/`.** The redhat.java `.project` and `.classpath`
+  in its workspace storage prove the cause: m2e turned each pom path outside `3. XML/` into a linked
+  folder, or rebuilt the absolute path as real folders. Those deep folders also made git print "Filename
+  too long". Deleting them could not last, so the pom moved and its `..` paths went; `build_backend.ps1`
+  and the docs followed. Build passes: 21 tests, fresh `backend.jar`. `3. XML/`, `.vscode/explaininh`,
+  `.vscode/Apptree.md` and the empty root `2. Frontend/` are in `trashcan/config-audit-2026-10-30/`.
+  Whether a Java LS clean keeps the folders away is B12. The moved `bin/pom.xml` then failed import as a
+  duplicate project (redhat.java log, 09:55), so `java.import.exclusions` in
+  `Poge7optimizer.code-workspace` now skips `trashcan/`; that setting is window-scoped, so a multi-root
+  workspace ignores it in `.vscode/settings.json`.
+- `[Repo]` **Report-tool configs added (R3).** `.editorconfig`, `.markdownlint-cli2.jsonc`, `knip.json`,
+  `.dependency-cruiser.cjs`, `.jscpd.json` and `sonar-project.properties`, with their packages; `.gitignore`
+  merged. `.gitattributes` already matched. `.remarkrc.mjs` skipped as adding nothing here. Marcus asked for
+  `jsconfig.json` and `jsconfig.strict.json` too; `lint:strict` now takes type info from the strict one, still
+  577 warnings. `yarn lint:strict:report` writes `.claude/plans/LINT-STRICT-REPORT.md` with the config repo's
+  `lint-strict-report.mjs`. Sonar config leaves Java out until a Java scan is wanted. knip 6.43 is the newest the age gate
+  allowed. Lead's run: lint, typecheck and build exit 0; Prettier lists the same 76 files with and without
+  `.editorconfig`, so it changes no formatting.
 - `[Repo]` **Prettier config moved to the root, permissions trimmed.** `.prettierrc.json` matches the config
   repo (width 100, was 80) and replaces the `prettier` block in `1. App/package.json`. `.prettierignore` moved
   to the root with unprefixed patterns, tested from both folders; `lint-styles` now names `2. CSS/`

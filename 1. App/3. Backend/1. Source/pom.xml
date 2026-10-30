@@ -68,9 +68,8 @@
         </dependency>
     </dependencies>
     <build>
-        <directory>../target</directory>
-        <sourceDirectory>../1. Java</sourceDirectory>
-        <testSourceDirectory>../1. Java/10. Tests</testSourceDirectory>
+        <sourceDirectory>1. Java</sourceDirectory>
+        <testSourceDirectory>1. Java/10. Tests</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

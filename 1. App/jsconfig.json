@@ -1,0 +1,26 @@
+{
+  // Base for jsconfig.strict.json. The editor and `yarn typecheck` use tsconfig.json, which wins
+  // when both files sit in one folder.
+  "compilerOptions": {
+    "target": "ES2025",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["dom", "esnext"],
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  // A dotfile is outside the default `**/*`, and the type-aware parser needs every linted file listed.
+  "include": ["**/*", ".dependency-cruiser.cjs"],
+  "exclude": [
+    "**/node_modules",
+    "release",
+    "2. Frontend/1. Source/8. DIST",
+    "**/renderer.dev.js",
+    "**/renderer.prod.js",
+    "**/main.prod.js",
+    "3. Backend"
+  ]
+}

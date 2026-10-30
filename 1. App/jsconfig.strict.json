@@ -1,0 +1,10 @@
+{
+  // Type information for `yarn lint:strict` only (eslint.strict.config.mjs). `strict` is on because
+  // typescript-eslint's no-unnecessary-condition needs strictNullChecks. checkJs stays off, so
+  // nothing here reports type errors. Not used by `yarn typecheck`.
+  "extends": "./jsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true
+  }
+}

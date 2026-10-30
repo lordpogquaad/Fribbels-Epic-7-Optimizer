@@ -22,7 +22,7 @@ Code loads its `MEMORY.md` index as auto memory; read the relevant body on deman
   1. Master/2. PS1/build_backend.ps1    Maven build → 1. Master/3. Jar/backend.jar
   2. Frontend/1. Source/      renderer: 1. HTML  2. CSS  3. ASSETS  4. JS  5. TS  6. JSON  7. PY  8. DIST
     package.json              runtime manifest — npm, no lockfile by design
-  3. Backend/1. Source/       Java sources + 3. XML/pom.xml
+  3. Backend/1. Source/       Java sources + pom.xml
   4. Both/1. Webpack/         four webpack configs (main/renderer × dev/prod)
   4. Both/2. Build/1. Scripts/  CopyAssets, CheckPortInUse, CheckNativeDep, CheckYarn, regen-installed-transitives
   5. Dev Only/                main.dev.js entry
@@ -38,7 +38,8 @@ A PreToolUse hook (`hooks/guard-package-root.mjs`) denies npm in the Yarn root a
 yarn install            outer deps; postinstall also runs electron-builder install-app-deps on the inner tree
 yarn lint               eslint (flat config, eslint.config.mjs)
 yarn lint:strict        report-only strict eslint (eslint.strict.config.mjs); always exits 0, not a gate
-yarn typecheck          tsc7 (TypeScript 7 alias) -p ./ --noEmit — added 2026-08-28
+yarn typecheck          tsc7 (TypeScript 7 alias) -p ./ --noEmit; checkJs is off, so JS types are not checked
+yarn typecheck:strict:report   report-only: checkJs on, writes .claude/plans/TYPECHECK-REPORT.md
 yarn build              copy-assets + webpack main/renderer prod bundles
 yarn dev                hot renderer dev server
 yarn package-win        electron-builder NSIS + zip → release/

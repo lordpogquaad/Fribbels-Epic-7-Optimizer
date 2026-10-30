@@ -1,10 +1,5 @@
 {
   "$schema": "file:///F:/VSCode-Data/.claude/tools/metrics/claude-code-settings.editor.schema.json",
-  "plansDirectory": "./.claude/plans",
-  "autoMemoryDirectory": "F:/VSCode-Data/.claude/Project-Memory/Fribbels Epic 7 Optimizer",
-  "autoCompactEnabled": true,
-  "autoMemoryEnabled": true,
-  "verbose": true,
   "permissions": {
     "allow": [
       "Bash(yarn lint*)",
@@ -34,8 +29,8 @@
       "PowerShell(yarn --version)",
       "PowerShell(mvn --version)"
     ],
-    "ask": [],
-    "deny": []
+    "deny": [],
+    "ask": []
   },
   "hooks": {
     "PreToolUse": [
@@ -52,5 +47,13 @@
         ]
       }
     ]
+  },
+  "plansDirectory": "./.claude/plans",
+  "autoMemoryEnabled": true,
+  "autoMemoryDirectory": "F:/VSCode-Data/.claude/Project-Memory/Fribbels Epic 7 Optimizer",
+  "verbose": true,
+  "autoCompactEnabled": true,
+  "enabledPlugins": {
+    "jdtls-lsp@claude-plugins-official": true
   }
 }

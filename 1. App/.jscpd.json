@@ -1,0 +1,17 @@
+{
+  "path": ["2. Frontend/1. Source/4. JS", "2. Frontend/1. Source/5. TS", "5. Dev Only", "4. Both"],
+  "format": ["javascript", "typescript"],
+  "pattern": "**/*.{js,ts}",
+  "ignore": [
+    "**/node_modules/**",
+    "**/*.d.ts",
+    "**/logs/**",
+    "2. Frontend/1. Source/8. DIST/**",
+    "2. Frontend/1. Source/main.prod.js",
+    "2. Frontend/1. Source/renderer.dev.js"
+  ],
+  "minLines": 8,
+  "minTokens": 70,
+  "reporters": ["console"],
+  "gitignore": false
+}

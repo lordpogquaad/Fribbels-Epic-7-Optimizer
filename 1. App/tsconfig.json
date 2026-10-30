@@ -1,12 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2025",
     "module": "preserve",
     "moduleResolution": "bundler",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "lib": ["dom", "esnext"],
     "noEmit": true,
     "strict": true,
     "pretty": true,
@@ -21,6 +18,9 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true,
+    /* Off on purpose: this file is the passing gate, so `yarn typecheck` covers JS syntax and module
+       resolution only. `yarn typecheck:strict:report` runs it with checkJs on and lists every error. */
+    "checkJs": false,
     /* Skip type-checking of third-party .d.ts files (avoids cross-package @types drift).
        Standard practice; does NOT relax type-checking of our own source. */
     "skipLibCheck": true
@@ -31,7 +31,6 @@
     "2. Frontend/1. Source/8. DIST",
     "**/renderer.dev.js",
     "**/renderer.prod.js",
-    "**/main.prod.js",
-    "2. Personal"
+    "**/main.prod.js"
   ]
 }

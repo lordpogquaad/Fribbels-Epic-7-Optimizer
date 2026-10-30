@@ -1,0 +1,21 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+# Matches .gitattributes: cmd.exe needs CRLF for batch files.
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Java, Python and the PowerShell scripts are indented with four spaces. Prettier does not format
+# them, so this does not change what `prettier --check` reports.
+[*.{java,py,ps1,xml}]
+indent_size = 4

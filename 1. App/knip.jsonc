@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/knip/schema-jsonc.json",
+  "entry": [
+    "4. Both/1. Webpack/webpack.config.*.js",
+    "4. Both/2. Build/1. Scripts/*.{js,mjs}",
+    "2. Frontend/1. Source/4. JS/6. Shared/1. Core/init.js",
+    "2. Frontend/1. Source/4. JS/7. Gear Analysis Tab/**/*.js",
+    "5. Dev Only/LogControl.js"
+  ],
+  "project": [
+    "5. Dev Only/**/*.js",
+    "4. Both/**/*.js",
+    "2. Frontend/1. Source/4. JS/**/*.js",
+    "2. Frontend/1. Source/5. TS/**/*.ts",
+    "*.{mjs,cjs}"
+  ],
+  // The webpack plugin executes the configs, which refuse to load without NODE_ENV=production;
+  // they are listed as entries above instead. The Gear Analysis files and LogControl.js are loaded
+  // by <script> tags in app.html, which knip does not read.
+  "webpack": false,
+  // The renderer's packages are declared in "2. Frontend/1. Source/package.json", a second manifest
+  // knip does not read, so every import of one would be reported as unlisted.
+  "exclude": ["unlisted"],
+  // Named as strings in the webpack configs, which knip does not read (see above). Nothing else goes
+  // here: a dependency that only looks unused stays in the report until it is judged.
+  "ignoreDependencies": [
+    "core-js", // entry string in webpack.config.renderer.*
+    "regenerator-runtime", // entry string in webpack.config.renderer.*
+    "css-loader", // loader string in webpack.config.renderer.*
+    "style-loader" // loader string in webpack.config.renderer.*
+  ]
+}

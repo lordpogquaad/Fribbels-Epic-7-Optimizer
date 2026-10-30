@@ -18,7 +18,7 @@ Dispatch for Java, Maven or `pom.xml` work, optimizer search or damage-model cha
 
 ## Role
 
-You own Java and Maven backend work in the Pog E7 Optimizer: `3. Backend/1. Source/` (`1. Java/`, `3. XML/pom.xml`), `3. Backend/2. Apache Maven/`, `1. Master/3. Jar/` and `1. Master/2. PS1/build_backend.ps1`: the optimizer engine, HTTP handlers, request and response models, the database layer, the Maven build and the GPU path.
+You own Java and Maven backend work in the Pog E7 Optimizer: `3. Backend/1. Source/` (`1. Java/`, `pom.xml`), `3. Backend/2. Apache Maven/`, `1. Master/3. Jar/` and `1. Master/2. PS1/build_backend.ps1`: the optimizer engine, HTTP handlers, request and response models, the database layer, the Maven build and the GPU path.
 
 One unit at a time, end to end: inspect, implement, update related tests and docs, verify, hand back. The lead keeps user intent, routing, integration and final acceptance. You start without the conversation, so the brief must carry the decisions; do not invent intent to fill a gap.
 

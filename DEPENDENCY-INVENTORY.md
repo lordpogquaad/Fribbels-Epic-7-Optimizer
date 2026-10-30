@@ -20,7 +20,7 @@
 >
 > **Authoritative, live sources of truth instead of this file:**
 > [1. App/package.json](1.%20App/package.json) · [2. Frontend/1. Source/package.json](1.%20App/2.%20Frontend/1.%20Source/package.json) ·
-> [pom.xml](1.%20App/3.%20Backend/1.%20Source/3.%20XML/pom.xml) · [build_backend.ps1](1.%20App/1.%20Master/2.%20PS1/build_backend.ps1).
+> [pom.xml](1.%20App/3.%20Backend/1.%20Source/pom.xml) · [build_backend.ps1](1.%20App/1.%20Master/2.%20PS1/build_backend.ps1).
 > For the modernization narrative see the agent memory (`project_modernization_2026`) and
 > `C:\Users\Marcus\.claude\plans\Bugs\Change Logs.md`. Kept only as historical reference — a fresh
 > inventory should be generated from the live manifests above, not patched from here.
@@ -50,7 +50,7 @@ This document inventories **every dependency/version manifest and config file** 
 | Node/JS — Build tooling     | [1. App/package.json](1.%20App/package.json)                                                                                                                                                                                  | Electron shell, webpack/Babel/ESLint/Jest/electron-builder build & package pipeline, main-process runtime libs |
 | Node/JS — Runtime deps      | [1. App/2. Frontend/1. Source/package.json](1.%20App/2.%20Frontend/1.%20Source/package.json)                                                                            | Renderer/UI runtime feature libraries (ag-grid, jquery, echarts, i18next, axios, jimp, etc.)                   |
 | Package-manager & lockfiles | [.yarnrc.yml](1.%20App/.yarnrc.yml), [yarn.lock](1.%20App/yarn.lock), [package-lock.json](1.%20App/package-lock.json)                                                                                | Yarn 4 config + resolved dependency graphs                                                                     |
-| Java / Maven                | [pom.xml](1.%20App/3.%20Backend/1.%20Source/3.%20XML/pom.xml) (+ bin copy), 2× settings.xml                                                                                                                                   | Backend JAR build, Java 21, Maven plugin/dependency versions                                                   |
+| Java / Maven                | [pom.xml](1.%20App/3.%20Backend/1.%20Source/pom.xml) (+ bin copy), 2× settings.xml                                                                                                                                   | Backend JAR build, Java 21, Maven plugin/dependency versions                                                   |
 | Python                      | [scanner.py](1.%20App/2.%20Frontend/1.%20Source/7.%20PY/1.%20Scanner/1.%20Core/scanner.py), vendored Scapy + dead trash copy                                                                                                  | Gear-scanner runtime (Scapy 2.5.0, user-supplied Python)                                                       |
 | Runtimes & CI               | [build_backend.ps1](1.%20App/1.%20Master/2.%20PS1/build_backend.ps1), [start-dev.bat](1.%20App/1.%20Master/1.%20BAT/start-dev.bat), [install_frontend.ps1](1.%20App/1.%20Master/2.%20PS1/install_frontend.ps1), dead Scapy CI | JDK 21.0.10 / Maven 3.8.8 pins; launch flow; (third-party CI in trash)                                         |
 | Build-tooling configs       | babel.config.cjs, 6× webpack configs, 2× tsconfig, 3× eslintrc                                                                                                                                                                | Transpile/bundle targets, TS target ES2018, lint rules                                                         |
@@ -289,7 +289,7 @@ The legacy Yarn 1 + npm archival lockfiles formerly described under `…\6. JSON
 
 ## (d) Java / Maven
 
-### [1. App/3. Backend/1. Source/3. XML/pom.xml](1.%20App/3.%20Backend/1.%20Source/3.%20XML/pom.xml)
+### [1. App/3. Backend/1. Source/pom.xml](1.%20App/3.%20Backend/1.%20Source/pom.xml)
 
 **Primary Maven build** for the Java backend (`groupId=fribbels`, `artifactId=backend`). Produces `backend-1.0.2-jar-with-dependencies.jar` via maven-assembly-plugin (`mainClass com.fribbels.Main`). Non-standard layout: build dir `../target`, sourceDirectory `../1. Java`. The compiler plugin **excludes** the numbered source subfolders, so only the `com/fribbels` package tree is compiled (matches the dual-source-tree memory note).
 
@@ -345,7 +345,7 @@ Default global `settings.xml` shipped inside the extracted Apache Maven 3.8.8 di
 
 > Gradle: **NONE** — this project is Maven-only (no `*.gradle`, no gradle wrapper).
 
-**How to update:** edit version properties/dependency/plugin versions in `1. App/3. Backend/1. Source/3. XML/pom.xml`, then rebuild with `build_backend.ps1` (runs `mvn clean package -Dmaven.test.skip=true`). The `bin/pom.xml` copy and the stock `settings.xml` files generally need no manual edits.
+**How to update:** edit version properties/dependency/plugin versions in `1. App/3. Backend/1. Source/pom.xml`, then rebuild with `build_backend.ps1` (runs `mvn clean package -Dmaven.test.skip=true`). The `bin/pom.xml` copy and the stock `settings.xml` files generally need no manual edits.
 
 ---
 
@@ -621,7 +621,7 @@ Tick each manifest once you've confirmed its pins are intentional / up to date:
 
 **Java / Maven**
 
-- [ ] `1. App/3. Backend/1. Source/3. XML/pom.xml` (authoritative)
+- [ ] `1. App/3. Backend/1. Source/pom.xml` (authoritative)
 - [ ] `1. App/3. Backend/1. Source/3. XML/bin/pom.xml` (generated copy — ignore/regenerate)
 - [ ] `1. App/3. Backend/2. Apache Maven/3. Conf/1. Settings/settings.xml` (stock)
 - [ ] `1. App/3. Backend/2. Apache Maven/apache-maven-3.8.8/conf/settings.xml` (stock)

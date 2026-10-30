@@ -3,12 +3,12 @@
 Where each section of the app lives, and who owns it. Paths are relative to `1. App/` and every one
 needs quoting. The full tree and the commands are in `.claude/CLAUDE.md`.
 
-| Section  | Lives in                                                                                              | Skill             |
-| -------- | ----------------------------------------------------------------------------------------------------- | ----------------- |
-| Backend  | `3. Backend/1. Source/` (`1. Java/`, `3. XML/pom.xml`), `3. Backend/2. Apache Maven/`, `1. Master/3. Jar/`, `1. Master/2. PS1/build_backend.ps1` | `/audit-backend`  |
-| Frontend | `2. Frontend/1. Source/4. JS/`, `5. TS/`, `6. JSON/`, `4. Both/`, `5. Dev Only/`, both `package.json`  | `/audit-frontend` |
-| Scanner  | `2. Frontend/1. Source/7. PY/`, and its caller `2. Frontend/1. Source/4. JS/4. Importer Tab/1. Scanner/` | `/audit-scanner`  |
-| UI       | `2. Frontend/1. Source/1. HTML/app.html`, `2. CSS/`, `3. ASSETS/`, under the same source root          | `/audit-ui`       |
+| Section  | Lives in                                                                                                                                  | Skill             |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| Backend  | `3. Backend/1. Source/` (`1. Java/`, `pom.xml`), `3. Backend/2. Apache Maven/`, `1. Master/3. Jar/`, `1. Master/2. PS1/build_backend.ps1` | `/audit-backend`  |
+| Frontend | `2. Frontend/1. Source/4. JS/`, `5. TS/`, `6. JSON/`, `4. Both/`, `5. Dev Only/`, both `package.json`                                     | `/audit-frontend` |
+| Scanner  | `2. Frontend/1. Source/7. PY/`, and its caller `2. Frontend/1. Source/4. JS/4. Importer Tab/1. Scanner/`                                  | `/audit-scanner`  |
+| UI       | `2. Frontend/1. Source/1. HTML/app.html`, `2. CSS/`, `3. ASSETS/`, under the same source root                                             | `/audit-ui`       |
 
 Each section has a Sonnet and an Opus agent in `.claude/agents/`: `<section>-sonnet` for routine
 units and `<section>-opus` for trap-dense or high-stakes ones, where `<section>` is `backend`,

@@ -1,2 +1,16 @@
 /2. Personal/
 /trashcan/
+/.mypy_cache/
+/.remember/
+
+# Dependencies, logs and secrets wherever they appear (1. App/.gitignore covers its own tree).
+node_modules/
+*.log
+.env
+.env.*
+!.env.example
+
+# Tool output: ESLint cache and the JSON twins of the plans reports.
+.eslintcache
+.claude/plans/LINT-STRICT-REPORT.json
+.claude/plans/SONAR-REPORT.json

@@ -28,7 +28,7 @@ else {
 
 # Build (runs the JUnit test suite as part of `package`; build fails if a test fails)
 Write-Host "Building backend jar..."
-Set-Location "$backendRoot\1. Source\3. XML"
+Set-Location "$backendRoot\1. Source"
 & $mvnExe clean package
 # Native (mvn.cmd) failures only auto-throw under PS 7.3+ ($PSNativeCommandUseErrorActionPreference);
 # this explicit check makes a failed build/test halt with a non-zero exit on every PowerShell version.
