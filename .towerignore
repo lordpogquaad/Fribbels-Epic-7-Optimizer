@@ -11,11 +11,7 @@ build/
 *.min.js
 
 # === Large generated data dumps (these alone are megabytes of noise) ===
-app_folder_tree.csv
-app_folder_tree_clean.csv
-diff-report.txt
 *.log
 
 # === Tooling / private (2. Personal is already in .gitignore) ===
 .git/
-.qodo/

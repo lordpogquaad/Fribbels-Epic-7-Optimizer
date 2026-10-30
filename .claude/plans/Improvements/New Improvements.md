@@ -1,10 +1,10 @@
 # New Improvements
 
-Open improvement ideas not yet implemented. When one ships, record it in `Change Logs.md` and remove
+Open improvement ideas not yet implemented. When one ships, record it in `../LEDGER.md` and remove
 it here. (No "Existing Improvements" bucket by design.)
 
 **Status 2026-06-16:** both source feature plans were verified **already implemented** in current code
-(see `Change Logs.md`) — FSpd/SpdEff columns and the full Priority Filter Rework. The only remaining
+(see `../LEDGER.md`) — FSpd/SpdEff columns and the full Priority Filter Rework. The only remaining
 item is a marginal performance micro-opt:
 
 ---
@@ -38,6 +38,6 @@ item is a marginal performance micro-opt:
 Kept "just in case" when `memory-bank/` was retired. Paths inside cite the old flat layout
 (`app/app.html`, `app/js/lib/...`); re-verify against the numbered-folder tree before acting.
 
-- [ ] `TASK003-a11y-fixes.md` — 16 open WCAG items with ready fix snippets; none applied.
-- [ ] `TASK004-java25-readiness.md` — 2 advisories; probably moot since the JDK 25 migration landed 2026-06.
+- [x] `TASK003-a11y-fixes.md` — 15 of 16 WCAG items applied; the last, the two overlays, is `U5` in `FIX LIST.md`.
+- [x] `TASK004-java25-readiness.md` — 2 advisories; moot, the backend is on JDK 27 (checked 2026-10-30).
 - [ ] `TASK007-oc-audit.md` — 9 Object-Calisthenics style findings; advisory only, no code changed.

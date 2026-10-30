@@ -5,6 +5,8 @@ metadata:
   type: project
 ---
 
+# ESLint strict lane
+
 `1. App/eslint.strict.config.mjs` + `lint:strict` script mirror the config repo's strict lane (verified 2026-10-30).
 
 - Report-only here = every rule demoted to 'warn' in the config's export (the recommended presets of promise/regexp ship 'error'); no --max-warnings. The config repo instead relies on 'warn' rules only.

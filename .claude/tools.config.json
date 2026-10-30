@@ -1,0 +1,8 @@
+{
+  "tools": {
+    "testDir": ".claude/hooks-test"
+  },
+  "rules": {
+    "alwaysLoadedTopicRules": ["README.md", "section-locations.md"]
+  }
+}

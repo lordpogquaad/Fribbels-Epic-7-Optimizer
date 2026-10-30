@@ -2,8 +2,11 @@
 # Copies shared constant files from the Google Sheets project source
 # to the optimizer's frontend constants folder.
 # Run this after editing either source file.
+#
+# WARNING: this overwrites the app copies whole. They hold edits the sources lack, and gearScorer.js
+# reads some of them. Do not run it until R10 in .claude/plans/FIX LIST.md is done.
 
-$base    = $PSScriptRoot
+$base    = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
 $source  = Join-Path $base "2. Personal\Json Gear Project"
 $dest    = Join-Path $base "1. App\2. Frontend\1. Source\4. JS\7. Gear Analysis Tab\constants"
 
@@ -36,6 +39,7 @@ foreach ($f in $files) {
 
 if ($anyFailed) {
     Write-Host "`nSync completed with errors." -ForegroundColor Yellow
+    exit 1
 } else {
     Write-Host "`nSync complete." -ForegroundColor Cyan
 }

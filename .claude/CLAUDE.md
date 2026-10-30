@@ -29,13 +29,14 @@ Code loads its `MEMORY.md` index as auto memory; read the relevant body on deman
 2. Personal/                  gitignored
 ```
 
-Two manifests, two package managers — why and how: `memory/two-manifests-two-package-managers.md`.
-A PreToolUse hook (`hooks/guard-package-root.mjs`) denies npm in the Yarn root and yarn in the npm tree.
+Two manifests, two package managers — why and how: project memory `two-manifests-two-package-managers`.
+A PreToolUse hook (`hooks/guard-package-root.mjs`) denies npm package changes in this repo, except npm with both installer flags in the renderer tree, and denies yarn package changes in the renderer tree.
 
 ## Commands (run from `1. App/` unless noted)
 
 ```text
 yarn install            outer deps; postinstall also runs electron-builder install-app-deps on the inner tree
+yarn test:hooks         the project hooks' test mirrors in .claude/hooks-test/
 yarn lint               eslint (flat config, eslint.config.mjs)
 yarn lint:strict        report-only strict eslint (eslint.strict.config.mjs); always exits 0, not a gate
 yarn typecheck          tsc7 (TypeScript 7 alias) -p ./ --noEmit; checkJs is off, so JS types are not checked
@@ -64,9 +65,9 @@ jar's timestamp: until `B7` is fixed, the script exits 0 when the built jar is m
 
 ## Current state
 
-Open work is in `.claude/plans/FIX LIST.md`, and finished work is in `.claude/plans/LEDGER.md`.
-Copilot-era files at the repo root (`COPILOT.md`, `.github/chatmodes/`, `.qodo/`, `memory-bank/`,
-`*-copilot-customizations.ps1`) stay until `R8` removes them; do not build on them. `R8` also says
-which `*.csv` files and `diff-report.txt` stay, and why.
+Open work is in `.claude/plans/FIX LIST.md`, and finished work is in `.claude/plans/LEDGER.md`. There
+is one of each, grouped by area (Repo, Backend, Frontend, Scanner, UI), because work crosses areas.
+Check the fix list when starting work, and move a finished row to the ledger with its evidence.
+Copilot-era files in `.github/` stay until `R8` removes them; do not build on them.
 
 Commit and push only when Marcus says so. This repo is not covered by the standing commit grant.

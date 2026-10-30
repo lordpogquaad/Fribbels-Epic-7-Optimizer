@@ -47,8 +47,6 @@ translation.missing.json
 .remember
 2. Personal
 trashcan
-.qodo
-memory-bank
 
 # Intentionally not Prettier-formatted (npm/yarn + the IDE manage it)
 package.json

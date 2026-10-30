@@ -17,6 +17,8 @@ effort is set in its own file. A subagent gets no automatic model fallback, so a
 refusal the lead re-dispatches the unit to `opus-worker-opus48`. The skills are planned, not built yet (`R6` in
 `.claude/plans/FIX LIST.md`).
 
+The scanner is a Scapy packet sniffer (`7. PY/1. Scanner/1. Core/scanner.py`). The app has no OCR.
+
 ## Inside `4. JS/`
 
 Each tab has its own numbered folder: `1. Optimizer & Multi-Hero Optimizer Tab`, `2. Gear & Enhancing Tab`,
@@ -30,6 +32,12 @@ goes in `6. Shared`.
 `com/fribbels/`: edit and search under `com/fribbels/`, where `Main.java` also lives. Git lists each
 package file under both its numbered path and `com/fribbels/`, so a commit stages both paths of
 every changed file there. `Main.java` and `10. Tests` have one path.
+
+## Conventions
+
+- A new UI string is an `i18next` key, added to every `translation.json` under
+  `2. Frontend/1. Source/6. JSON/3. TRANSLATION/locales/` except `dev/`.
+- Check gear stat formulas and numeric constants against in-game values before changing them.
 
 ## Do not edit by hand
 

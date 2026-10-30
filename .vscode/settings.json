@@ -1,4 +1,5 @@
 {
+  "maven.executable.path": "F:/Epic Seven Screenshots Only/New folder/Gear simulator files/Fribbels-Epic-7-Optimizer/1. App/3. Backend/2. Apache Maven/apache-maven-3.10.0/bin/mvn.cmd",
   "eslint.workingDirectories": [{ "directory": "1. App" }],
   "eslint.probe": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
