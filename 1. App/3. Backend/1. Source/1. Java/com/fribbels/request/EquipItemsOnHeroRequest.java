@@ -14,7 +14,7 @@ import java.util.List;
 @ToString
 public class EquipItemsOnHeroRequest extends Request {
 
-    final String heroId;
-    final List<String> itemIds;
+    private String heroId;
+    private List<String> itemIds;
     private boolean useReforgeStats; // Optional
 }

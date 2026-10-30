@@ -1,7 +1,7 @@
 {
   "//typescript": [
     "Two TypeScript copies are installed on purpose here — do not tidy one away.",
-    "'tsc7' (npm alias of typescript@7) runs the 'typecheck' script. 'typescript' 6.x exists only to satisfy typescript-eslint's peer range '>=4.8.4 <6.1.0' (see @typescript-eslint/typescript-estree's SUPPORTED_TYPESCRIPT_VERSIONS, verified against 8.68.0 in this tree).",
+    "'tsc7' (npm alias of typescript@7) runs the 'typecheck' script. 'typescript' 6.x exists only to satisfy typescript-eslint's peer range '>=4.8.4 <6.1.0' (see @typescript-eslint/typescript-estree's SUPPORTED_TYPESCRIPT_VERSIONS, verified against 8.72.1 in this tree, peer still '<6.1.0' on 2026-10-30).",
     "Yarn cannot nest a peer dependency, so an alias under a different package name is the only arrangement where the linter keeps TS6 while the type-checker is TS7.",
     "Always invoke TS7 by explicit path (node node_modules/tsc7/bin/tsc) because both 'typescript' and 'tsc7' declare bin 'tsc'.",
     "typescript-eslint only WARNS on an out-of-range TypeScript version by default (onUnsupportedTypeScriptVersion defaults to 'warn' in createParseSettings.js; it does not hard-throw) — verified in the installed 8.68.0 tree, not a hard failure mode.",
@@ -125,46 +125,46 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^8.0.1",
-    "@babel/preset-env": "^8.0.2",
-    "@babel/register": "^8.0.1",
-    "@electron/rebuild": "^4.2.0",
+    "@babel/core": "^8.0.9",
+    "@babel/preset-env": "^8.0.7",
+    "@babel/register": "^8.0.6",
+    "@electron/rebuild": "^4.2.1",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^24.13.3",
-    "chalk": "^6.0.0",
-    "concurrently": "^10.0.5",
-    "core-js": "^3.50.0",
+    "@types/node": "^24.19.2",
+    "chalk": "^6.0.1",
+    "concurrently": "^10.0.6",
+    "core-js": "^3.51.0",
     "cross-env": "^10.1.0",
-    "css-loader": "^7.1.4",
+    "css-loader": "^7.1.5",
     "css-minimizer-webpack-plugin": "^8.0.0",
     "detect-port": "^2.1.0",
-    "electron": "^44.0.0",
-    "electron-builder": "^26.15.3",
-    "eslint": "^10.9.1",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0",
+    "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
-    "globals": "^17.11.0",
+    "globals": "^17.13.0",
     "mini-css-extract-plugin": "^2.10.2",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.10",
     "style-loader": "^4.0.0",
-    "stylelint": "^17.14.1",
+    "stylelint": "^17.16.0",
     "stylelint-config-standard": "^40.0.0",
     "terser-webpack-plugin": "^5.6.1",
     "tsc7": "npm:typescript@^7.0.2",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.68.0",
-    "webpack": "5.109.2",
-    "webpack-bundle-analyzer": "^5.3.2",
-    "webpack-cli": "^7.2.2",
-    "webpack-dev-server": "^6.0.0",
+    "typescript-eslint": "^8.72.1",
+    "webpack": "^5.112.2",
+    "webpack-bundle-analyzer": "^5.4.0",
+    "webpack-cli": "^7.2.3",
+    "webpack-dev-server": "^6.1.0",
     "webpack-merge": "^6.0.1"
   },
   "dependencies": {
-    "electron-debug": "^4.1.0",
+    "electron-debug": "^5.0.0",
     "regenerator-runtime": "^0.14.1",
     "source-map-support": "^0.5.21"
   },
   "browserslist": [
-    "electron 44.0"
+    "electron 45.0"
   ],
   "prettier": {
     "overrides": [
@@ -193,5 +193,5 @@
       "no-descending-specificity": null
     }
   },
-  "packageManager": "yarn@4.18.0+sha512.fcb8716fe7cd0eece141ffc18b92193a9df9204c1ba83189c288835223fc0bbe64af473bab0d5e9927a7daeb5caf2bb07eb2787cc9338ca040ea125f2a1f2f7e"
+  "packageManager": "yarn@4.18.1+sha512.b2e1e7524f654f2749d32b4ebcb4622473cb5bcbc485df2007e12a154e50162a4d795526768bc5f5b8f81717bfd79deb2472813d86fb5ae2eb551fa9c872b08f"
 }

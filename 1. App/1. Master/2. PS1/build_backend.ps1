@@ -2,20 +2,21 @@ $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
 $backendRoot = "$root\..\..\3. Backend"
 $mvnDir = "$backendRoot\2. Apache Maven"
-$mvnZip = "$backendRoot\2. Apache Maven\apache-maven-3.9.16-bin.zip"
-$mvnExe = "$mvnDir\apache-maven-3.9.16\bin\mvn.cmd"
-$env:JAVA_HOME = "F:\VSCode-Data\jdk\jdk-25.0.3+9"
+$mvnZip = "$backendRoot\2. Apache Maven\apache-maven-3.10.0-bin.zip"
+$mvnExe = "$mvnDir\apache-maven-3.10.0\bin\mvn.cmd"
+# Junction the Oracle installer repoints at each 27.x patch, so patch updates need no edit here.
+$env:JAVA_HOME = "C:\Program Files\Java\latest\jdk-27"
 
 if (!(Test-Path $env:JAVA_HOME)) {
-    Write-Error "JAVA_HOME not found: $env:JAVA_HOME`nUpdate the path in this script if the portable JDK 25 was moved or upgraded (look under F:\VSCode-Data\jdk\jdk-25*)."
+    Write-Error "JAVA_HOME not found: $env:JAVA_HOME`nInstall JDK 27 or update the path in this script (the portable JDK 25 fallback is F:\VSCode-Data\jdk\jdk-25.0.3+9, but pom.xml targets release 27)."
     exit 1
 }
 
 # Download Maven if not already present
 if (!(Test-Path $mvnExe)) {
-    Write-Host "Downloading Maven 3.9.16..."
+    Write-Host "Downloading Maven 3.10.0..."
     New-Item -ItemType Directory -Force -Path "$backendRoot\2. Apache Maven" | Out-Null
-    Invoke-WebRequest -Uri "https://archive.apache.org/dist/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip" -OutFile $mvnZip
+    Invoke-WebRequest -Uri "https://archive.apache.org/dist/maven/maven-3/3.10.0/binaries/apache-maven-3.10.0-bin.zip" -OutFile $mvnZip
     Write-Host "Extracting Maven..."
     Expand-Archive -Path $mvnZip -DestinationPath $mvnDir -Force
     Remove-Item $mvnZip

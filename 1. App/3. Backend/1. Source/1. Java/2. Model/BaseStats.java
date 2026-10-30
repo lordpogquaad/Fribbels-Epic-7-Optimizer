@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 public class BaseStats {
 
-    private final HeroStats lv50FiveStarFullyAwakened;
-    private final HeroStats lv60SixStarFullyAwakened;
-    private final HeroSkills skills;
+    private HeroStats lv50FiveStarFullyAwakened;
+    private HeroStats lv60SixStarFullyAwakened;
+    private HeroSkills skills;
 }

@@ -53,7 +53,7 @@ const Updater = {
     New in v${v}
 </h2>
 <ul class="newFeatures">
-    <li>Major under-the-hood modernization — now on the latest Electron runtime and Java 25 for better stability and performance</li>
+    <li>Major under-the-hood modernization — now on the latest Electron runtime and Java 27 for better stability and performance</li>
     <li>Refreshed all app dependencies and build tooling</li>
     <li>Deleting a filter preset now asks for confirmation, so a misclick won't lose it</li>
     <li>Numerous bug fixes and cleanup across the optimizer, importer, and gear tools</li>

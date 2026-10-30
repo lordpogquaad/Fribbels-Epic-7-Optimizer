@@ -5,15 +5,20 @@
             "name": "Electron: Main",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+            "cwd": "${workspaceFolder}/1. App",
+            "runtimeExecutable": "${workspaceFolder}/1. App/node_modules/.bin/electron",
             "windows": {
-                "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+                "runtimeExecutable": "${workspaceFolder}/1. App/node_modules/.bin/electron.cmd"
             },
             "args": [
                 ".",
                 "--remote-debugging-port=9222"
             ],
+            "env": {
+                "START_HOT": "1",
+                "NODE_ENV": "development",
+                "ELECTRON_RUN_AS_NODE": null
+            },
             "outputCapture": "std"
         },
         {
@@ -21,7 +26,7 @@
             "type": "chrome",
             "request": "attach",
             "port": 9222,
-            "webRoot": "${workspaceFolder}",
+            "webRoot": "${workspaceFolder}/1. App/2. Frontend/1. Source",
             "timeout": 30000
         }
     ],

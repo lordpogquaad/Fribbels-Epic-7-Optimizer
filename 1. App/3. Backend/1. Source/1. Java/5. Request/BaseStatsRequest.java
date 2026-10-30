@@ -13,5 +13,5 @@ import java.util.Map;
 @ToString
 public class BaseStatsRequest extends Request {
 
-    final Map<String, BaseStats> baseStatsByName;
+    private Map<String, BaseStats> baseStatsByName;
 }

@@ -2,7 +2,7 @@
 cd /d "%~dp0..\.."
 title Pog E7 Optimizer - Dev
 set "PATH=E:\Node;F:\VSCode-Data\npm-global;%APPDATA%\npm;%PATH%"
-set "JAVA_HOME=F:\VSCode-Data\jdk\jdk-25.0.3+9"
+set "JAVA_HOME=C:\Program Files\Java\latest\jdk-27"
 
 REM --- Separate-process logging controls. The renderer switchboard is 5. Dev Only\LogControl.js;
 REM     these env vars control the processes that cannot read it. Defaults = current behavior. ---
@@ -30,7 +30,7 @@ if not exist "E:\Node\node.exe" (
 )
 if not exist "%JAVA_HOME%\bin\java.exe" (
     echo.
-    echo ERROR: Java 25 JDK not found at "%JAVA_HOME%".
+    echo ERROR: Java 27 JDK not found at "%JAVA_HOME%".
     echo        Update JAVA_HOME in this script.
     pause
     exit /b 1

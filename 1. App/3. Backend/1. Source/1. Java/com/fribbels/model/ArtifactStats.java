@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 public class ArtifactStats {
 
-    private final Float attack;
-    private final Float health;
-    private final Float defense;
+    private Float attack;
+    private Float health;
+    private Float defense;
 }

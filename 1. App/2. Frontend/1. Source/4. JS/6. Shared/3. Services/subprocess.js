@@ -16,7 +16,7 @@ let child = null;
 let activePort = 8130;
 
 // Use JAVA_HOME if set so the correct JRE version runs the JAR.
-// The JAR is compiled with Java 25; system PATH may have an older JRE.
+// The JAR is compiled with Java 27; system PATH may have an older JRE.
 function getJavaBin() {
   const javaHome = process.env.JAVA_HOME;
   if (javaHome) {
@@ -26,7 +26,7 @@ function getJavaBin() {
   return 'java';
 }
 
-const defaultJavaError = `Unable to load Java 25+. Please install the <a href='https://adoptium.net/'>64-bit Java 25 JRE</a>, set JAVA_HOME, and restart your computer.`;
+const defaultJavaError = `Unable to load Java 27+. Please install the <a href='https://adoptium.net/'>64-bit Java 27 JRE</a>, set JAVA_HOME, and restart your computer.`;
 
 // Parses `netstat -ano` output and returns the deduped PIDs of processes
 // LISTENING on `port` (IPv4 or IPv6 local address). Module-private; kept pure
@@ -55,20 +55,31 @@ function parseListeningPids(netstatOutput, port) {
 function killPort(port) {
   return new Promise((resolve) => {
     if (process.platform === 'win32') {
-      execFile('netstat', ['-ano'], { maxBuffer: 16 * 1024 * 1024 }, (err, stdout) => {
-        if (err || !stdout) return resolve();
-        const pids = parseListeningPids(stdout, port);
-        if (pids.length === 0) return resolve();
-        let remaining = pids.length;
-        for (const pid of pids) {
-          execFile('taskkill', ['/F', '/T', '/PID', String(pid)], (killErr) => {
-            if (killErr) {
-              globalThis.Log?.debug?.(`[Subprocess] taskkill /PID ${pid} failed: ${killErr.message}`);
-            }
-            if (--remaining === 0) resolve();
-          });
-        }
-      });
+      execFile(
+        'netstat',
+        ['-ano'],
+        { maxBuffer: 16 * 1024 * 1024 },
+        (err, stdout) => {
+          if (err || !stdout) return resolve();
+          const pids = parseListeningPids(stdout, port);
+          if (pids.length === 0) return resolve();
+          let remaining = pids.length;
+          for (const pid of pids) {
+            execFile(
+              'taskkill',
+              ['/F', '/T', '/PID', String(pid)],
+              (killErr) => {
+                if (killErr) {
+                  globalThis.Log?.debug?.(
+                    `[Subprocess] taskkill /PID ${pid} failed: ${killErr.message}`,
+                  );
+                }
+                if (--remaining === 0) resolve();
+              },
+            );
+          }
+        },
+      );
     } else {
       execFile('lsof', ['-ti', `:${port}`], (err, stdout) => {
         if (err || !stdout) return resolve();
@@ -78,7 +89,9 @@ function killPort(port) {
             try {
               process.kill(pid, 'SIGTERM');
             } catch (killErr) {
-              globalThis.Log?.debug?.(`[Subprocess] SIGTERM pid ${pid} failed: ${killErr.message}`);
+              globalThis.Log?.debug?.(
+                `[Subprocess] SIGTERM pid ${pid} failed: ${killErr.message}`,
+              );
             }
           }
         }
@@ -151,7 +164,7 @@ const Subprocess = {
       // JDK 24+ restricts "native access"; aparapi's GPU path uses System.load (JNI).
       // Grant it explicitly so the optimizer runs without the native-access warning —
       // that warning's text contains "aparapi", which would otherwise trip the
-      // stderr handler below into a false "Subprocess error" popup. No-op on Java 25.
+      // stderr handler below into a false "Subprocess error" popup.
       '--enable-native-access=ALL-UNNAMED',
     ];
     // Backend log verbosity, chosen centrally in 5. Dev Only/LogControl.js
@@ -159,7 +172,14 @@ const Subprocess = {
     // Token is a JUL level name (letters only), validated above; passed as its own argv
     // entry (no shell) so no escaping is needed either way.
     const VALID_JAVA_LEVELS = [
-      'OFF', 'SEVERE', 'WARNING', 'INFO', 'FINE', 'FINER', 'FINEST', 'ALL',
+      'OFF',
+      'SEVERE',
+      'WARNING',
+      'INFO',
+      'FINE',
+      'FINER',
+      'FINEST',
+      'ALL',
     ];
     const javaLevel = String(globalThis.__backendJavaLevel || 'INFO')
       .trim()
@@ -199,12 +219,10 @@ const Subprocess = {
     startupTimer = setTimeout(() => {
       if (initialized) return;
       initialized = true;
-      Log.error(
-        '[Subprocess] backend did not report BACKEND_PORT within 30s',
-      );
+      Log.error('[Subprocess] backend did not report BACKEND_PORT within 30s');
       Notifier.error(
         'Backend startup timed out — the optimizer engine did not start. ' +
-          'Check that 64-bit Java 25 is installed, then restart the app.',
+          'Check that 64-bit Java 27 is installed, then restart the app.',
       );
       callback();
     }, STARTUP_TIMEOUT_MS);
@@ -283,8 +301,13 @@ const Subprocess = {
         str.includes('"allowedMods":') ||
         str.includes('"material":');
       // JVM diagnostic warnings (e.g. JDK 24+ native-access / sun.misc.Unsafe notices,
-      // some of which name "com.aparapi") are benign — never treat them as errors.
-      const isJvmWarning = /^WARNING:/.test(str.trimStart());
+      // JDK 26+ final-field notices, some of which name "com.aparapi") are benign — never
+      // treat them as errors. The JVM can emit the "WARNING:" prefix as its own stderr
+      // chunk, so the next chunk may start at the message text.
+      const isJvmWarning =
+        /^(WARNING:|A terminally deprecated method|Final field )/.test(
+          str.trimStart(),
+        );
       const isJavaLoggerNoise =
         str.includes('com.fribbels') ||
         /^[A-Z][a-z]+ \d/.test(str.trim()) ||
@@ -298,7 +321,10 @@ const Subprocess = {
 
       // Only surface a GPU "Subprocess error" for an actual aparapi failure
       // (exception/stack trace or an OpenCL problem) — not for benign warnings.
-      if (str.includes('aparapi') && (isRealError || str.includes('OpenCL'))) {
+      if (
+        str.includes('aparapi') &&
+        (isRealError || (str.includes('OpenCL') && !isJvmWarning))
+      ) {
         const msg = `Subprocess error. If you are using GPU acceleration, try disabling it on the settings tab.\n${str}`;
         Log.error('[Backend stderr]', msg);
         Notifier.error(msg);

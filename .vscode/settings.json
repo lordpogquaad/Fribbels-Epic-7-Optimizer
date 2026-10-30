@@ -2,7 +2,11 @@
   "codeQL.createQuery.qlPackLocation": "f:\\Epic Seven Screenshots Only\\New folder",
   "json.schemas": [
     {
-      "fileMatch": ["nodemon.json", ".nodemonrc", ".nodemonrc.json"],
+      "fileMatch": [
+        "nodemon.json",
+        ".nodemonrc",
+        ".nodemonrc.json"
+      ],
       "url": "https://json.schemastore.org/nodemon.json"
     }
   ],
@@ -55,5 +59,9 @@
   "github.copilot.chat.localeOverride": "en",
   "github.copilot.chat.terminalChatLocation": "terminal",
   "claudeCode.preferredLocation": "sidebar",
-  "kilo-code.new.claudeCodeCompat": true
+  "kilo-code.new.claudeCodeCompat": true,
+  "sonarlint.connectedMode.project": {
+    "connectionId": "lordpogquaad",
+    "projectKey": "lordpogquaad_Fribbels-Epic-7-Optimizer"
+  }
 }

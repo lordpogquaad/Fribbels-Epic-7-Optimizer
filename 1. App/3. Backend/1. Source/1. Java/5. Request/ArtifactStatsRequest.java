@@ -13,5 +13,5 @@ import java.util.Map;
 @ToString
 public class ArtifactStatsRequest extends Request {
 
-    final Map<String, ArtifactStats> artifactStatsByName;
+    private Map<String, ArtifactStats> artifactStatsByName;
 }
