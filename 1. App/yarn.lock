@@ -2543,21 +2543,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^24.19.2":
-  version: 24.19.2
-  resolution: "@types/node@npm:24.19.2"
-  dependencies:
-    undici-types: "npm:>=7.24.0 <7.24.7"
-  checksum: 10c0/b51a7f8854007ad579dffdd0633d8addbfeb2c97cceb380f2eba0ed163638ec52e17565385a6cc04d54ac4ff99c70c64aee68a4ca45b6128c035e828794e29c5
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^24.9.0":
   version: 24.12.4
   resolution: "@types/node@npm:24.12.4"
   dependencies:
     undici-types: "npm:~7.16.0"
   checksum: 10c0/d2c36b78b6050d8677769fa05a32243061675e81ddc2bb43955d91a671af3465506ef2731a24c0c9ab42b6b679bd5c1513de45bbe9ea278c2c07ee63b564b61b
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^26.6.6":
+  version: 26.6.6
+  resolution: "@types/node@npm:26.6.6"
+  dependencies:
+    undici-types: "npm:~8.9.0"
+  checksum: 10c0/5cb63f644f6e85a257a9cd2403cbcbe196760e2a35fd3ec9fb8b5cff663e14cc832b198cc17b53f870a2e30900ed45a1fb3f53e6589aba26b8e8c484aa672053
   languageName: node
   linkType: hard
 
@@ -4554,7 +4554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder@npm:^26.18.0":
+"electron-builder@npm:^26.18.1":
   version: 26.18.1
   resolution: "electron-builder@npm:26.18.1"
   dependencies:
@@ -4615,7 +4615,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^45.0.0":
+"electron@npm:^45.1.0":
   version: 45.1.0
   resolution: "electron@npm:45.1.0"
   dependencies:
@@ -7152,7 +7152,7 @@ __metadata:
     "@babel/register": "npm:^8.0.6"
     "@electron/rebuild": "npm:^4.2.1"
     "@eslint/js": "npm:^10.0.1"
-    "@types/node": "npm:^24.19.2"
+    "@types/node": "npm:^26.6.6"
     chalk: "npm:^6.0.1"
     concurrently: "npm:^10.0.6"
     core-js: "npm:^3.51.0"
@@ -7160,8 +7160,8 @@ __metadata:
     css-loader: "npm:^7.1.5"
     css-minimizer-webpack-plugin: "npm:^8.0.0"
     detect-port: "npm:^2.1.0"
-    electron: "npm:^45.0.0"
-    electron-builder: "npm:^26.18.0"
+    electron: "npm:^45.1.0"
+    electron-builder: "npm:^26.18.1"
     electron-debug: "npm:^5.0.0"
     eslint: "npm:^10.13.0"
     eslint-config-prettier: "npm:^10.1.8"
@@ -9068,17 +9068,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:>=7.24.0 <7.24.7":
-  version: 7.24.6
-  resolution: "undici-types@npm:7.24.6"
-  checksum: 10c0/d9cd8befb643ac904615c280a095ba4240531f6bb4a5e75a22a7483630ca8d3f1016d2ab6ace6ceda1f63b3a2db2fe037fafe121d6917a0187573aa548ff78ca
-  languageName: node
-  linkType: hard
-
 "undici-types@npm:~7.16.0":
   version: 7.16.0
   resolution: "undici-types@npm:7.16.0"
   checksum: 10c0/3033e2f2b5c9f1504bdc5934646cb54e37ecaca0f9249c983f7b1fc2e87c6d18399ebb05dc7fd5419e02b2e915f734d872a65da2e3eeed1813951c427d33cc9a
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~8.9.0":
+  version: 8.9.0
+  resolution: "undici-types@npm:8.9.0"
+  checksum: 10c0/51c712c20c087368f62c6fc0f2bc49fa76bfe5dec28ff01584bb677ff29b0622569783c02d43e151143808c48c0503f804093bd2c491b10f2a830138034cb451
   languageName: node
   linkType: hard
 
