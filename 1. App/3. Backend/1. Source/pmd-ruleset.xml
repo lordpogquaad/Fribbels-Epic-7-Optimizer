@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Pog E7 Optimizer backend"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+    <description>Report-only bug-finding rules for the backend (yarn lint:java).</description>
+
+    <!-- Included categories, and why:
+         - bestpractices: unused code, resource handling, risky API use that hides real bugs.
+         - errorprone: likely defects (null handling, equals/hashCode, broken switches, empty catches).
+         - multithreading: the optimizer runs worker threads and a shared HTTP server.
+         - performance: the search is CPU-bound, so allocation and string-in-loop findings matter.
+         Left out on purpose: codestyle, design, documentation and the other style/metrics
+         categories (naming and brace opinions, not problems).
+         No path is excluded. Rules are removed only when listed below, each with its reason. -->
+    <rule ref="category/java/bestpractices.xml">
+        <!-- Test style, not a defect: asks for a message on every assertion and a cap on asserts per test. -->
+        <exclude name="UnitTestAssertionsShouldIncludeMessage" />
+        <exclude name="UnitTestContainsTooManyAsserts" />
+        <!-- Test visibility convention, not a defect. -->
+        <exclude name="JUnitJupiterTestShouldBePackagePrivate" />
+        <!-- Formatting: the stat code declares related locals together (a, b, c) on purpose. -->
+        <exclude name="OneDeclarationPerLine" />
+        <!-- API-design preference; changing signatures in the Gson/Lombok request models is not a fix. -->
+        <exclude name="UseVarargs" />
+    </rule>
+    <rule ref="category/java/errorprone.xml">
+        <!-- Fires on every numeric constant in the damage formulas; the formulas are the product. -->
+        <exclude name="AvoidLiteralsInIfCondition" />
+        <!-- Duplicate string literals: a size/maintainability opinion, not a bug. -->
+        <exclude name="AvoidDuplicateLiterals" />
+    </rule>
+    <rule ref="category/java/multithreading.xml">
+        <!-- Meant for J2EE containers; this is a desktop app that owns its worker threads. -->
+        <exclude name="DoNotUseThreads" />
+    </rule>
+    <rule ref="category/java/performance.xml">
+        <!-- Formatting-level: an explicit default initialiser is harmless. -->
+        <exclude name="RedundantFieldInitializer" />
+    </rule>
+</ruleset>

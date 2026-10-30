@@ -1,0 +1,28 @@
+# Ruff config for the repo's own Python (scanner + one root helper script).
+# Replaces .flake8. Run via `yarn lint:py` from "1. App/" (report-only).
+
+target-version = "py314"
+line-length = 88          # carried over from .flake8 (aligned with Black)
+respect-gitignore = true
+
+# Not our source: build/package output, vendored deps, personal and scratch folders.
+extend-exclude = [
+  "release",
+  "2. Personal",
+  ".mypy_cache",
+  "node_modules",
+  "trashcan",
+  "8. DIST",
+  "*/release/*",
+]
+
+[lint]
+# E/W pycodestyle, F pyflakes (the flake8 baseline), B bugbear (likely bugs),
+# UP pyupgrade (modernize for 3.14), I import order, S bandit (security: this
+# code handles network captures and account data), C4 comprehensions, SIM
+# simplifications, PL pylint-style checks, RUF ruff-specific.
+select = ["E", "F", "W", "B", "UP", "I", "S", "C4", "SIM", "RUF", "PL"]
+
+# E203 / W503 were ignored in .flake8 only because they clash with Black. Ruff
+# does not implement W503 or E203 (E203 is preview-only), so nothing to carry.
+ignore = []

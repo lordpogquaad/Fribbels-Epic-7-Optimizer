@@ -139,6 +139,59 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Report-only static analysis (yarn lint:java). No executions: it is bound to no phase, so
+                 build_backend.ps1 never runs it. The plugin's bundled PMD (7.17) cannot parse Java 27, so
+                 the net.sourceforge.pmd artifacts are overridden to 7.29.0, which can. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.28.0</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>${project.basedir}/pmd-ruleset.xml</ruleset>
+                    </rulesets>
+                    <targetJdk>27</targetJdk>
+                    <!-- Same exclusion as the compiler: the numbered folders are junctions to com/fribbels/*,
+                         so each file is analysed once. Tests are added back through includeTests. -->
+                    <excludes>
+                        <exclude>**/1. Core/**</exclude>
+                        <exclude>**/2. Model/**</exclude>
+                        <exclude>**/3. DB/**</exclude>
+                        <exclude>**/4. Handler/**</exclude>
+                        <exclude>**/5. Request/**</exclude>
+                        <exclude>**/6. Response/**</exclude>
+                        <exclude>**/7. Enums/**</exclude>
+                        <exclude>**/8. GPU/**</exclude>
+                        <exclude>**/10. Tests/**</exclude>
+                    </excludes>
+                    <includeTests>true</includeTests>
+                    <failOnViolation>false</failOnViolation>
+                    <printFailingErrors>true</printFailingErrors>
+                    <minimumPriority>5</minimumPriority>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sourceforge.pmd</groupId>
+                        <artifactId>pmd-core</artifactId>
+                        <version>7.29.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>net.sourceforge.pmd</groupId>
+                        <artifactId>pmd-java</artifactId>
+                        <version>7.29.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>net.sourceforge.pmd</groupId>
+                        <artifactId>pmd-javascript</artifactId>
+                        <version>7.29.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>net.sourceforge.pmd</groupId>
+                        <artifactId>pmd-jsp</artifactId>
+                        <version>7.29.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 </project>

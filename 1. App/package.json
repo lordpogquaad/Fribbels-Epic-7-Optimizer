@@ -41,6 +41,9 @@
     "lint:dead": "knip",
     "lint:deps-graph": "depcruise --config .dependency-cruiser.cjs \"2. Frontend/1. Source/4. JS\" \"5. Dev Only\" \"4. Both\"",
     "lint:dupes": "jscpd",
+    "lint:java": "pwsh -NoProfile -NonInteractive -File \"1. Master/2. PS1/lint_java.ps1\"",
+    "lint:py": "ruff check .. --exit-zero",
+    "lint:py:types": "mypy \"2. Frontend/1. Source/7. PY/1. Scanner/1. Core/scanner.py\" ../add_rarity.py --ignore-missing-imports",
     "package": "yarn build && electron-builder build --publish never",
     "package-all": "yarn build && electron-builder build -mwl",
     "package-mac": "yarn build && electron-builder build --mac",
@@ -52,6 +55,7 @@
     "start-main-debug": "yarn start-main-dev --inspect=5858 --remote-debugging-port=9223",
     "start-main-dev": "cross-env START_HOT=1 NODE_ENV=development electron .",
     "start-renderer-dev": "cross-env NODE_ENV=development webpack serve --config \"4. Both/1. Webpack/webpack.config.renderer.dev.js\"",
+    "scan": "node \"./4. Both/2. Build/1. Scripts/ScanReport.mjs\"",
     "typecheck": "node node_modules/tsc7/bin/tsc -p ./ --noEmit",
     "typecheck:strict:report": "node \"./4. Both/2. Build/1. Scripts/TypecheckReport.mjs\""
   },

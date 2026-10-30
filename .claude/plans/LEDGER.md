@@ -6,6 +6,22 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-30
 
+- `[Repo]` **R24 closed: `yarn scan`.** `ScanReport.mjs` runs the 10 report-only checks one at a time and
+  writes `SCAN-REPORT.md`, counts per tool and rule. A check that cannot run, times out or gives output
+  that does not parse shows as FAILED or TIMEOUT with `n/a`, never zero, and `scan` then exits 1. A probe
+  proved all three paths. First run: all 10 ran, in about a minute. New file: adds 35 `checkJs` errors, so
+  F10 is now 6,032. `lint:strict` rose from 936 to 939, cause not confirmed.
+  The one `lint:deps-graph` error is a false report: `LogControl.js` requires `@electron/remote`, which is
+  in the inner manifest and loads at runtime in a raw `<script>`; depcruise only looks from `1. App`.
+- `[Backend]` **B9 closed: `yarn lint:java`.** Report-only PMD through `lint_java.ps1`, with
+  `pmd-ruleset.xml` (bestpractices, errorprone, multithreading, performance). maven-pmd-plugin 3.28.0
+  bundles PMD 7.17.0, which has no Java 27 grammar, so the pom overrides PMD to 7.29.0. It is bound to
+  no phase, so `build_backend.ps1` does not run it. First run: 202 findings in 23 files, 0 parse errors,
+  none from the junction paths, none triaged. The report is `target/pmd.xml`, which `mvn clean` removes.
+  Maven 3.9.16 had no references and moved to `trashcan/`.
+- `[Scanner]` **S6 closed: `yarn lint:py`.** Report-only Ruff with a root `ruff.toml`, plus
+  `yarn lint:py:types` for mypy. `.flake8` moved to `trashcan/`; only its line length carried over.
+  First run: 7 findings (no `S` or `B`), mypy clean, both over the 2 tracked Python files.
 - `[Backend]` **B12 closed: the Java editor compiles the whole backend.** It compiled only `Main.java`,
   so backend classes had no real diagnostics. The eight `com/fribbels` links were already junctions (Git
   Bash shows them as symlinks), and the language server reads a junction as a file (inferred). Flipped
