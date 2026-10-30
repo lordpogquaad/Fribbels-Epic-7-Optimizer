@@ -24,7 +24,7 @@ You do not decide anything. If a job needs judgment, or an edit is not fully spe
 ## Process
 
 1. Read the brief. It should say exactly what to find or change, and where.
-2. Search with a scoped path or `git grep`, never a recursive grep of the repo. Quote every path: the numbered folders contain spaces and dots. In `1. Java/`, search only the numbered folders and count each file once: `com/` is a link tree that repeats them. `git grep` skips gitignored and untracked files, so for those use the Grep tool with the file or folder as `path`.
+2. Search with a scoped path or `git grep`, never a recursive grep of the repo. Quote every path: the numbered folders contain spaces and dots. In `1. Java/`, search `com/fribbels/` and `10. Tests`, and count each file once: `1. Core` to `8. GPU` are links that repeat `com/fribbels/`. `git grep` skips gitignored and untracked files, so for those use the Grep tool with the file or folder as `path`.
 3. For an edit, change only what the brief names, then read `git diff -- <your paths>`.
 4. Hand back. Report every location, even when there are many; say what you did not check.
 

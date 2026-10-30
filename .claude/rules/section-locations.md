@@ -25,10 +25,11 @@ goes in `6. Shared`.
 
 ## Inside `1. Java/`
 
-`0. Main`, `1. Core`, `2. Model`, `3. DB`, `4. Handler`, `5. Request`, `6. Response`, `7. Enums`,
-`8. GPU`, `10. Tests`. The `com/` tree is symlinks to these folders: edit the numbered path. Git lists
-each file in `1. Core` to `8. GPU` under both its numbered path and `com/fribbels/`, so a commit
-stages both paths of every changed file there. `0. Main` and `10. Tests` have one path.
+`com/`, `1. Core`, `2. Model`, `3. DB`, `4. Handler`, `5. Request`, `6. Response`, `7. Enums`,
+`8. GPU`, `10. Tests`. `1. Core` to `8. GPU` are directory junctions to the real folders in
+`com/fribbels/`: edit and search under `com/fribbels/`, where `Main.java` also lives. Git lists each
+package file under both its numbered path and `com/fribbels/`, so a commit stages both paths of
+every changed file there. `Main.java` and `10. Tests` have one path.
 
 ## Do not edit by hand
 

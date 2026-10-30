@@ -1,0 +1,4 @@
+# Read by the Java language server through java.settings.url.
+# Its builder crashes with a ClassCastException when it copies non-Java files through the com/fribbels
+# directory junctions. Maven owns resources here, so the editor's build has no need to copy any.
+org.eclipse.jdt.core.builder.resourceCopyExclusionFilter=*

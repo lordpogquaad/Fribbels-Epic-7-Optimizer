@@ -81,10 +81,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.16.0</version>
                 <configuration>
-                    <!-- Every package is compiled once via the com/fribbels/* directory symlinks, so the
-                         numbered folders are excluded. Main.java is the exception: it is compiled from
-                         0. Main directly (com/fribbels/ used to hold a hardlink to it, which editors
-                         silently broke and shipped a stale Main — 2026-08-28). -->
+                    <!-- Every package is compiled once from its real com/fribbels/* folder, so the numbered
+                         junctions to them are excluded. Main.java has one copy, in com/fribbels/ (a hardlink
+                         to a second copy once shipped a stale Main — 2026-08-28). -->
                     <excludes>
                         <exclude>1. Core/**</exclude>
                         <exclude>2. Model/**</exclude>

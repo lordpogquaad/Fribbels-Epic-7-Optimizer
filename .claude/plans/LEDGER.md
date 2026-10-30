@@ -6,6 +6,16 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-30
 
+- `[Backend]` **B12 closed: the Java editor compiles the whole backend.** It compiled only `Main.java`,
+  so backend classes had no real diagnostics. The eight `com/fribbels` links were already junctions (Git
+  Bash shows them as symlinks), and the language server reads a junction as a file (inferred). Flipped
+  them: `com/fribbels/<package>` are real, `1. Core` to `8. GPU` are junctions. git sees no change, so
+  the flip exists only on this machine. The 10:43 editor rebuild then wrote 111 classes across all
+  eight packages. `com.fribbels.Main` no longer resolved from `0. Main`, so `Main.java` moved to
+  `com/fribbels/` and `0. Main` is gone. `build_backend.ps1`: 73 sources, 21 of 21 tests. Diagnostics now
+  show zero backend errors plus real warnings (null safety, unused fields) for the backend section dive.
+  The URI log noise stays open as B12.
+
 - `[Repo]` **Lint scripts renamed and report scripts added (R17, R19).** `lint-fix`, `lint-styles` and
   `lint-styles-fix` are now `lint:fix`, `lint:styles`, `lint:styles:fix`; `lint:dead`, `lint:deps-graph` and `lint:dupes` run knip, dependency-cruiser and jscpd.
 - `[Repo]` **Config audit: nothing hides a problem now.** `/audit-fix` over every config, read against
