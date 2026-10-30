@@ -1,0 +1,50 @@
+# Prettier's ignore file. Stylelint and ESLint do not use it: `yarn lint-styles` names its own folder,
+# and ESLint's ignores live in "1. App/eslint.config.mjs" (globalIgnores).
+# Patterns carry no folder prefix so they match from the repo root and from "1. App/".
+
+# Dependencies and lockfiles
+node_modules
+.yarn
+yarn.lock
+package-lock.json
+
+# Logs + caches
+logs
+*.log
+.eslintcache
+.mypy_cache
+
+# Compiled native addons (http://nodejs.org/api/addons.html)
+build/Release
+
+# OS / IDE
+.DS_Store
+.idea
+.sonarlint
+
+# Packaged app + webpack build artifacts (kept in sync with .gitignore)
+release
+target
+8. DIST
+renderer.dev.js
+main.prod.js
+main.prod.js.map
+*.min.js
+
+# Generated or synced data, and vendored stylesheets: diff before replacing, never reformat
+2. CACHE
+2. CSS
+assets
+
+# Backend: nothing Prettier owns, and its stray IDE folders can hold long paths
+3. Backend
+
+# Session state, personal folders and Copilot leftovers
+.remember
+2. Personal
+trashcan
+.qodo
+memory-bank
+
+# Intentionally not Prettier-formatted (npm/yarn + the IDE manage it)
+package.json

@@ -6,6 +6,12 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-30
 
+- `[Repo]` **Prettier config moved to the root, permissions trimmed.** `.prettierrc.json` matches the config
+  repo (width 100, was 80) and replaces the `prettier` block in `1. App/package.json`. `.prettierignore` moved
+  to the root with unprefixed patterns, tested from both folders; `lint-styles` now names `2. CSS/`
+  directly. It exits 2 on one existing error (U3). Marcus removed the project `ask` and `deny` rules himself
+  because the auto mode classifier refused the edit; `guard-git-publish.mjs` asks on force-push. Added an
+  ignored root `trashcan/`.
 - `[Frontend]` **Strict lint added (R14).** `yarn lint:strict` is report-only: 577 warnings, 0 errors, exit 0.
   Top rules: `no-floating-promises` 222, `no-unnecessary-condition` 161, `no-misused-promises` 73,
   `require-await` 45, `require-atomic-updates` 20. `regexp/no-super-linear-move` 6 and
@@ -101,7 +107,7 @@ Dated record of findings and finished work, newest first, with the evidence behi
   auto-download branch of `build_backend.ps1` was not run; its URL and checksum were checked.
 - `[Backend]` **GPU, reported by the worker (B4).** No `OpenCL.dll` on this machine, so it runs on
   CPU with no false popup. Separately, `ClassModel.getEntrypoint` throws `Sanity check, we seem to
-  have >20 iterations collapsing logical expression` on both kernels on JDK 25 and 27, so this
+have >20 iterations collapsing logical expression` on both kernels on JDK 25 and 27, so this
   predates the JDK move.
 - `[Backend]` **Stray folders in `3. XML/`** appeared at 05:22 on 2026-10-30, before the first
   worker build. Cause unconfirmed; `pom.xml` has `<directory>../target</directory>` (B3).

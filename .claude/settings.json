@@ -34,20 +34,8 @@
       "PowerShell(yarn --version)",
       "PowerShell(mvn --version)"
     ],
-    "ask": [
-      "Bash(git push*)",
-      "PowerShell(git push*)"
-    ],
-    "deny": [
-      "Bash(git push --force*)",
-      "Bash(git push -f*)",
-      "Bash(git push * --force*)",
-      "Bash(git push * -f*)",
-      "PowerShell(git push --force*)",
-      "PowerShell(git push -f*)",
-      "PowerShell(git push * --force*)",
-      "PowerShell(git push * -f*)"
-    ]
+    "ask": [],
+    "deny": []
   },
   "hooks": {
     "PreToolUse": [

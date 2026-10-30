@@ -29,7 +29,7 @@
     "lint": "cross-env NODE_ENV=development eslint . --cache",
     "lint:strict": "cross-env NODE_ENV=development eslint -c eslint.strict.config.mjs .",
     "lint-fix": "yarn --silent lint --fix; exit 0",
-    "lint-styles": "stylelint --ignore-path .prettierignore '**/*.*(css|scss)'",
+    "lint-styles": "stylelint '2. Frontend/1. Source/2. CSS/*.css'",
     "lint-styles-fix": "yarn --silent lint-styles --fix; exit 0",
     "package": "yarn build && electron-builder build --publish never",
     "package-all": "yarn build && electron-builder build -mwl",
@@ -37,8 +37,8 @@
     "package-linux": "yarn build && electron-builder build --linux",
     "package-win": "yarn build && electron-builder build --win --x64",
     "postinstall": "node -r @babel/register \"4. Both/2. Build/1. Scripts/CheckNativeDep.js\" && electron-builder install-app-deps",
-    "postlint-fix": "prettier --ignore-path .prettierignore --single-quote --write '**/*.{js,jsx,json,html,css,less,scss,yml}'",
-    "postlint-styles-fix": "prettier --ignore-path .prettierignore --single-quote --write '**/*.{css,scss}'",
+    "postlint-fix": "prettier --ignore-path ../.prettierignore --single-quote --write '**/*.{js,jsx,json,html,css,less,scss,yml}'",
+    "postlint-styles-fix": "prettier --ignore-path ../.prettierignore --single-quote --write '**/*.{css,scss}'",
     "preinstall": "node \"./4. Both/2. Build/1. Scripts/CheckYarn.js\"",
     "prestart": "yarn build",
     "start": "cross-env NODE_ENV=production electron \"./2. Frontend/1. Source/main.prod.js\"",
@@ -170,23 +170,6 @@
   "browserslist": [
     "electron 45.0"
   ],
-  "prettier": {
-    "overrides": [
-      {
-        "files": [
-          ".prettierrc",
-          ".babelrc",
-          ".eslintrc",
-          ".stylelintrc"
-        ],
-        "options": {
-          "parser": "json"
-        }
-      }
-    ],
-    "singleQuote": true,
-    "endOfLine": "auto"
-  },
   "stylelint": {
     "extends": [
       "stylelint-config-standard"
