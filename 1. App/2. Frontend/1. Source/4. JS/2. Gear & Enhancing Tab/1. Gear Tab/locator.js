@@ -1,5 +1,4 @@
 import tippy from 'tippy.js';
-import Constants from '../3. Gear/constants';
 
 /* global Api, Settings */
 
@@ -16,10 +15,6 @@ const readableSubstatByName = {
   EffectivenessPercent: 'Eff',
   EffectResistancePercent: 'Eff res',
 };
-
-// Ingame stat key → optimizer stat type name. Canonical definition lives in
-// Constants.ingameStatToStatType (constants.js).
-const opStatToSubstat = Constants.ingameStatToStatType;
 
 function locateSingleItem(itemId, items) {
   if (!itemId) {
@@ -42,46 +37,15 @@ function locateSingleItem(itemId, items) {
   let minIndexSubstat = '';
 
   item.substats.forEach((substat) => {
-    if (item.op) {
-      // floating point sort
-
-      filteredItems.sort((x, y) => {
-        if (!y.op) {
-          return 1;
-        }
-        if (!x.op) {
-          return -1;
-        }
-        const yOpValues = y.op
-          .slice(1)
-          .filter((entry) => opStatToSubstat[entry[0]] === substat.type)
-          .map((entry) => Number.parseFloat(entry[1]));
-        const ySum = yOpValues.reduce((a, b) => a + b, 0);
-
-        const xOpValues = x.op
-          .slice(1)
-          .filter((entry) => opStatToSubstat[entry[0]] === substat.type)
-          .map((entry) => Number.parseFloat(entry[1]));
-        const xSum = xOpValues.reduce((a, b) => a + b, 0);
-
-        const difference = ySum - xSum;
-        if (difference === 0) {
-          return y.ingameId - x.ingameId;
-        }
-        return difference;
-      });
-    } else {
-      // naive
-
-      filteredItems.sort((x, y) => {
-        const difference =
-          y.augmentedStats[substat.type] - x.augmentedStats[substat.type];
-        if (difference === 0) {
-          return y.ingameId - x.ingameId;
-        }
-        return difference;
-      });
-    }
+    filteredItems.sort((x, y) => {
+      const yValue = y.augmentedStats[substat.type] || 0;
+      const xValue = x.augmentedStats[substat.type] || 0;
+      const difference = yValue - xValue;
+      if (difference === 0) {
+        return y.ingameId - x.ingameId;
+      }
+      return difference;
+    });
 
     const currentIndex = filteredItems.findIndex(
       (x) => x.ingameId === item.ingameId,

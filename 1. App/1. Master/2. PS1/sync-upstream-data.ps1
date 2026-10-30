@@ -16,6 +16,12 @@
 #      feat/offline branch carries code main.json data alone won't show.
 #
 # Idempotent: run it twice back to back and the second run reports 0 added/updated.
+#
+# -DataRef syncs from another upstream ref. Rex publishes each patch on an
+# e7-data-<id> branch before it reaches main, for example:
+#   -DataRef upstream/e7-data-291fabdab9f046be8fb6870bddf5bed0
+
+param([string]$DataRef = 'upstream/main')
 
 $ErrorActionPreference = "Stop"
 
@@ -30,7 +36,7 @@ $heroPngDir = Join-Path $sourceDir '3. ASSETS\1. PNG\2. Hero\5. Hero'
 $syncRecordPath = Join-Path $masterDir 'upstream-sync.json'
 
 $UPSTREAM_REMOTE = 'upstream'
-$UPSTREAM_MAIN = "$UPSTREAM_REMOTE/main"
+$UPSTREAM_MAIN = $DataRef
 $UPSTREAM_OFFLINE = "$UPSTREAM_REMOTE/feat/offline"
 $FALLBACK_BASELINE = 'ad81e24'
 
@@ -152,6 +158,7 @@ try {
 
     $syncRecord = [ordered]@{
         syncedAt             = (Get-Date).ToString('o')
+        upstreamDataRef      = $DataRef
         upstreamMain         = $mainSha
         upstreamFeatOffline  = $offlineSha
         heroJsonArtifactJsonUpdated = $jsonUpdated
