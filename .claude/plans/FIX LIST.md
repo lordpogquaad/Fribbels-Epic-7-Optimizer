@@ -12,14 +12,13 @@ on something named in the row.
 | --- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | R3  | next   | Adapt config-repo files: `.prettierrc.json`, `.prettierignore`, `.gitattributes`, `.gitignore`, `.editorconfig`, `.markdownlint-cli2.jsonc`, `.remarkrc.mjs`, `jsconfig.json`, `jsconfig.strict.json`, `knip.json`, `.dependency-cruiser.cjs`, `.jscpd.json`, `sonar-project.properties`, plus the packages they need. Merge with existing files; paths must fit the numbered layout |
 | R4  | next   | Move the `prettier` block from `1. App/package.json` into the rc file (part of R3)                                                                                                                                                                                                                         |
-| R6  | next   | Build the agents and skills: Sonnet + Opus pair each for Java/Maven, JS/TS, Python and UI, one shared Haiku agent, and `/audit-backend`, `/audit-frontend`, `/audit-scanner`, `/audit-ui`. Opus, Sonnet and Haiku 5.5; Fable 5.1 as advisor if it can be set; lead chooses effort                           |
+| R6 | doing  | Agents built (Sonnet + Opus for backend, frontend, scanner and UI, plus `section-haiku`). Still to do: `/audit-backend`, `/audit-frontend`, `/audit-scanner`, `/audit-ui`, and a first real test of agent memory writes under the protected `.claude/` path |
 | R7  | later  | Review the numbered layout problems one at a time; no blanket restructure                                                                                                                                                                                                                                  |
-| R8  | later  | Remove the Copilot leftovers at the repo root, including `archive-copilot-customizations.ps1` and `restore-copilot-customizations.ps1`                                                                                                                                                                     |
+| R8 | later  | Remove the Copilot leftovers at the repo root, including `archive-copilot-customizations.ps1`, `restore-copilot-customizations.ps1` and `Copilot-Processing.md`. Keep `heroes.csv` and `heroes_with_rarity.csv` until `add_rarity.py` is decided, and `diff-report.txt` until R9. Remove the matching `.towerignore` lines too |
 | R9  | later  | Decide on `compare-files.ps1` (hardcoded paths, depends on `2. Personal`)                                                                                                                                                                                                                                  |
 | R10 | later  | Make `sync-constants.ps1` a hook that runs after its two source files in `2. Personal` change                                                                                                                                                                                                              |
 | R11 | later  | `start-dev.bat` is LF in the working tree although `.gitattributes` says CRLF                                                                                                                                                                                                                              |
 | R13 | next   | TypeScript language server fails: global `typescript` 7.0.2 has no `tsserver`, and the repo root has no `node_modules`. Needs a TypeScript 6 install it can find |
-| R14 | next   | Match the config repo's TypeScript and ESLint setup: add the `//typescript` note, `eslint.strict.config.mjs`, a report-only `lint:strict`, and `eslint-plugin-regexp`, `-promise` and `-n`. Keep `typescript` 6 because `typescript-eslint` needs below 6.1 |
 | R15 | next   | `yarn up "@babel/core@^8.0.10"` after 2026-10-30 16:35 UTC, when it passes Yarn's 24-hour age gate. Skip if `F4` removes Babel first |
 | R12 | later  | `guard-package-root.mjs` also blocks `npm install -g`, a false positive                                                                                                                                                                                                                                    |
 
@@ -27,10 +26,11 @@ on something named in the row.
 
 | ID | Status  | Item                                                                                                                                         |
 | -- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| B3 | next    | Find what creates the stray folders in `3. Backend/1. Source/3. XML/`, fix it, then remove them once. Likely `<directory>../target</directory>` |
+| B3 | next    | Stray `bin/`, `.._target_test-classes/` and `Epic Seven Screenshots Only/` folders in `3. Backend/1. Source/3. XML/`. Likely the VS Code Java importer, which mishandles the `..` paths in `pom.xml`; not yet confirmed from its log. Delete them once, run **Java: Clean Java Language Server Workspace**, and see if they return |
 | B4 | blocked | GPU: both kernels fail aparapi translation on JDK 25 and 27. Needs a real GPU run to confirm; this machine has no OpenCL                     |
 | B5 | later   | Keep the GPU path ready for a future GPU: low priority, never deleted. Keep kernels in step with CPU damage changes, keep a CPU-vs-kernel parity test, and prepare a JOCL replacement for aparapi in small steps (project memory `gpu-backend-successor`)                                                              |
 | B6 | later   | Make the GPU setting show when a run fell back to CPU                                                                                        |
+| B7 | next    | `build_backend.ps1` exits 0 when the built jar is missing: it prints `ERROR` and carries on. Make it exit 1, and test that the error path fails |
 
 ## Frontend (JS / TS / ESLint / JSON)
 
@@ -42,6 +42,9 @@ on something named in the row.
 | F5 | next   | When the backend aborts for exceeding 1,000,000,000,000 permutations, the popup still blames the hero, a gear set or GPU. Show the real reason. The log line also garbles its dash (encoding) |
 | F4 | next   | Drop Babel: rename `CheckPortInUse.js` and `CheckNativeDep.js` to `.mjs`, remove `@babel/register` from the scripts, then remove the three `@babel` packages and `babel.config.cjs` after checking nothing else uses them |
 | F6 | later  | Artifact icons load from Smilegate's site, which returns 403 for four new artifacts (`efk26`, `efw42`, `efa34`, `efr35`). Add a fallback for a missing icon. Stats are unaffected |
+| F7 | next   | Tighten `eslint.config.mjs` one rule at a time: declare `$`, `jQuery` and the app's shared globals centrally, remove the per-file `/* global */` comments, turn `no-undef` on; then review `no-unused-vars` `args: 'none'`, empty `catch` blocks and `no-explicit-any`. The header's "modernization 2026" memory is not in the index |
+| F8 | next   | Triage the 577 `yarn lint:strict` warnings. Start with `regexp/no-super-linear-move` (6) and `regexp/no-dupe-characters-character-class` (4), then decide whether `no-floating-promises` (222) is real or fire-and-forget. Consider turning `n/no-unpublished-import` off for build scripts |
+| F9 | next   | `DEPENDENCY-INVENTORY.md` still lists `npmMinimalAgeGate` as `0`, which contradicts the live config. Correct or remove the row |
 
 ## Scanner (Python)
 
@@ -53,6 +56,16 @@ Python, scapy and Npcap were current and running on 2026-10-30.
 | S5 | next   | Rex publishes patches on `e7-data-<id>` branches before `main`. Check for a newer branch each patch, and go back to the default sync once `main` catches up |
 | S1 | later  | Declare scapy in a `requirements.txt`; nothing in the repo records it or the Python version                 |
 | S2 | later  | Check whether `2. Tessdata/eng.traineddata` is still needed: no JS or manifest reference to Tesseract found |
+
+## Tests
+
+| ID | Status | Item                                                                                                                                           |
+| -- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| T1 | next   | Add a JS test setup: pick the runner (`node --test` needs no new package), add a `test` script, and add a `test` step to the acceptance gate      |
+| T2 | next   | First JS tests on pure logic where a miss gives wrong numbers silently: `fribbelsPriorityFilter.js` damage, `convertUnits`, the item locator sort |
+| T3 | later  | Python tests for the scanner, starting from a saved export with personal data removed                                                          |
+| T4 | later  | ESLint block for test files in `eslint.config.mjs`, once test files exist                                                                      |
+| T5 | later  | Add test ownership to the section agents, `section-locations.md` and the `/audit-*` skills                                                     |
 
 ## UI
 

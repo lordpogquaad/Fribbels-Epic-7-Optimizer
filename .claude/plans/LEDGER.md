@@ -6,6 +6,27 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-30
 
+- `[Frontend]` **Strict lint added (R14).** `yarn lint:strict` is report-only: 577 warnings, 0 errors, exit 0.
+  Top rules: `no-floating-promises` 222, `no-unnecessary-condition` 161, `no-misused-promises` 73,
+  `require-await` 45, `require-atomic-updates` 20. `regexp/no-super-linear-move` 6 and
+  `regexp/no-dupe-characters-character-class` 4 are unverified leads. The export demotes every rule to
+  `warn`, because the regexp and promise presets ship `error` rules. `yarn lint`, `yarn typecheck` and
+  `yarn build` exit 0 in the lead's own run. First `frontend-sonnet` run; its agent memory write worked
+  with no prompt.
+- `[Repo]` **Agent audit, project roster.** Gates clean on 30 files; 9 project agents audited, 21 user-scope
+  agents gate-only. Nine small fixes applied, including one broken rule path in the UI agents and
+  `yarn typecheck` in the scanner and UI gates. Gates clean afterwards. Correction: git holds one blob under two index entries for files under `com/`,
+  not separate blobs, and `0. Main` and `10. Tests` have a single path.
+- `[Repo]` **Project agents built with `/forge`.** Sonnet and Opus agents for backend, frontend, scanner
+  and UI, plus `section-haiku`. Audit: 0 violations. Advisor is Fable through user-scope `advisorModel`,
+  not per agent. Section agents use `memory: project` and read their twin's notes. New agents needed
+  `/reload-plugins` to become spawnable. Two test runs returned their contracted format: B3 diagnosis
+  and the R8 inventory, which also found the tracked `Copilot-Processing.md`. Both ran before memory,
+  effort pins and the scouting change, so memory writes are untested. The old `.claude/agents/README.md`
+  placeholder was removed. Effort is pinned per agent. Scouts are `section-haiku` and the global
+  `sonnet-researcher`. A review of `backend-opus` corrected the build gate, the before-and-after run,
+  GPU reporting, `com/` commit staging and path anchoring. No Opus 4.8 pairs: a subagent gets no
+  automatic fallback, so after a cyber refusal the lead uses `opus-worker-opus48`.
 - `[Scanner]` **Rescan confirmed at 07:38.** With local cache on and the 5★ filter, the saved database
   holds 400 heroes and 3,780 items, none at level 0. Moro was named by code; only the four `s000N`
   story units were dropped; nothing pruned; no errors.

@@ -37,6 +37,7 @@ A PreToolUse hook (`hooks/guard-package-root.mjs`) denies npm in the Yarn root a
 ```text
 yarn install            outer deps; postinstall also runs electron-builder install-app-deps on the inner tree
 yarn lint               eslint (flat config, eslint.config.mjs)
+yarn lint:strict        report-only strict eslint (eslint.strict.config.mjs); always exits 0, not a gate
 yarn typecheck          tsc7 (TypeScript 7 alias) -p ./ --noEmit — added 2026-08-28
 yarn build              copy-assets + webpack main/renderer prod bundles
 yarn dev                hot renderer dev server
@@ -46,7 +47,8 @@ pwsh -File "1. Master/2. PS1/build_backend.ps1"      backend jar
 ```
 
 Acceptance gate before claiming a JS/config change works: `yarn lint` → `yarn typecheck` → `yarn build`.
-Backend changes: `build_backend.ps1` must produce a fresh `backend.jar`.
+Backend changes: `build_backend.ps1` must produce a fresh `backend.jar`. Check the `SUCCESS` line and the
+jar's timestamp: until `B7` is fixed, the script exits 0 when the built jar is missing.
 
 ## Windows/session traps
 
@@ -61,7 +63,9 @@ Backend changes: `build_backend.ps1` must produce a fresh `backend.jar`.
 
 ## Current state
 
-The 2026-08 overhaul is in progress; order and per-step decisions are in
-`memory/overhaul-plan-2026-08.md`. Copilot-era files at the repo root (`COPILOT.md`,
-`.github/chatmodes/`, `.qodo/`, `memory-bank/`, `*-copilot-customizations.ps1`, the `*.csv` /
-`diff-report.txt` analysis dumps) are slated for removal in the reorganization step — do not build on them.
+Open work is in `.claude/plans/FIX LIST.md`, and finished work is in `.claude/plans/LEDGER.md`.
+Copilot-era files at the repo root (`COPILOT.md`, `.github/chatmodes/`, `.qodo/`, `memory-bank/`,
+`*-copilot-customizations.ps1`) stay until `R8` removes them; do not build on them. `R8` also says
+which `*.csv` files and `diff-report.txt` stay, and why.
+
+Commit and push only when Marcus says so. This repo is not covered by the standing commit grant.
