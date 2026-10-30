@@ -6,6 +6,8 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-30
 
+- `[Repo]` **Lint scripts renamed and report scripts added (R17, R19).** `lint-fix`, `lint-styles` and
+  `lint-styles-fix` are now `lint:fix`, `lint:styles`, `lint:styles:fix`; `lint:dead`, `lint:deps-graph` and `lint:dupes` run knip, dependency-cruiser and jscpd.
 - `[Repo]` **Config audit: nothing hides a problem now.** `/audit-fix` over every config, read against
   the installed tools. Fixed: `lint-fix` and `lint-styles-fix` ran nothing and exited 0 (`yarn --silent`
   is invalid in Yarn 4); `prestart` never ran (no `prestart` in Yarn 4's bundle), so `start` now builds

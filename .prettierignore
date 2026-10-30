@@ -1,4 +1,4 @@
-# Prettier's ignore file. Stylelint and ESLint do not use it: `yarn lint-styles` names its own folder,
+# Prettier's ignore file. Stylelint and ESLint do not use it: `yarn lint:styles` names its own folder,
 # and ESLint's ignores live in "1. App/eslint.config.mjs" (globalIgnores).
 # Patterns carry no folder prefix so they match from the repo root and from "1. App/".
 

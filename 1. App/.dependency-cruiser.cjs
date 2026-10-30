@@ -1,5 +1,5 @@
 // Report-only import-graph check, run from "1. App/" with the roots passed on the command line:
-//   yarn depcruise --config .dependency-cruiser.cjs "2. Frontend/1. Source/4. JS" "5. Dev Only" "4. Both"
+//   yarn lint:deps-graph
 // The renderer's packages live in "2. Frontend/1. Source/node_modules" (a second manifest); Node
 // resolution reaches it by walking up from each renderer file. "5. Dev Only" files do not, so their
 // imports of renderer packages show as unresolvable.
