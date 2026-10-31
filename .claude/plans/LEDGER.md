@@ -6,6 +6,9 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-30
 
+- `[Repo]` **`R28` closed: `audit-skill-wiring` exits 0 here.** The config-repo tool now knows the `-sonnet`, `-opus` and `-haiku`
+  suffixes, and `tools.dirs` is set to `.claude/hooks/` and `.claude/skills/`, so the `DANGLING_TOOL` check runs. A throwaway copy with a
+  bad agent name and a missing script exits 1 with both errors. The tool's remaining gaps are in the config repo's ledger.
 - `[Repo]` **`R6` closed: `/audit-backend`, `/audit-frontend`, `/audit-scanner` and `/audit-ui` built.** Four thin skills share
   `.claude/skills/section-audit.md`, which also holds the contract the eight section agents read for an audit; `audit-ui` adds
   `scripts/ui-drift.mjs`. Every tool-pass command was run once for real and wrote no tracked file. `doc-reviewer` found no blocker,

@@ -27,7 +27,7 @@
     "dev": "yarn copy-assets && cross-env START_HOT=1 node -r @babel/register \"./4. Both/2. Build/1. Scripts/CheckPortInUse.js\" && cross-env START_HOT=1 yarn start-renderer-dev",
     "electron-rebuild": "electron-rebuild --parallel --force --types prod,dev,optional --module-dir \"2. Frontend/1. Source\"",
     "lint": "cross-env NODE_ENV=development eslint . --cache",
-    "lint:strict": "eslint -c eslint.strict.config.mjs .",
+    "lint:strict": "eslint -c eslint.strict.config.mjs . --cache --cache-location node_modules/.cache/eslint-strict/",
     "format": "prettier --ignore-path ../.prettierignore --write ..",
     "format:check": "prettier --ignore-path ../.prettierignore --check ..",
     "lint:md": "markdownlint-cli2 --config ../.markdownlint-cli2.jsonc \"../**/*.md\" \"#**/node_modules/**\"",

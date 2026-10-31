@@ -1,5 +1,6 @@
 {
   "tools": {
+    "dirs": [".claude/hooks/", ".claude/skills/"],
     "testDir": ".claude/hooks-test"
   },
   "rules": {
