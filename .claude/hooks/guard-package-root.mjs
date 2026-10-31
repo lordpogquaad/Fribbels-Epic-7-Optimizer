@@ -31,8 +31,13 @@ const BACKSLASH = String.fromCodePoint(92);
 export const STDIN_NET_MS = 5000;
 const MAX_DEPTH = 3;
 
-const normalize = (p) =>
-  path.resolve(p).split(BACKSLASH).join('/').replace(/[/]+$/, '').toLowerCase();
+const trimSlashes = (p) => {
+  let end = p.length;
+  while (end > 0 && p[end - 1] === '/') end--;
+  return p.slice(0, end);
+};
+
+const normalize = (p) => trimSlashes(path.resolve(p).split(BACKSLASH).join('/')).toLowerCase();
 
 const REPO_ROOT = normalize(fileURLToPath(new URL('../..', import.meta.url)));
 const FRONTEND_ROOT = `${REPO_ROOT}/1. app/2. frontend/1. source`;
@@ -120,92 +125,110 @@ const DENY_TOO_DEEP =
   'guard-package-root: shell nesting is too deep to judge. Run the package command directly.';
 
 const SHELL_FED_LINE = /(^|[ |])(bash|sh|zsh|pwsh|powershell)([ .]|$)/i;
-const HEREDOC_OPENER = /<<-?[ ]*['"]?([a-z0-9_]+)['"]?/i;
+const HEREDOC_OPENER = /<<-? *['"]?([a-z0-9_]+)['"]?/i;
 const REDIRECT = /^[0-9*]*(>>?|<<?-?|&>>?)(.*)$/;
 const ASSIGNMENT = /^[a-z_][a-z0-9_]*=/i;
-const ENV_REFERENCE = /[$][{]?(?:env:)?([a-z_][a-z0-9_]*)[}]?/gi;
-const DRIVE_MSYS = /^[/]([a-z])[/]/i;
+const ENV_REFERENCE = /[$][{]?(?:env:)?([a-z_][a-z0-9_]*)}?/gi;
+
+const isHereString = (trimmed) => trimmed.endsWith("@'") || trimmed.endsWith('@"');
+
+/** The index of the line closing a heredoc or here-string opened at line i, or -1. */
+function closingLine(lines, i) {
+  const line = lines[i];
+  const opener = HEREDOC_OPENER.exec(line);
+  const trimmed = line.trimEnd();
+  if (opener && !SHELL_FED_LINE.test(line)) {
+    return lines.findIndex((l, j) => j > i && l.trim() === opener[1]);
+  }
+  if (!isHereString(trimmed)) return -1;
+  const closer = `${trimmed.at(-1)}@`;
+  return lines.findIndex((l, j) => j > i && l.trimStart().startsWith(closer));
+}
 
 /** Drops heredoc and here-string bodies, keeping the text when no closing line exists. */
 function stripHeredocs(text) {
   const lines = text.split('\n');
   const kept = [];
-  for (let i = 0; i < lines.length; i++) {
+  let i = 0;
+  while (i < lines.length) {
     const line = lines[i];
-    const opener = HEREDOC_OPENER.exec(line);
-    const trimmed = line.trimEnd();
-    const hereString = trimmed.endsWith("@'") || trimmed.endsWith('@"');
-    let close = -1;
-    if (opener && !SHELL_FED_LINE.test(line)) {
-      close = lines.findIndex((l, j) => j > i && l.trim() === opener[1]);
-    } else if (hereString) {
-      const closer = `${trimmed.at(-1)}@`;
-      close = lines.findIndex((l, j) => j > i && l.trimStart().startsWith(closer));
-    }
+    const close = closingLine(lines, i);
     if (close < 0) {
       kept.push(line);
-      continue;
+      i++;
+    } else {
+      const trimmed = line.trimEnd();
+      kept.push(isHereString(trimmed) ? trimmed.slice(0, -2) : line);
+      i = close + 1;
     }
-    kept.push(hereString ? trimmed.slice(0, -2) : line);
-    i = close;
   }
   return kept.join('\n');
 }
 
-/** Splits text into statements of words, honoring quotes and escapes. */
-function parseStatements(text) {
-  const statements = [];
-  let words = [];
-  let word = null;
-  let quote = null;
-  const endWord = () => {
-    if (word !== null) words.push(word);
-    word = null;
-  };
-  const endStatement = () => {
-    endWord();
-    if (words.length) statements.push(words);
-    words = [];
-  };
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    const next = text[i + 1];
-    if (quote) {
-      if (quote === '"' && c === BACKSLASH && next === '"') {
-        word += '"';
-        i++;
-      } else if (c === quote) quote = null;
-      else word += c === BACKSLASH ? '/' : c;
-    } else if (c === BACKSLASH || c === '`') {
-      const lineEnd = next === '\n' || next === '\r';
-      if (lineEnd) i += next === '\r' && text[i + 2] === '\n' ? 2 : 1;
-      else if (next === ' ' && c === BACKSLASH) {
-        word = `${word ?? ''} `;
-        i++;
-      } else if (c === BACKSLASH) word = `${word ?? ''}/`;
-    } else if (c === '"' || c === "'") {
-      word ??= '';
-      quote = c;
-    } else if (c === '#' && word === null) {
-      const end = text.indexOf('\n', i);
-      if (end < 0) break;
-      i = end - 1;
-    } else if (c === '\n' || c === ';' || c === '(' || c === ')' || c === '|') {
-      endStatement();
-    } else if (c === '&' && text[i - 1] !== '>' && next !== '>') {
-      endStatement();
-    } else if (c === ' ' || c === '\t' || c === '\r') {
-      endWord();
-    } else {
-      word = `${word ?? ''}${c}`;
-    }
-  }
-  endStatement();
-  return statements;
+const endWord = (s) => {
+  if (s.word !== null) s.words.push(s.word);
+  s.word = null;
+};
+
+const endStatement = (s) => {
+  endWord(s);
+  if (s.words.length) s.statements.push(s.words);
+  s.words = [];
+};
+
+const appendToWord = (s, text) => {
+  s.word = `${s.word ?? ''}${text}`;
+};
+
+function readQuoted(s, c, next) {
+  if (s.quote === '"' && c === BACKSLASH && next === '"') {
+    s.word += '"';
+    s.i++;
+  } else if (c === s.quote) s.quote = null;
+  else s.word += c === BACKSLASH ? '/' : c;
 }
 
-/** Removes redirections, assignments and wrapper words, leaving program + arguments. */
-function commandWords(statement) {
+function readEscape(s, c, next) {
+  if (next === '\n' || next === '\r') {
+    s.i += next === '\r' && s.text[s.i + 2] === '\n' ? 2 : 1;
+  } else if (c === BACKSLASH && next === ' ') {
+    appendToWord(s, ' ');
+    s.i++;
+  } else if (c === BACKSLASH) appendToWord(s, '/');
+}
+
+const endsStatement = (c, previous, next) =>
+  '\n;()|'.includes(c) || (c === '&' && previous !== '>' && next !== '>');
+
+/** Reads one character, or a whole comment, and moves past it. */
+function readNext(s) {
+  const c = s.text[s.i];
+  const next = s.text[s.i + 1];
+  if (s.quote === null && c === '#' && s.word === null) {
+    const end = s.text.indexOf('\n', s.i);
+    s.i = end < 0 ? s.text.length : end;
+    return;
+  }
+  if (s.quote !== null) readQuoted(s, c, next);
+  else if (c === BACKSLASH || c === '`') readEscape(s, c, next);
+  else if (c === '"' || c === "'") {
+    s.word ??= '';
+    s.quote = c;
+  } else if (endsStatement(c, s.text[s.i - 1], next)) endStatement(s);
+  else if (' \t\r'.includes(c)) endWord(s);
+  else appendToWord(s, c);
+  s.i++;
+}
+
+/** Splits text into statements of words, honoring quotes and escapes. */
+function parseStatements(text) {
+  const s = { text, i: 0, word: null, quote: null, words: [], statements: [] };
+  while (s.i < text.length) readNext(s);
+  endStatement(s);
+  return s.statements;
+}
+
+function withoutRedirections(statement) {
   const words = [];
   for (let i = 0; i < statement.length; i++) {
     const redirect = REDIRECT.exec(statement[i]);
@@ -215,6 +238,12 @@ function commandWords(statement) {
       words.push(statement[i]);
     }
   }
+  return words;
+}
+
+/** Removes redirections, assignments and wrapper words, leaving program + arguments. */
+function commandWords(statement) {
+  const words = withoutRedirections(statement);
   while (words.length) {
     const first = words[0].toLowerCase();
     if (ASSIGNMENT.test(words[0])) words.shift();
@@ -243,7 +272,9 @@ function resolveDir(raw, base) {
     return found ?? '';
   });
   if (missing) return null;
-  value = value.replace(DRIVE_MSYS, (_match, drive) => `${drive}:/`);
+  if (value.length > 2 && value[0] === '/' && value[2] === '/' && /[a-z]/i.test(value[1])) {
+    value = `${value[1]}:/${value.slice(3)}`;
+  }
   if (value === '~' || value.startsWith('~/')) value = os.homedir() + value.slice(1);
   if (path.isAbsolute(value)) return normalize(value);
   return base === null ? null : normalize(path.join(base, value));
@@ -278,16 +309,15 @@ function firstVerb(args, valueOptions) {
 }
 
 function judgeNodeManager(program, args, dir) {
-  const lower = args.map((a) => a.toLowerCase());
+  const lower = new Set(args.map((a) => a.toLowerCase()));
   const found = firstVerb(args, NODE_VALUE_OPTIONS);
-  const auditFix = found?.verb === 'audit' && lower.includes('fix');
+  const auditFix = found?.verb === 'audit' && lower.has('fix');
   if (!found || (!NODE_MUTATIONS.has(found.verb) && !auditFix)) return null;
-  if (lower.includes('-g') || lower.includes('--global') || lower.includes('--location=global'))
-    return null;
+  if (lower.has('-g') || lower.has('--global') || lower.has('--location=global')) return null;
   const options = program === 'npm' ? ['--prefix', '-c'] : ['--dir', '-c', '--prefix'];
   const zone = zoneOf(targetDir(args, new Set(options), dir));
   if (zone === 'outside') return null;
-  const installerFlags = lower.includes('--ignore-scripts') && lower.includes('--legacy-peer-deps');
+  const installerFlags = lower.has('--ignore-scripts') && lower.has('--legacy-peer-deps');
   if (zone === 'frontend') return program === 'npm' && installerFlags ? null : DENY_NPM_IN_FRONTEND;
   return zone === 'unknown' && installerFlags ? null : DENY_NPM_IN_REPO;
 }
@@ -375,8 +405,10 @@ async function main() {
 
 const scriptPath = (p) => normalize(realpathSync(p));
 if (process.argv[1] && scriptPath(process.argv[1]) === scriptPath(fileURLToPath(import.meta.url))) {
-  main().catch((error) => {
+  try {
+    await main();
+  } catch (error) {
     process.stderr.write(`guard-package-root: ${error.message}\n`);
     process.exit(1);
-  });
+  }
 }

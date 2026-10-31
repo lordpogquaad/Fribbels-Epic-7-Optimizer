@@ -14,8 +14,9 @@ Each section has a Sonnet and an Opus agent in `.claude/agents/`: `<section>-son
 units and `<section>-opus` for trap-dense or high-stakes ones, where `<section>` is `backend`,
 `frontend`, `scanner` or `ui`. `section-haiku` does mechanical work in any section. Each agent's
 effort is set in its own file. A subagent gets no automatic model fallback, so after a cyber
-refusal the lead re-dispatches the unit to `opus-worker-opus48`. The skills are planned, not built yet (`R6` in
-`.claude/plans/FIX LIST.md`).
+refusal the lead re-dispatches the unit to `opus-worker-opus48`. The skills are hidden from the model, so Marcus runs them by name; their shared
+flow and the agents' audit contract are in `.claude/skills/section-audit.md`. In `6. JSON/`, the UI
+section owns the `translation.json` locales and the frontend owns the rest.
 
 The scanner is a Scapy packet sniffer (`7. PY/1. Scanner/1. Core/scanner.py`). The app has no OCR.
 

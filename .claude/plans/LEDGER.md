@@ -6,6 +6,14 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-30
 
+- `[Repo]` **`R6` closed: `/audit-backend`, `/audit-frontend`, `/audit-scanner` and `/audit-ui` built.** Four thin skills share
+  `.claude/skills/section-audit.md`, which also holds the contract the eight section agents read for an audit; `audit-ui` adds
+  `scripts/ui-drift.mjs`. Every tool-pass command was run once for real and wrote no tracked file. `doc-reviewer` found no blocker,
+  and its findings were applied, except the file-type filter it suggested for `ui-drift`. `audit-frontend` keeps `yarn build` as a gate. The skills stay hidden from the
+  model. New `R28` for the wiring auditor. First results to expect: `not-to-unresolvable` on `@electron/remote` from
+  `5. Dev Only/LogControl.js`, and locale key gaps from `ui-drift`.
+- `[Repo]` **`guard-package-root.mjs` Sonar pass.** 12 findings on the rewrite fixed, none masked: tokenizer and `commandWords` split into
+  helpers, loop-counter assignments gone, slash handling moved out of regexes, top-level await. 60 of 60 hook tests pass, and `diag-scan` reports 0.
 - `[Repo]` **`R27` closed: `guard-package-root.mjs` rewritten.** It now drops heredoc bodies, splits statements, tokenizes words and
   judges each statement at its own folder (`cwd`, `cd`, `--prefix`, `--cwd`), scoped to this repo. Stays self-contained on purpose.
   New: `.claude/hooks-test/`, `yarn test:hooks`, stdin net, and `.claude/tools.config.json` `tools.testDir`. A bad payload now exits
