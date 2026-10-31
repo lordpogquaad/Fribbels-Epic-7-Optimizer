@@ -24,6 +24,9 @@ different profile with its own settings and enabled extensions: never read it as
 setting and extension list lives, and how apply-to-all settings override a profile, is machine-wide: global
 `rules/machine.md` → "VS Code settings and extensions", with `<id>` = `4f1684d1`.
 
+Extensions are on or off per profile, not per repo. This repo's `.vscode/` (tracked) holds
+`settings.json`, `launch.json` and `jdt.prefs`, and has no `extensions.json`.
+
 ## Traps on this machine
 
 - This machine has no OpenCL, so GPU kernels cannot run here and every search uses the CPU loop. A

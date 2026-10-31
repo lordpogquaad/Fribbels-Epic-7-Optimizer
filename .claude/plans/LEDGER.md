@@ -6,6 +6,17 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-31
 
+- `[Frontend]` **Swept the June plans in `F:/VSCode-Data/Projects` before Marcus deleted them, read-only.** Plan 2 and 3 (constants), plan 4 (optimizer tab), plan 5 (gear and optimizer
+  tabs), and his `deep dive report.md` (scoring-mod display, Gear Analysis): 123 claims checked against code by four readers. Filed `F36` and `F37`. Almost everything else is fixed or stale. Lead
+  rechecked what survived. Dropped two reader findings: `OFFICIAL_SpeedSets` lacking `Revenge` and `Reversal` matches the sheet's `OFFICIAL_SPEED_SETS`, and `buildItemPanel` escapes its only
+  free-text field. Cosmetic or optional, no row: `ITEM_LEVEL.LEVEL_RANGE_72_84` against `SUBSTAT_ROLL_RANGES.LEVEL_RANGE_72_85`; no game-version note in `rollDivisors.js`, whose values remain
+  unchecked in game; a yellow modified-substat cell highlight and a score-band heatmap in Gear Analysis, both never built. T10 was checked by one of the two readers that covered it.
+- `[Frontend]` **Also swept `plan 1.md` and `Gear Basic 101.txt` in the same folder, lead read.** `plan 1.md` is a pasted Copilot log with its middle lost; the full text survives as
+  `gap-analysis-plan.md` under the Copilot `memory-tool` folder in `workspaceStorage/585fe2722f55d16b88fb6488e5bca44e`. BUG-1, FEAT-1 to FEAT-4 and UX-1 to UX-3 are done in `gearAnalysisTab.js` and
+  `gearScorer.js`, and no `isPhantom` exists (BUG-3). BUG-2 is `F37`. `Gear Basic 101.txt` is Marcus's copy of `epicSevenGearConstant.js`: every compared constant matches except
+  `SUBSTAT_ROLL_RANGES`, where he added `LEVEL_RANGE_Otherwordly_85`, Epic only: Percent 7 to 8, Speed 3 to 5, CD 6 to 7, CC 4 to 5. The app lacks it. No score changes: the scorer reads only
+  each range's maximum, and those match `LEVEL_RANGE_72_85`. Kept here so the table survives the file's delete; the values are unchecked in game.
+
 - `[Backend]` **`B7`, `B8`, `B25`, `B42`, `B44` closed, and most of `B29`, `B36`, `B38`, `B39`, test first, jar not rebuilt.** `B42`, `B36`: `OptimizationDb.applyFilter`
   walks and records under one lock; a 200k-row race test was wrong on the old code and exact after. `B39`: format 1 or 2 with an empty first list threw `ArrayIndexOutOfBoundsException`,
   worse than the row said, and now warns and searches as format 0. `B44`: no defect, `equipItemsOnHero` never unequips; a test pins it. `B25`: the request Gson clamps a whole number past
