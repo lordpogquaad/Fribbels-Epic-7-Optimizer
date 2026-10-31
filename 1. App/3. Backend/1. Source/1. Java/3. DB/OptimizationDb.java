@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,12 +20,16 @@ public class OptimizationDb {
     private HeroStats[] resultHeroStats;
     private int[] filteredIndices;
     private Set<String> filteredIds;
-    private long maximum;
-    private long filteredMaximum;
-    private boolean filtered = false;
+    // The row count and the sort state are written under the lock and read without it by the
+    // progress poll (getMaximum) and the best-so-far snapshot (sortSnapshot). Nothing in the
+    // search loop reads them, so volatile costs the search nothing. Writers set them in an
+    // order that never shows a reader a count that was not a real one.
+    private volatile long maximum;
+    private volatile long filteredMaximum;
+    private volatile boolean filtered = false;
 
-    private OptimizationColumn column;
-    private SortOrder order;
+    private volatile OptimizationColumn column;
+    private volatile SortOrder order;
     // Effectiveness weight for the SpdEff synthetic sort key (spd + eff*weight),
     // updated per getResultRows request so the server sort matches the displayed
     // column.
@@ -45,6 +50,9 @@ public class OptimizationDb {
     // Per-execution interrupt and completion flags
     private final AtomicBoolean interrupted = new AtomicBoolean(false);
     private volatile boolean done = false;
+    // Whether a run has begun on this db, so beginRun can tell a cancel waiting for
+    // the first run from the leftovers of a finished one.
+    private boolean runBegun = false;
 
     public OptimizationDb() {
         resultHeroStats = new HeroStats[] {};
@@ -96,11 +104,27 @@ public class OptimizationDb {
     }
 
     /**
-     * Called at the start of an optimization run to enable live result streaming.
+     * Called once as a run begins, before any of its work. A db normally serves one
+     * run, and a cancel that landed before this call belongs to that run, so it is
+     * kept. Only a db that already ran is reset: its flags and counters are the
+     * previous run's. From here on a cancel sticks until the next beginRun.
+     */
+    public synchronized void beginRun() {
+        if (runBegun) {
+            interrupted.set(false);
+            done = false;
+            searchedCounter.set(0);
+            resultsCounter.set(0);
+        }
+        runBegun = true;
+    }
+
+    /**
+     * Enables live result streaming for a legacy run. Leaves the cancel state alone:
+     * this point comes after item filtering and mod expansion, and a cancel that
+     * landed during them still applies.
      */
     public synchronized void setLiveResults(final HeroStats[] arr, final AtomicLong counter) {
-        interrupted.set(false);
-        done = false;
         liveArray = arr;
         liveCounter = counter;
         liveTopN = null;
@@ -108,14 +132,38 @@ public class OptimizationDb {
 
     /**
      * Enables live streaming for keep-best-N mode: the grid serves sorted snapshots
-     * of the bounded top-N heap while the search runs.
+     * of the bounded top-N heap while the search runs. Leaves the cancel state alone,
+     * as {@link #setLiveResults} does.
      */
     public synchronized void setLiveTopN(final TopNResults topN) {
-        interrupted.set(false);
-        done = false;
         liveTopN = topN;
         liveArray = null;
         liveCounter = null;
+    }
+
+    /** True while a run's live references are set, that is, between going live and publishing. */
+    public boolean isLive() {
+        return liveTopN != null || liveArray != null;
+    }
+
+    /**
+     * Publishes what a run that never reached {@link #setResultHeroes} had found, so a
+     * failed run does not leave the live references set (where {@link #sort} only
+     * records and the grid keeps serving a frozen snapshot). Does nothing when no run
+     * is live. The results are whatever the workers had written, so they are partial.
+     */
+    public synchronized void publishLiveSnapshot() {
+        final TopNResults topN = liveTopN;
+        if (topN != null) {
+            final HeroStats[] found = topN.toArray();
+            setResultHeroes(found, found.length);
+            return;
+        }
+        final HeroStats[] live = liveArray;
+        final AtomicLong liveCount = liveCounter;
+        if (live != null && liveCount != null) {
+            setResultHeroes(live, Math.min(liveCount.get(), live.length));
+        }
     }
 
     /** Clears the live streaming references (called when the run finishes). */
@@ -126,30 +174,49 @@ public class OptimizationDb {
     }
 
     /**
-     * Sorts a detached snapshot array by the current grid column/order, defaulting
-     * to
-     * priority descending (the headline ranking) when no sort has been chosen.
+     * Sorts a detached array by the recorded column/order, defaulting to buildScore
+     * descending (the ranking keep-best-N retains by, and the grid's default) when no
+     * sort has been chosen.
      */
     private void sortSnapshot(final HeroStats[] arr) {
-        if (column != null && order != null) {
-            Sorter.sortHeroes(arr, column, order, spdEffWeight);
+        // One read of each, so a concurrent sort() cannot hand over a column and an order
+        // from two different requests.
+        final OptimizationColumn sortColumn = column;
+        final SortOrder sortOrder = order;
+        if (sortColumn != null && sortOrder != null) {
+            Sorter.sortHeroes(arr, sortColumn, sortOrder, spdEffWeight);
         } else {
-            Arrays.sort(arr, (a, b) -> Integer.compare(b.getPriority(), a.getPriority()));
+            Sorter.sortHeroes(arr, OptimizationColumn.BUILDSCORE, SortOrder.DESC);
         }
     }
 
-    public void setResultHeroes(final HeroStats[] newResultHeroStats, final long newMaximum) {
-        clearLiveResults();
-        resultHeroStats = ArrayUtils.subarray(newResultHeroStats, 0, (int) newMaximum);
-        maximum = newMaximum;
-        filteredMaximum = 0;
+    /**
+     * Publishes a finished run. The results are sorted here, on a copy, because the
+     * sort recorded before or during the run was never applied to them: the next
+     * fetch asks for that same sort and {@link #sort} skips it as already done.
+     * A slot a failed worker left unwritten is dropped, since it would break the sort.
+     * The live references are cleared last so the unsynchronized {@link #getMaximum}
+     * moves straight from the live count to the final one. The filtered count is left as it
+     * was: a reader that read the flag before it dropped would otherwise return zero, and
+     * every consumer of the count checks the flag first.
+     */
+    public synchronized void setResultHeroes(final HeroStats[] newResultHeroStats, final long newMaximum) {
+        final HeroStats[] finished = Arrays.stream(ArrayUtils.subarray(newResultHeroStats, 0, (int) newMaximum))
+                .filter(Objects::nonNull)
+                .toArray(HeroStats[]::new);
+        sortSnapshot(finished);
+        lastSortWeight = spdEffWeight;
+
+        resultHeroStats = finished;
+        maximum = finished.length;
+        filtered = false;
         filteredIds = new HashSet<>();
         filteredIndices = new int[] {};
-        filtered = false;
+        clearLiveResults();
     }
 
-    public void setFilteredIds(final Set<String> newFilteredIds, final int newFilteredMaximum) {
-        filtered = true;
+    public synchronized void setFilteredIds(final Set<String> newFilteredIds, final int newFilteredMaximum) {
+        // The count first, the flag last: getMaximum reads the flag, then the count.
         filteredIds = newFilteredIds;
         filteredMaximum = newFilteredMaximum;
 
@@ -165,6 +232,7 @@ public class OptimizationDb {
         }
 
         filteredIndices = sortedFilteredIndices;
+        filtered = true;
     }
 
     public synchronized HeroStats[] getRows(final int startRow, final int endRow) {
@@ -196,7 +264,7 @@ public class OptimizationDb {
             return liveResults.toArray(new HeroStats[0]);
         }
 
-        if (filteredIds.size() == 0) {
+        if (!filtered) {
             return ArrayUtils.subarray(resultHeroStats, startRow, endRow);
         }
 
@@ -215,7 +283,8 @@ public class OptimizationDb {
     }
 
     /**
-     * Returns the best results found so far, sorted descending by score.
+     * Returns the best results found so far, in the recorded sort or buildScore
+     * descending when none is recorded.
      * Safe to call at any time: reads from the live array if optimization is
      * still running, or from the finalised result set if it has completed or
      * been cancelled. Never mutates any internal state.
@@ -242,18 +311,14 @@ public class OptimizationDb {
                 }
             }
             final HeroStats[] arr = results.toArray(new HeroStats[0]);
-            if (column != null && order != null) {
-                Sorter.sortHeroes(arr, column, order, spdEffWeight);
-            } else {
-                Arrays.sort(arr, (a, b) -> Integer.compare(b.getScore(), a.getScore()));
-            }
+            sortSnapshot(arr);
             final int count = Math.min(limit, arr.length);
             return Arrays.copyOf(arr, count);
         }
         return getRows(0, limit);
     }
 
-    public HeroStats[] getAllHeroStats() {
+    public synchronized HeroStats[] getAllHeroStats() {
         return resultHeroStats;
     }
 
@@ -280,18 +345,14 @@ public class OptimizationDb {
     }
 
     public synchronized void sort(final OptimizationColumn newColumn, final SortOrder newOrder) {
-        // Keep-best-N live: the heap is the source of truth — just record the requested
-        // order so getRows' snapshot honors it; don't sort anything in place.
-        if (liveTopN != null) {
+        // Never sort in place while a run is live: the legacy array is still being
+        // written. Just record the requested order for the snapshots and for
+        // setResultHeroes, which applies it when the run finishes.
+        if (liveTopN != null || liveArray != null) {
             if (newColumn != null && newOrder != null) {
                 column = newColumn;
                 order = newOrder;
             }
-            return;
-        }
-        // Never sort in-place while the optimization run is still writing into the
-        // array
-        if (liveArray != null) {
             return;
         }
         // Re-sort when column/order changed, OR (for the weight-sensitive SpdEff
@@ -306,7 +367,7 @@ public class OptimizationDb {
         lastSortWeight = spdEffWeight;
 
         int count = 0;
-        final int[] sortedFilteredIndices = new int[(int) filteredMaximum];
+        final int[] sortedFilteredIndices = new int[filtered ? (int) filteredMaximum : 0];
         for (int i = 0; i < maximum; i++) {
             if (count >= sortedFilteredIndices.length)
                 break; // safety: filteredMaximum was exact when set

@@ -2749,6 +2749,8 @@ const OptimizerTab = {
       'inputMaxBSLimit',
       'inputMinPriorityLimit',
       'inputMaxPriorityLimit',
+      'inputMinItemGSLimit',
+      'inputMaxItemGSLimit',
     ];
     _restoreNumberFields.forEach((f) => {
       const [id, key] = Array.isArray(f) ? f : [f, f];

@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ItemDb {
+
+    private static final Logger logger = Logger.getLogger(ItemDb.class.getName());
 
     private List<Item> items;
     private HeroDb heroDb;
@@ -23,8 +26,7 @@ public class ItemDb {
     }
 
     public void addItems(final List<Item> newItems) {
-        final List<Item> validItems = newItems.stream()
-                .filter(this::isValid)
+        final List<Item> validItems = importable(newItems).stream()
                 .map(this::calculateWss)
                 .collect(Collectors.toList());
 
@@ -32,8 +34,7 @@ public class ItemDb {
     }
 
     public void setItems(final List<Item> newItems) {
-        final List<Item> validItems = newItems.stream()
-                .filter(this::isValid)
+        final List<Item> validItems = importable(newItems).stream()
                 .map(this::calculateWss)
                 .collect(Collectors.toList());
 
@@ -49,7 +50,7 @@ public class ItemDb {
     }
 
     public void replaceItems(final Item newItem) {
-        if (!isValid(newItem)) {
+        if (importable(List.of(newItem)).isEmpty()) {
             return;
         }
         calculateWss(newItem);
@@ -68,6 +69,32 @@ public class ItemDb {
 
     private boolean isValid(final Item item) {
         return item.getSet() != null;
+    }
+
+    /**
+     * The items the db can hold. An item whose set did not bind to an {@link com.fribbels.enums.Set}
+     * (a set released after this build) is dropped, and each drop is logged with its id, so an
+     * import that loses items says so. Callers that also act on the items they were given, as
+     * mergeItems does when it unequips heroes, use this so both see the same list.
+     */
+    public List<Item> importable(final List<Item> candidates) {
+        final List<Item> valid = new ArrayList<>(candidates.size());
+        final List<Item> dropped = new ArrayList<>();
+        for (final Item item : candidates) {
+            if (isValid(item)) {
+                valid.add(item);
+            } else {
+                dropped.add(item);
+            }
+        }
+        if (!dropped.isEmpty()) {
+            logger.warning("Dropped " + dropped.size() + " item(s) whose set is not known to this build: "
+                    + dropped.stream()
+                            .map(item -> item.getId() + " (" + item.getGear() + ", ingameId " + item.getIngameId()
+                                    + ")")
+                            .collect(Collectors.joining(", ")));
+        }
+        return valid;
     }
 
     public Item calculateWss(final Item item) {

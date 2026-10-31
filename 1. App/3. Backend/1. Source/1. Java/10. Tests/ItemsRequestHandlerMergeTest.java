@@ -211,8 +211,8 @@ public class ItemsRequestHandlerMergeTest {
         final Hero existing = optimizerHero("h1", "Ras", "oldRasId");
         heroDb.setHeroes(new ArrayList<>(List.of(existing)));
 
-        // Legacy scan: every MergeHero has a null id.
-        final MergeRequest request = mergeRequestOf(HeroFilter.SIX_STAR, scanHero(null, "Vildred"));
+        // Legacy scan: every MergeHero has a null id, and the one unit is the linked Ras (T7).
+        final MergeRequest request = mergeRequestOf(HeroFilter.SIX_STAR, scanHero(null, "Ras"));
 
         newHandler(heroDb, itemDb).mergeHeroes(request);
 
@@ -221,5 +221,37 @@ public class ItemsRequestHandlerMergeTest {
         assertEquals("oldRasId", result.getIngameId(), "ingameId must be left untouched");
         assertFalse(heroDb.getAllHeroes().stream().anyMatch(h -> "Ras #2".equals(h.getName())),
                 "no spurious duplicate should be created either");
+        assertEquals(1, heroDb.getAllHeroes().size(), "the scan unit is the existing Ras, so nothing is added");
+    }
+
+    // The case the test above names but does not scan (T7): a null-id scan unit whose name is
+    // an optimizer hero already linked to an in-game id. It matched nothing by id, so it used to
+    // fall through to the create branch and add "Ras #2".
+    @Test
+    public void nullIdScanUnitNamedLikeALinkedHero_isNotDuplicated() {
+        for (final HeroFilter filter : new HeroFilter[] { HeroFilter.SIX_STAR, HeroFilter.OPTIMIZER }) {
+            final HeroDb heroDb = new HeroDb(new BaseStatsDb());
+            final ItemDb itemDb = new ItemDb(heroDb);
+            heroDb.setHeroes(new ArrayList<>(List.of(optimizerHero("h1", "Ras", "oldRasId"))));
+
+            newHandler(heroDb, itemDb).mergeHeroes(mergeRequestOf(filter, scanHero(null, "Ras")));
+
+            assertEquals(1, heroDb.getAllHeroes().size(), filter + ": no 'Ras #2' for a scan unit with no id");
+            assertEquals("oldRasId", heroDb.getHeroById("h1").getIngameId(), filter + ": link untouched");
+        }
+    }
+
+    @Test
+    public void nullIdScanUnitWithANewName_isStillAddedOnce() {
+        final HeroDb heroDb = new HeroDb(new BaseStatsDb());
+        final ItemDb itemDb = new ItemDb(heroDb);
+        heroDb.setHeroes(new ArrayList<>(List.of(optimizerHero("h1", "Ras", "oldRasId"))));
+
+        newHandler(heroDb, itemDb).mergeHeroes(mergeRequestOf(HeroFilter.SIX_STAR,
+                scanHero(null, "Vildred"), scanHero(null, "Vildred")));
+
+        final List<String> names = heroDb.getAllHeroes().stream().map(Hero::getName).sorted().toList();
+        assertEquals(List.of("Ras", "Vildred", "Vildred #2"), names,
+                "two scan units of a new name keep their '#2' suffix; only an existing name is not repeated");
     }
 }

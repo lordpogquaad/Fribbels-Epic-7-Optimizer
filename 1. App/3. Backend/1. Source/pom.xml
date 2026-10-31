@@ -11,6 +11,8 @@
         <maven.compiler.release>27</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Empty by default so surefire's @{argLine} resolves with no JaCoCo; -Pcoverage fills it with the agent. -->
+        <argLine></argLine>
     </properties>
     <dependencies>        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
@@ -112,7 +114,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
-                    <argLine>                        --add-opens java.base/java.lang=ALL-UNNAMED                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED                        --add-opens java.base/java.nio=ALL-UNNAMED                        --add-opens java.base/java.util=ALL-UNNAMED                    </argLine>
+                    <argLine>@{argLine}                        --add-opens java.base/java.lang=ALL-UNNAMED                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED                        --add-opens java.base/java.nio=ALL-UNNAMED                        --add-opens java.base/java.util=ALL-UNNAMED                    </argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -192,6 +194,81 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <!-- Fails the build fast on a Maven or JDK older than the project needs (validate phase). -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.7.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.9.0,)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[27,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Pinned so versions:display-dependency-updates / display-plugin-updates run (yarn outdated:java). No executions. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.23.0</version>
+            </plugin>
+            <!-- Report-only (yarn lint:spotbugs). No executions: bound to no phase, never runs in build_backend.ps1.
+                 failOnError=false so findings never fail a run. Report: target/spotbugsXml.xml -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.10.5.0</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                    <xmlOutput>true</xmlOutput>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <!-- Coverage (yarn coverage:java): mvn -Pcoverage test. Not active by default, so the normal build and
+             backend.jar are untouched. Report: target/site/jacoco/index.html, jacoco.csv. -->
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.16</version>
+                        <executions>
+                            <execution>
+                                <id>jacoco-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>jacoco-report</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

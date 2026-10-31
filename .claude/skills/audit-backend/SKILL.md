@@ -28,6 +28,11 @@ Both write only to the ignored `3. Backend/1. Source/target/`.
 - `yarn lint:java`: PMD. Exit 0 includes findings, so read them from `3. Backend/1. Source/target/pmd.xml`.
   Exit 1 means Maven could not run, and a missing `pmd.xml` or one older than this tool pass means no
   result.
+- `yarn lint:spotbugs`: SpotBugs. Exit 0 includes findings, so read them from
+  `3. Backend/1. Source/target/spotbugsXml.xml`, and filter out `PA_PUBLIC_PRIMITIVE_ATTRIBUTE`, which
+  is the Gson models. Exit 1 means Maven could not run.
+- `yarn coverage:java`: JaCoCo, for the coverage gaps. `yarn outdated:java`: newer Maven packages.
+  Both exit 0 when they ran, and both write only under `target/` or to the console.
 - The Maven tests, using the Maven path and `JAVA_HOME` that `lint_java.ps1` sets, from
   `3. Backend/1. Source/`:
 

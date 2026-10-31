@@ -37,10 +37,14 @@ A PreToolUse hook (`hooks/guard-package-root.mjs`) denies npm package changes in
 ```text
 yarn install            outer deps; postinstall also runs electron-builder install-app-deps on the inner tree
 yarn test:hooks         the project hooks' test mirrors in .claude/hooks-test/
+yarn lint:claude        real YAML parse, then frontmatter and wiring audits of .claude/agents and .claude/skills
 yarn lint               eslint (flat config, eslint.config.mjs)
 yarn lint:strict        report-only strict eslint (eslint.strict.config.mjs); always exits 0, not a gate
 yarn typecheck          tsc7 (TypeScript 7 alias) -p ./ --noEmit; checkJs is off, so JS types are not checked
 yarn typecheck:strict:report   report-only: checkJs on, writes .claude/plans/TYPECHECK-REPORT.md
+yarn lint:spotbugs      report-only SpotBugs, writes target/spotbugsXml.xml; RC 1 only when Maven cannot run
+yarn coverage:java      JaCoCo through mvn -Pcoverage test; report at target/site/jacoco/index.html; no gate
+yarn outdated:java      lists newer Maven dependencies and plugins; updates nothing
 yarn build              copy-assets + webpack main/renderer prod bundles
 yarn dev                hot renderer dev server
 yarn package-win        electron-builder NSIS + zip → release/

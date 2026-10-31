@@ -30,13 +30,13 @@ public class HeroesRequestHandler extends RequestHandler implements HttpHandler 
 
     private static final Logger logger = Logger.getLogger(HeroesRequestHandler.class.getName());
 
-    public static boolean SETTING_UNLOCK_ON_UNEQUIP = false;
+    public static volatile boolean SETTING_UNLOCK_ON_UNEQUIP = false;
 
     private final HeroDb heroDb;
     private final BaseStatsDb baseStatsDb;
     private final ArtifactStatsDb artifactStatsDb;
     private final ItemDb itemDb;
-    private StatCalculator statCalculator;
+    private final StatCalculator statCalculator;
 
     @Override
     public synchronized void handle(final HttpExchange exchange) throws IOException {
@@ -411,13 +411,13 @@ public class HeroesRequestHandler extends RequestHandler implements HttpHandler 
                 .collect(Collectors.toList());
         final float[][] statAccumulatorArrs = statAccumulators.toArray(new float[0][]);
 
-        statCalculator.setBaseValues(baseStats, hero);
         final int upgrades = equipment.values().stream().mapToInt(Item::getUpgradeable).sum();
         final int conversions = equipment.values().stream().mapToInt(Item::getConvertable).sum();
         final int priority = equipment.values().stream().mapToInt(Item::getPriority).sum();
         final int weightedScore = equipment.values().stream().mapToInt(Item::getPriorityScore).sum();
-        final HeroStats finalStats = statCalculator.addAccumulatorArrsToHero(baseStats, statAccumulatorArrs, setsArr,
-                hero, upgrades, conversions, 0, priority, weightedScore);
+        // The hero's own stats carry no priorities or targets: a blank request.
+        final HeroStats finalStats = calculateFinalStats(baseStats, hero, new OptimizationRequest(),
+                statAccumulatorArrs, setsArr, upgrades, conversions, priority, weightedScore);
         hero.setStats(finalStats);
         clearNullBuilds(hero, baseStats, useReforgeStats);
 
@@ -493,13 +493,16 @@ public class HeroesRequestHandler extends RequestHandler implements HttpHandler 
             statAccumulatorArrs[i] = statCalculator.buildStatAccumulatorArr(baseStats, statItem, useReforgeStats);
         }
 
-        statCalculator.setBaseValues(baseStats, hero);
         final int upgrades = items.stream().mapToInt(Item::getUpgradeable).sum();
         final int conversions = items.stream().mapToInt(Item::getConvertable).sum();
         final int priority = items.stream().mapToInt(Item::getPriority).sum();
         final int weightedScore = items.stream().mapToInt(Item::getPriorityScore).sum();
-        final HeroStats finalStats = statCalculator.addAccumulatorArrsToHero(baseStats, statAccumulatorArrs, setsArr,
-                hero, upgrades, conversions, 0, priority, weightedScore);
+        // The score columns replay the filters the hero was last optimized with, as the run
+        // that produced a fresh build did; a hero never optimized has none.
+        final OptimizationRequest scoring = hero.getOptimizationRequest() != null ? hero.getOptimizationRequest()
+                : new OptimizationRequest();
+        final HeroStats finalStats = calculateFinalStats(baseStats, hero, scoring, statAccumulatorArrs, setsArr,
+                upgrades, conversions, priority, weightedScore);
         build.atk = finalStats.atk;
         build.hp = finalStats.hp;
         build.def = finalStats.def;
@@ -527,8 +530,35 @@ public class HeroesRequestHandler extends RequestHandler implements HttpHandler 
         build.priority = finalStats.priority;
         build.conversions = finalStats.conversions;
         build.eq = finalStats.eq;
+        build.dac = finalStats.dac;
+        build.hmcdmgs = finalStats.hmcdmgs;
+        build.dmcdmgs = finalStats.dmcdmgs;
+        build.hdmg = finalStats.hdmg;
+        build.hdmgs = finalStats.hdmgs;
+        build.ddmg = finalStats.ddmg;
+        build.ddmgs = finalStats.ddmgs;
+        build.customScore = finalStats.customScore;
+        build.buildScore = finalStats.buildScore;
 
         return true;
+    }
+
+    /**
+     * Runs the handler's one shared calculator for one request. Requests arrive on a pool of
+     * HTTP threads (the Items handler calls in without this handler's monitor), and the
+     * calculator keeps the request's base values and weights in fields, so the set-up and the
+     * use must not interleave with another request's.
+     */
+    private HeroStats calculateFinalStats(final HeroStats baseStats, final Hero hero,
+            final OptimizationRequest scoring, final float[][] accs, final int[] sets, final int upgrades,
+            final int conversions, final int priority, final int weightedScore) {
+        synchronized (statCalculator) {
+            statCalculator.setBaseValues(baseStats, hero);
+            statCalculator.setPriorityWeights(scoring);
+            statCalculator.setTargets(scoring);
+            return statCalculator.addAccumulatorArrsToHero(baseStats, accs, sets, hero, upgrades, conversions, 0,
+                    priority, weightedScore);
+        }
     }
 
     public String getHeroById(final GetHeroByIdRequest request) {

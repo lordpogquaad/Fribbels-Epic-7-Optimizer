@@ -17,6 +17,7 @@ import com.fribbels.enums.Gear;
 import com.fribbels.enums.Set;
 import com.fribbels.gpu.GpuOptimizerKernel;
 import com.fribbels.gpu.SetFormat000OptimizerKernel;
+import com.fribbels.model.DamageMultipliers;
 import com.fribbels.model.Hero;
 import com.fribbels.model.HeroStats;
 import com.fribbels.model.Item;
@@ -58,8 +59,10 @@ import static com.fribbels.enums.Set.SET_COUNT;
 
 public class OptimizationRequestHandler extends RequestHandler implements HttpHandler {
 
-    public static int SETTING_MAXIMUM_RESULTS = 5_000_000;
-    public static boolean SETTING_GPU = true;
+    // The SETTING_ fields are written on an HTTP thread (SystemRequestHandler) and read on the
+    // optimize thread, once per run, never per permutation: volatile costs the search nothing.
+    public static volatile int SETTING_MAXIMUM_RESULTS = 5_000_000;
+    public static volatile boolean SETTING_GPU = true;
     // Hard ceiling on the permutation search space (base + mod-variant pool). The
     // frontend
     // soft-warns (OptimizerTab.warnParams) but is bypassable / absent on some
@@ -71,7 +74,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     // runs
     // (typically ≤ ~1e9) are unaffected. Tune here if a real run is ever wrongly
     // rejected.
-    public static long SETTING_MAX_PERMUTATIONS = 1_000_000_000_000L; // 1e12
+    public static volatile long SETTING_MAX_PERMUTATIONS = 1_000_000_000_000L; // 1e12
 
     private final BaseStatsDb baseStatsDb;
     private final Map<String, OptimizationDb> optimizationDbs;
@@ -99,6 +102,8 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     private GpuOptimizerKernel cachedKernel = null;
     private String cachedKernelHeroId = null;
     private boolean cachedKernelIsFormat0 = false;
+    // The kernel copies the damage multipliers into final arrays that update() does not refresh.
+    private DamageMultipliers cachedKernelMultipliers = null;
 
     private static final class BoolArrEntry {
         final String key;
@@ -403,12 +408,10 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
             heroDb.saveOptimizationRequest(request);
         }
         final HeroStats[] heroStats = optimizationDb.getAllHeroStats();
-        final int[] indices = new int[heroStats.length];
         final java.util.Set<String> ids = new HashSet<>();
         int count = 0;
 
-        for (int i = 0; i < heroStats.length; i++) {
-            final HeroStats heroStatsInstance = heroStats[i];
+        for (final HeroStats heroStatsInstance : heroStats) {
             if (passesUpdatedFilter(request, heroStatsInstance)) {
                 boolean passesGearIdFilter = true;
                 if (hasExcludedGearIds) {
@@ -421,7 +424,6 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                 }
 
                 if (passesGearIdFilter) {
-                    indices[count] = i;
                     ids.add(heroStatsInstance.getId());
                     count++;
                 }
@@ -521,7 +523,8 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     }
 
     public String handleOptimizationRequest(final OptimizationRequest request) {
-        heroDb.saveOptimizationRequest(request);
+        // The request is saved onto the hero in optimizeInternal, once the run is accepted:
+        // a refused run must not overwrite the filters the hero already has.
         System.gc();
 
         return optimize(request, HeroStats.builder()
@@ -713,14 +716,58 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
             return "";
         }
 
+        // The run starts here, not at the live hand-off: a cancel during the setup in
+        // optimizeInternal must still stop this run.
+        optimizationDb.beginRun();
+
         // Register this execution in the global running count; always decrement on exit
         runningCount.incrementAndGet();
         try {
             return optimizeInternal(request, optimizationDb);
         } finally {
             runningCount.decrementAndGet();
+            publishIfStillLive(optimizationDb);
             optimizationDb.setDone(true);
         }
+    }
+
+    /**
+     * A run that threw after going live, or whose finalize step failed, never reached
+     * setResultHeroes. Publishes what it found so the db is usable again; the failure
+     * itself is still thrown or logged by the caller.
+     */
+    private void publishIfStillLive(final OptimizationDb optimizationDb) {
+        if (!optimizationDb.isLive()) {
+            return;
+        }
+        logger.warning("[optimize] run ended without publishing; publishing the partial results");
+        try {
+            optimizationDb.publishLiveSnapshot();
+        } catch (final RuntimeException e) {
+            logger.log(Level.SEVERE, "Could not publish the partial results of a failed run", e);
+            optimizationDb.clearLiveResults();
+        }
+    }
+
+    /**
+     * Gives the run's hero the damage multipliers behind the S1, S2 and S3 columns.
+     * A single-hero run sends them and stores them on the hero. A multi-hero run merges in
+     * a saved request that has none: it derives them from the stored hero's skill table and
+     * options (setSkillOptions writes there, so the echoed hero can be older; and an echo
+     * with no skill table would make every multiplier 0 and any S min limit reject every
+     * build), and leaves what is stored alone.
+     */
+    private void applyDamageMultipliers(final OptimizationRequest request, final Hero hero) {
+        final Hero stored = heroDb.getHeroById(hero.getId());
+        if (request.getDamageMultipliers() != null) {
+            hero.setDamageMultipliers(request.getDamageMultipliers());
+            if (stored != null) {
+                stored.setDamageMultipliers(request.getDamageMultipliers());
+            }
+            return;
+        }
+        final Hero source = stored != null && stored.hasSkillData() ? stored : hero;
+        hero.setDamageMultipliers(source.computeDamageMultipliers());
     }
 
     @SneakyThrows
@@ -954,6 +1001,9 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                     + " — tighten filters or reduce mod variants and retry.");
             return "ERROR";
         }
+        // Every refusal above has returned or thrown, so the run is accepted: keep its
+        // filters on the hero.
+        heroDb.saveOptimizationRequest(request);
         statCalculator.setBaseValues(base, request.hero);
         statCalculator.setPriorityWeights(request);
         statCalculator.setTargets(request);
@@ -1035,8 +1085,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
 
         final GpuOptimizerKernel kernel;
 
-        hero.setDamageMultipliers(request.damageMultipliers);
-        heroDb.getHeroById(hero.getId()).setDamageMultipliers(request.getDamageMultipliers());
+        applyDamageMultipliers(request, hero);
 
         // Disable GPU when running in parallel — the GPU kernel is not thread-safe
         // across concurrent executions
@@ -1968,7 +2017,8 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         final String heroId = request.hero.getId();
         final boolean canReuse = cachedKernel != null
                 && heroId.equals(cachedKernelHeroId)
-                && isFormat0 == cachedKernelIsFormat0;
+                && isFormat0 == cachedKernelIsFormat0
+                && Objects.equals(hero.getDamageMultipliers(), cachedKernelMultipliers);
         if (canReuse) {
             cachedKernel.update(request,
                     flattenedWeaponAccs, flattenedHelmetAccs, flattenedArmorAccs,
@@ -1995,6 +2045,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         cachedKernel = kernel;
         cachedKernelHeroId = heroId;
         cachedKernelIsFormat0 = isFormat0;
+        cachedKernelMultipliers = hero.getDamageMultipliers();
         return kernel;
     }
 

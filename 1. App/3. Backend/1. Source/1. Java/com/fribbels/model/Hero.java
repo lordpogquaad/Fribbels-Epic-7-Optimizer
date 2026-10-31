@@ -155,10 +155,24 @@ public class Hero {
         private DamageMultipliers damageMultipliers;
         private HeroSkills skills;
 
+        public boolean hasStoredDamageMultipliers() {
+                return damageMultipliers != null;
+        }
+
+        /** True when the base skill table is loaded; without it every multiplier computes as 0. */
+        public boolean hasSkillData() {
+                return skills != null && skills.S1 != null && skills.S1.length > 0 && skills.S1[0].name != null;
+        }
+
         public DamageMultipliers getDamageMultipliers() {
                 if (damageMultipliers != null) {
                         return damageMultipliers;
                 }
+                return computeDamageMultipliers();
+        }
+
+        /** Builds the multipliers from the skill table and options, ignoring any stored value. */
+        public DamageMultipliers computeDamageMultipliers() {
                 if (skills == null || skills.S1 == null || skills.S1.length == 0 || skills.S1[0].name == null) {
                         skills = HeroSkills.builder()
                                         .S1(new SkillData[] { SkillData.builder().build(), SkillData.builder().build(),
@@ -215,18 +229,14 @@ public class Hero {
                                                         calculateCrit(skills.S3[0].name) })
                                         .build();
                 } else {
-                        final SkillData s1 = Arrays.stream(skills.S1)
-                                        .filter(x -> Strings.CS.equals(x.name, skillOptions.getS1().skillEffect))
-                                        .findFirst()
-                                        .orElse(skills.S1[0]);
-                        final SkillData s2 = Arrays.stream(skills.S2)
-                                        .filter(x -> Strings.CS.equals(x.name, skillOptions.getS2().skillEffect))
-                                        .findFirst()
-                                        .orElse(skills.S2[0]);
-                        final SkillData s3 = Arrays.stream(skills.S3)
-                                        .filter(x -> Strings.CS.equals(x.name, skillOptions.getS3().skillEffect))
-                                        .findFirst()
-                                        .orElse(skills.S3[0]);
+                        // Mirrors JS DamageCalc.getMultipliers: a skill missing from the options asks for
+                        // its first option, and an effect naming no option resolves to the first option.
+                        final String e1 = requestedEffect(skillOptions.getS1(), skills.S1);
+                        final String e2 = requestedEffect(skillOptions.getS2(), skills.S2);
+                        final String e3 = requestedEffect(skillOptions.getS3(), skills.S3);
+                        final SkillData s1 = resolveOption(skills.S1, e1);
+                        final SkillData s2 = resolveOption(skills.S2, e2);
+                        final SkillData s3 = resolveOption(skills.S3, e3);
                         return DamageMultipliers.builder()
                                         .rate(new Float[] { s1.rate, s2.rate, s3.rate })
                                         .pow(new Float[] { s1.pow, s2.pow, s3.pow })
@@ -252,27 +262,27 @@ public class Hero {
                                                                         s3.extraSelfAtkScaling })
                                         .cdmgIncrease(new Float[] { s1.cdmgIncrease, s2.cdmgIncrease, s3.cdmgIncrease })
                                         .penetration(new Float[] { s1.penetration, s2.penetration, s3.penetration })
-                                        .hitMulti(new Float[] {
-                                                        calculateHitMulti(getSkillOptionsByIndex(0).skillEffect),
-                                                        calculateHitMulti(getSkillOptionsByIndex(1).skillEffect),
-                                                        calculateHitMulti(getSkillOptionsByIndex(2).skillEffect) })
-                                        .support(new Float[] {
-                                                        calculateSupport(getSkillOptionsByIndex(0).skillEffect),
-                                                        calculateSupport(getSkillOptionsByIndex(1).skillEffect),
-                                                        calculateSupport(getSkillOptionsByIndex(2).skillEffect) })
-                                        .crit(new Float[] { calculateCrit(getSkillOptionsByIndex(0).skillEffect),
-                                                        calculateCrit(getSkillOptionsByIndex(1).skillEffect),
-                                                        calculateCrit(getSkillOptionsByIndex(2).skillEffect) })
+                                        // The hit type follows the requested name, crit and support the
+                                        // resolved option, as in JS.
+                                        .hitMulti(new Float[] { calculateHitMulti(e1), calculateHitMulti(e2),
+                                                        calculateHitMulti(e3) })
+                                        .support(new Float[] { calculateSupport(s1.name), calculateSupport(s2.name),
+                                                        calculateSupport(s3.name) })
+                                        .crit(new Float[] { calculateCrit(s1.name), calculateCrit(s2.name),
+                                                        calculateCrit(s3.name) })
                                         .build();
                 }
         }
 
-        private SingleSkillOptions getSkillOptionsByIndex(final int skill) {
-                if (skill == 0)
-                        return skillOptions.S1;
-                if (skill == 1)
-                        return skillOptions.S2;
-                return skillOptions.S3;
+        private static String requestedEffect(final SingleSkillOptions options, final SkillData[] table) {
+                return options == null ? table[0].name : options.skillEffect;
+        }
+
+        private static SkillData resolveOption(final SkillData[] table, final String effect) {
+                return Arrays.stream(table)
+                                .filter(x -> Strings.CS.equals(x.name, effect))
+                                .findFirst()
+                                .orElse(table[0]);
         }
 
         private float calculateSupport(final String name) {
@@ -383,6 +393,8 @@ public class Hero {
 
         public void setSkillOptions(final SkillOptionsRequest request) {
                 this.skillOptions = request.getSkillOptions();
+                // A run's stored multipliers were built from the old options (B18).
+                this.damageMultipliers = null;
         }
 
         public Map<Gear, Item> getEquipment() {

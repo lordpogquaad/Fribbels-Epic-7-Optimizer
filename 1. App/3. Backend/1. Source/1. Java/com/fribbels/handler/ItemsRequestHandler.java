@@ -163,10 +163,12 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
     }
 
     public String mergeItems(final MergeRequest request) {
-        final List<Item> newItems = request.getItems()
+        // Items the db cannot hold are dropped (and logged) here, before heroes are reconciled
+        // against the list: otherwise a hero keeps an item the inventory no longer has (B24).
+        final List<Item> newItems = itemDb.importable(request.getItems()
                 .stream()
                 .filter(x -> x.getEnhance() >= request.getEnhanceLimit())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
         final List<Item> existingItems = itemDb.getAllItems();
 
         final Map<Integer, List<Item>> itemsByHash = new HashMap<>();
@@ -482,7 +484,7 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
                     .filter(mh -> optimizerBaseNames.contains(mh.getName()))
                     .forEach(mh -> processSingleMergeHero(mh,
                             existingHeroesByIngameId, existingHeroesByUnlinkedName, staleHeroesByBaseName,
-                            optimizerNames, itemsByIngameEquippedId));
+                            optimizerNames, optimizerBaseNames, itemsByIngameEquippedId));
         }
 
         if (request.getHeroFilter() == HeroFilter.SIX_STAR) {
@@ -490,7 +492,7 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
                     .filter(x -> Integer.valueOf(6).equals(x.getStars()))
                     .forEach(mergeHero -> processSingleMergeHero(mergeHero,
                             existingHeroesByIngameId, existingHeroesByUnlinkedName, staleHeroesByBaseName,
-                            optimizerNames, itemsByIngameEquippedId));
+                            optimizerNames, optimizerBaseNames, itemsByIngameEquippedId));
         }
 
         if (request.getHeroFilter() == HeroFilter.FIVE_STAR) {
@@ -498,7 +500,7 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
                     .filter(x -> Integer.valueOf(6).equals(x.getStars()) || Integer.valueOf(5).equals(x.getStars()))
                     .forEach(mergeHero -> processSingleMergeHero(mergeHero,
                             existingHeroesByIngameId, existingHeroesByUnlinkedName, staleHeroesByBaseName,
-                            optimizerNames, itemsByIngameEquippedId));
+                            optimizerNames, optimizerBaseNames, itemsByIngameEquippedId));
         }
 
         // Post-pass: any stale hero that never got relinked to a scan unit no longer
@@ -550,6 +552,7 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
             final Map<String, Hero> existingHeroesByUnlinkedName,
             final Map<String, Deque<Hero>> staleHeroesByBaseName,
             final Set<String> optimizerNames,
+            final Set<String> preexistingBaseNames,
             final Map<String, List<Item>> itemsByIngameEquippedId) {
 
         final String ingameHeroId = mergeHero.getId();
@@ -583,6 +586,12 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
                 }
                 logger.info("LINKED EXISTING HERO: " + hero.getName() + " -> " + ingameHeroId);
             } else {
+                // A scan unit with no in-game id cannot be told apart from the hero of the
+                // same name this account already has, so it is that hero, not a second copy (B20).
+                // Names created earlier in this same merge do not count: those are new units.
+                if (ingameHeroId == null && preexistingBaseNames.contains(baseName))
+                    return;
+
                 // No matching optimizer hero — create a new one with a unique display name
                 final Hero heroData = mergeHero.getData();
                 if (heroData == null)
@@ -664,8 +673,12 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
             dbItem.setRank(item.getRank());
             dbItem.setSet(item.getSet());
             dbItem.setSubstats(item.getSubstats());
-            dbItem.setOp(item.getOp());
-            dbItem.setStorage(item.getStorage());
+            // The gear editor sends neither: an absent value keeps what the import stored,
+            // where it used to clear the storage flag and the locator lines (B16).
+            if (item.getOp() != null)
+                dbItem.setOp(item.getOp());
+            if (item.getStorage() != null)
+                dbItem.setStorage(item.getStorage());
             dbItem.setReforgeable(item.getReforgeable());
             dbItem.setUpgradeable(item.getUpgradeable());
             dbItem.setConvertable(item.getConvertable());

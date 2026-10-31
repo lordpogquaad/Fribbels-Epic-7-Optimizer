@@ -160,8 +160,34 @@ public class OptimizationRequest extends Request {
     private Integer inputResMinForce;
     private Integer inputResMaxForce;
 
+    // Item-pool filters the renderer applies before the request is sent (gear score
+    // window, per-slot substat and stat-floor rules, must-have substat, enhance floor).
+    // The optimizer does not read them: they are declared so the Gson round-trip in
+    // HeroDb.saveOptimizationRequest keeps them, because the multi-hero tab filters gear
+    // with the saved request as its params (B15).
+    //
+    // Types follow what the renderer sends. The GS limits are boxed with no default because
+    // the renderer reads null as "no limit": an int would save an unset max as 0 and reject
+    // every item. A value past int range throws JsonSyntaxException, like the int limits
+    // above (B25). The two slot maps are lossless Object trees, as slotPriorityConfig is.
+    private Integer inputMinItemGSLimit;
+    private Integer inputMaxItemGSLimit;
+    private Map<String, Object> inputSlotSubstatFilters;
+    private Map<String, Object> inputSlotStatFloors;
+    private String inputGlobalMustHaveStat;
+    private Integer inputGlobalMustHaveCount;
+    private Integer inputPriorityScoreFloor;
+    private Boolean inputForceAndMode;
+    private List<String> enhanceLimit;
+
     private Integer inputForceNumberSelect;
     private Integer inputForceMode;
+    private Integer inputWeaponFilterPriority;
+    private Integer inputHelmetFilterPriority;
+    private Integer inputArmorFilterPriority;
+    private Integer inputNecklaceFilterPriority;
+    private Integer inputRingFilterPriority;
+    private Integer inputBootsFilterPriority;
     private Integer inputFilterPriority;
     private Double inputAtkPriority;
     private Double inputHpPriority;
