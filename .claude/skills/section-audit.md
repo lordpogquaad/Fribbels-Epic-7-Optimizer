@@ -81,6 +81,11 @@ When your brief names an audit, this replaces steps 3 to 6 of your Process and y
 - An audit changes no scoring behaviour, so report a scoring or damage problem and leave the numbers
   alone. Before calling a gear formula or numeric constant wrong, compare it with in-game values and
   say what you compared, or mark it `inferred`.
+- Report cache opportunities: repeated work in the app, such as an optimizer search or a data load, or
+  in a repo command, that a cache would speed up. Give each as a `low` finding starting `cache:`, with
+  what is repeated, what must invalidate the cache and what a stale entry would show, and keep it out
+  of the `verified` count unless you measured the gain. A cache that could return wrong results or
+  hide a finding is a risk to state, not a recommendation.
 - Nothing is masked in an audit. A tool hit you judge false goes under Findings as
   `false-report? — <file and rule> — <evidence>`, never silently dropped: Marcus judges each one.
 - A check you cannot run, including anything in the brief's `not run` field, goes under Verification

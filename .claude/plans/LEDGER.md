@@ -6,6 +6,32 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-30
 
+- `[Backend]` **Maven and Java logs read after the audit.** The `mvn test` and PMD logs show only the Lombok `Unsafe` and PMD `auxClasspath` warnings
+  (`B31`). The Java extension log for 2026-10-30 gives `B30` and new `B12` evidence. Not checked: a separate Maven extension log, because none exists in that log folder.
+- `[Backend]` **`/audit-backend deep`, first run.** Four `backend-opus` shards, 83 of 83 files read; no source changed. Tools: `yarn lint:java`
+  RC 0, 202 PMD violations in 23 files, no `<error>`; `mvn test` RC 0, 21 tests, BUILD SUCCESS. The 9 high findings were checked against the
+  code by the lead. Filed `B14` to `B29`, `F22` to `F32`, `T6` and `T7`. New `B7` evidence: the jar path hard-codes `backend-1.0.2`, so a pom
+  version bump alone takes the error branch and exits 0; the Maven zip has no checksum, and the `JAVA_HOME` message still cites JDK 25.
+  Inferred, for Marcus to rule on:
+  - **High:** `mergeHeroes` prunes every hero missing from a scan, with its builds and priorities, and the only guard is an all-null-id scan.
+    Pruning is deliberate, so the risk is an older export, a partial capture, or a `SIX_STAR` hero whose new unit is 5-star.
+  - **High, GPU, not run:** `getOrCreateKernel` reuses on hero id and format-0 only. `boolArr`, `setPermutationIndicesPlusOne`, the settings and
+    the base and bonus stats stay from the first run, so a second run for that hero can use old sets and settings. Blocked by `B4`.
+  - **Medium, GPU, not run:** kernels compare float stats where CPU compares truncated ones and have no `passesFilter` afterwards; no null guard
+    on `dm.getRate()`; a kernel failure returns a normal partial response with no fallback (beyond `B6`).
+  - **Medium:** `rollDivisors.js` `bonusMax*` omit `bonusMax*Percent`; CPU catches lose a throwing task's slice and report success; an `Error`
+    at the results allocation gets no response and `api.js` has no timeout; `optimizationDbs` LRU eviction returns `""`; the server has no
+    Origin, Host or token check, so a web page could POST to `localhost:8130`; `ItemDb`, `HeroDb` and `StatCalculator` are shared without a
+    common lock, and only `HeroesRequestHandler.handle` is synchronized; overlapping autosaves can land an older snapshot.
+  - **Low:** `getSkillValue` `SETTING_PEN_SET` off still applies `penSetOn`; `selfSpdScaling` counted twice; several carried multiplier fields
+    are unused by all three formulas (none compared with the game); `rollDivisors.js` ceilings omit fixed mains; set 2 may accept a 4-piece
+    set; `keepBestNLimit` past int range clamps to 1; `setSettings` can skip two settings on a throw; `mergeHeroes` with an empty equipped list
+    never unequips; `skipPmdError` defaults true, so a PMD failure can exit 0 from `yarn lint:java` alone (`yarn scan` guards this);
+    `lint_java.ps1` runs no compile, so type-resolved rules may report fewer hits after a clean.
+    False-report candidates are all 202 PMD hits not named above: `AvoidUsingVolatile`, `ArrayIsStoredDirectly`, method-local `UseConcurrentHashMap`,
+    `AvoidSynchronized*`, `AvoidInstantiatingObjectsInLoops`, `NullAssignment`, `TypeNameMismatch` on the flat `10. Tests` folder, and the style-only
+    rules. Each had a stated reason in its shard's report; nothing was masked. `PassesPool` at `OptimizationRequestHandler` line 1116 is a true
+    `UseConcurrentHashMap` hit. Not run: `build_backend.ps1`, jar comparison, GPU kernels, in-game value comparison, the rendered grid.
 - `[Repo]` **`R28` closed: `audit-skill-wiring` exits 0 here.** The config-repo tool now knows the `-sonnet`, `-opus` and `-haiku`
   suffixes, and `tools.dirs` is set to `.claude/hooks/` and `.claude/skills/`, so the `DANGLING_TOOL` check runs. A throwaway copy with a
   bad agent name and a missing script exits 1 with both errors. The tool's remaining gaps are in the config repo's ledger.
