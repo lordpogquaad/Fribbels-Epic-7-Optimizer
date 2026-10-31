@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class OptimizationDb {
@@ -213,6 +214,23 @@ public class OptimizationDb {
         filteredIds = new HashSet<>();
         filteredIndices = new int[] {};
         clearLiveResults();
+    }
+
+    /**
+     * Filters the published rows by a predicate and records the result. The walk and the
+     * recording happen under one hold of the lock, so a concurrent {@link #sort} cannot reorder
+     * the rows while they are being read (B42, B36).
+     */
+    public synchronized void applyFilter(final Predicate<HeroStats> passes) {
+        final Set<String> ids = new HashSet<>();
+        int count = 0;
+        for (final HeroStats row : resultHeroStats) {
+            if (passes.test(row)) {
+                ids.add(row.getId());
+                count++;
+            }
+        }
+        setFilteredIds(ids, count);
     }
 
     public synchronized void setFilteredIds(final Set<String> newFilteredIds, final int newFilteredMaximum) {

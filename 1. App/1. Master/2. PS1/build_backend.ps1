@@ -45,6 +45,7 @@ if (Test-Path $builtJar) {
     Write-Host "SUCCESS: backend.jar updated at $destJar"
 }
 else {
-    Write-Host "ERROR: built jar not found at $builtJar"
-    Get-ChildItem "$backendRoot\1. Source\target\*.jar"
+    Write-Host "ERROR: built jar not found at $builtJar - backend.jar NOT updated."
+    Get-ChildItem "$backendRoot\1. Source\target\*.jar" -ErrorAction SilentlyContinue
+    exit 1
 }

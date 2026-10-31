@@ -3,12 +3,10 @@ package com.fribbels.db;
 import com.fribbels.model.Hero;
 import com.fribbels.model.HeroStats;
 import com.fribbels.request.OptimizationRequest;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Strings;
 
 import java.util.ArrayList;
@@ -97,7 +95,7 @@ public class HeroDb {
     }
 
     public void setHeroes(final List<Hero> newHeroes) {
-        if (CollectionUtils.isEmpty(newHeroes)) {
+        if (newHeroes == null || newHeroes.isEmpty()) {
             heroes = new ArrayList<>();
             return;
         }
@@ -151,10 +149,10 @@ public class HeroDb {
 
     public List<HeroStats> getBuildsForHero(final String heroId) {
         if (heroId == null)
-            return ImmutableList.of();
+            return List.of();
         final Hero hero = getHeroById(heroId);
         if (hero == null)
-            return ImmutableList.of();
+            return List.of();
 
         if (hero.getBuilds() == null) {
             hero.setBuilds(new ArrayList<>());

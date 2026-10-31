@@ -175,6 +175,9 @@ public class HeroesRequestHandler extends RequestHandler implements HttpHandler 
             return "";
 
         final String buildHash = build.getBuildHash();
+        if (buildHash == null) { // no hash would match every other hash-less build
+            return "";
+        }
         final HeroStats matchingBuild = builds.stream()
                 .filter(x -> Strings.CS.equals(x.getBuildHash(), buildHash))
                 .findFirst()
@@ -196,6 +199,9 @@ public class HeroesRequestHandler extends RequestHandler implements HttpHandler 
             return "";
 
         final String buildHash = build.getBuildHash();
+        if (buildHash == null) { // no hash would match every other hash-less build
+            return "";
+        }
         final List<HeroStats> changedBuilds = builds.stream()
                 .filter(x -> !Strings.CS.equals(x.getBuildHash(), buildHash))
                 .collect(Collectors.toList());
@@ -434,8 +440,10 @@ public class HeroesRequestHandler extends RequestHandler implements HttpHandler 
             final HeroStats build = builds.get(i);
             if (!addStatsToBuild(hero, baseStats, build, useReforgeStats)) {
                 final String buildHash = build.getBuildHash();
+                // A hash-less build is dropped by identity: a null hash would match them all.
                 changedBuilds = changedBuilds.stream()
-                        .filter(x -> !Strings.CS.equals(x.getBuildHash(), buildHash))
+                        .filter(x -> buildHash == null ? x != build
+                                : !Strings.CS.equals(x.getBuildHash(), buildHash))
                         .collect(Collectors.toList());
 
             }

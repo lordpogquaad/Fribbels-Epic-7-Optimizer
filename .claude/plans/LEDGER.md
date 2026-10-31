@@ -4,9 +4,35 @@ Dated record of findings and finished work, newest first, with the evidence behi
 `[Repo]`, `[Backend]`, `[Frontend]`, `[Scanner]`, `[UI]`. Open work lives in
 [FIX LIST.md](FIX LIST.md). Entries from 2026-06 and earlier were moved here unchanged from the old change logs on 2026-10-30. They were confirmed applied at the time, and Java fixes needed a JAR rebuild unless noted.
 
+## 2026-10-31
+
+- `[Backend]` **`B7`, `B8`, `B25`, `B42`, `B44` closed, and most of `B29`, `B36`, `B38`, `B39`, test first, jar not rebuilt.** `B42`, `B36`: `OptimizationDb.applyFilter`
+  walks and records under one lock; a 200k-row race test was wrong on the old code and exact after. `B39`: format 1 or 2 with an empty first list threw `ArrayIndexOutOfBoundsException`,
+  worse than the row said, and now warns and searches as format 0. `B44`: no defect, `equipItemsOnHero` never unequips; a test pins it. `B25`: the request Gson clamps a whole number past
+  int range to the bound, and a fractional value still fails. `B8`: `-Xlint:all` on as warnings; a scratch javac run with Lombok gave 3 warnings (cast, rawtypes, processing), because Maven
+  had nothing to recompile. `B7`: the missing-jar branch exits 1, shown on a scratch copy of the script with a fake `mvn`; the real script was not run. `B29`: `failIfNoTests`, request
+  bodies at FINE, and the two `[getResultRows]` strings built only at FINE. `B38`: `10. Tests/generate-damage-parity.mjs` reproduces the fixture byte for byte. `B35` confirmed, not
+  fixed. Lead reran `mvn test`: RC 0, 128 of 128; `yarn lint:spotbugs` 437; `yarn lint:java` 254, was 246; the generator reports the fixture up to date; lead read the production diff.
+  Not run: the app, the GPU path, `build_backend.ps1`.
+- `[Backend]` **`B32` closed, and most of `B27`, `B28`, `B39`, `B41`, test first, jar not rebuilt.** `B39`: the first-list guard now covers formats 1 to 5. With `@Timeout` the
+  red run of formats 1 to 5 failed at 120 seconds and Maven ended itself; earlier, with no timeout, format 3 ran until stopped. It is not an infinite loop: "any set" fills the list with
+  every set, 4-piece ones included, so 8 to 12 indices permute over 24^2 to 24^4 combinations. `getSetFormat` in `optimizerTab.js` never sends this. `B27`: progress sums only running
+  executions and falls back to the most recently used; a null sort column takes the INVALID COLUMN path; a hash-less build no longer matches every other one; the 24^6 GPU index table
+  is built only with the GPU on, and `canUseGpu` starts true and only falls, so a GPU machine still gets it. `B28`: the listed dead fields and methods are gone, `sampleOptimizationRequest.json`
+  is loaded by two tests, and no Java or renderer source calls Destruction RageSet. `B32`: guava, commons-io and commons-collections4 removed; the shaded jar holds none of their classes.
+  Also: `ItemsRequestHandler.handle` logs the throwable, and the `(long)` cast and raw `List` warnings are gone. `@Timeout` on `OptimizationRequestHandlerTest` and `SearchPruningTest`.
+  Lead reran `mvn test`: RC 0, 150 of 150; `yarn lint:java` 251, was 254; `yarn lint:spotbugs` RC 0, 427, was 437; the worker's `yarn coverage:java` gave `handler` 53.8%. The GPU
+  index-table test had no red run, since the old code always built the table. Lead read the production diff. Not run: the app, the GPU path, `build_backend.ps1`.
+- `[Backend]` **`B43` closed, and `SpecialStats` off `B41`, test first, jar not rebuilt.** `B43`: most of the row's names were not optimizer-grid sort fields: some are
+  `headerName` keys whose fields already bind, the rest belong to the client-side hero and gear grids. The one real gap was `sets`, now `OptimizationColumn.SETS`, sorted lexicographically
+  on the piece-count array so identical sets group; a test binds all 37 grid sort fields through Gson. `modCount` and `property` are `sortable: false`. `SpecialStats`: 18 of 19 lines; no
+  value looks wrong against the renderer, and none was checked in game. Lead reran from `mvn clean test`: RC 0, 160 of 160, 73 main files compiled by javac; `yarn lint:java` 252, the +1 being
+  the new test's `TypeNameMismatch`; `yarn lint:spotbugs` RC 0, 427. The same source gave 430 on a `target/` with language-server classes, so SpotBugs counts compare only after a clean
+  build. Lead read the production diff. Not run: the app, the GPU path, `build_backend.ps1`.
+
 ## 2026-10-30
 
-- `[Backend]` **`B16`, `B17`, `B20`, `B24`, `B40`, `T7` and the `Sorter` half of `B41` fixed, test first, uncommitted, jar not rebuilt.** `B40`: the `OptimizationDb` result
+- `[Backend]` **`B16`, `B17`, `B20`, `B24`, `B40`, `T7` and the `Sorter` half of `B41` fixed, test first, jar not rebuilt.** `B40`: the `OptimizationDb` result
   fields and three settings are `volatile`, `setFilteredIds` publishes the count before the flag, `getAllHeroStats` is `synchronized`. The trace found the search path safe, since
   each run builds its own `StatCalculator` before any worker starts, and found one real race: the shared calculator in `HeroesRequestHandler` is used from the unsynchronized Items
   handler. `calculateFinalStats` now holds a lock across set-up and use. `B17`: the nine columns are copied, and scores replay the hero's saved request, or a blank one, with no
@@ -20,18 +46,18 @@ Dated record of findings and finished work, newest first, with the evidence behi
   bug; 284 are `PA_PUBLIC_PRIMITIVE_ATTRIBUTE` on Gson models. JaCoCo 0.8.16 in the `coverage` profile: `core` 79.5% of lines, `db` 76.0%, `handler` 38.5%, `gpu` 0%. New `yarn lint:spotbugs`, `coverage:java`,
   `outdated:java`. Surefire `argLine` now starts `@{argLine}`, with an empty default. Lead reran `mvn test`: RC 0, 101 of 101, both Enforcer rules passed; `yarn lint` RC 0. Not run: the `package` phase;
   `backend.jar` being unchanged rests on JaCoCo and SpotBugs not being bound to the default lifecycle. Filed `B40`, `B41`.
-- `[Backend]` **`B37` fixed and most of `T6` done, test first, uncommitted, jar not rebuilt.** `Hero.computeDamageMultipliers` now resolves a stale or empty effect to the
+- `[Backend]` **`B37` fixed and most of `T6` done, test first, jar not rebuilt.** `Hero.computeDamageMultipliers` now resolves a stale or empty effect to the
   first option and fills missing skills, as JS does; valid names are unchanged. Sweep of 5,378 cases on 393 heroes: `crit` and `support` differences and the 393 throws all
   gone, leaving only the nine fields the CPU never reads. 20 new tests in `PassesFilterTest`, `SearchPruningTest` and `StatCalculatorTest` pin `passesFilter`, `calculateSetIndex`,
   the short-circuit, the pre-filter and Fervor with Rage, expected values worked out by hand or by brute force; 12 of 12 mutants killed; no production bug found. Lead reran
   `mvn test`: RC 0, 101 of 101. `yarn lint:java`: RC 0, 217 PMD violations, 214 before. Not run: GPU. Filed `B39`.
-- `[Backend]` **`B34` fixed, test first, uncommitted, jar not rebuilt; multiplier parity measured.** `optimize()` now calls `publishIfStillLive` in its `finally`, so a
+- `[Backend]` **`B34` fixed, test first, jar not rebuilt; multiplier parity measured.** `optimize()` now calls `publishIfStillLive` in its `finally`, so a
   run that fails after going live publishes its partial results through `OptimizationDb.publishLiveSnapshot` and the db stays usable; the failure still throws or logs.
   Red 4 of 48, green 48 of 48. Lead reran `mvn test`: RC 0, 81 of 81. `yarn lint:java`: RC 0, 214 PMD violations, 210 before. Parity: the real `damageCalc.js` in Node
   against Java over 5,378 cases on 393 heroes. All 16 fields the CPU reads match for every real option. Nine fields the CPU never reads differ, 1.0 against 0.0; the GPU
   uploads them with no use found, read only. The stale-name and partial-options shapes became `B37`. New `DamageMultipliersParityTest` pins 78 cases on 8 heroes, generator
   in `B38`. Not run: the finalize `catch` as a live run, GPU.
-- `[Backend]` **`B15`, `B18`, `B19` and the round-trip half of `T6` fixed, test first, uncommitted, jar not rebuilt.** `OptimizationRequest` declares the 15
+- `[Backend]` **`B15`, `B18`, `B19` and the round-trip half of `T6` fixed, test first, jar not rebuilt.** `OptimizationRequest` declares the 15
   dropped keys. `HeroDb.saveOptimizationRequest` copies through `SAVE_GSON`, leaving out `hero`, `items`, `boolArr`, `setPermutationIndicesPlusOne` and
   `damageMultipliers`, and now runs after every refusal in `optimizeInternal`. `applyDamageMultipliers` stops a multi-hero run wiping stored multipliers;
   `setSkillOptions` and `sanitizeHero` clear stale ones; `cachedKernelMultipliers` gates GPU kernel reuse. `_restoreNumberFields` gained the GS limits. New
@@ -44,7 +70,7 @@ Dated record of findings and finished work, newest first, with the evidence behi
   `Custom`) and `5. Skill` (1,705). Each file was checked for size and PNG signature, and 0 names clash with the existing 1,763, which matters because
   `CopyAssets.js` flattens by filename. The `zhs` folders were left out. Credit to Gio and Moriyaism added to the About tab's thank-you list and all 8 locales; ko and ru
   stay in English like their neighbouring rows. Not run: `yarn copy-assets`, the app. `app.html` already fails `prettier --check` at HEAD.
-- `[Backend]` **`B14`, `B21`, `B26` fixed, test first, uncommitted, jar not rebuilt.** `OptimizationDb.setResultHeroes` now sorts a finished run by the
+- `[Backend]` **`B14`, `B21`, `B26` fixed, test first, jar not rebuilt.** `OptimizationDb.setResultHeroes` now sorts a finished run by the
   recorded sort, or `buildScore` desc when none is recorded, and drops null slots; `sort` records during a live run in both modes; `beginRun` keeps a
   cancel that lands before live start and resets a reused db; `getRows` tests `filtered`. Live snapshots with no sort also moved to `buildScore` desc,
   from priority and score, so the multi-hero live order changes. New `OptimizationDbTest`: 36 tests, 31 red before the fix. Lead reran `mvn test`: RC 0,

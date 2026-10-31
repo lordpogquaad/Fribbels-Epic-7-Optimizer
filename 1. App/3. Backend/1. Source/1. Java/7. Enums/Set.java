@@ -9,90 +9,89 @@ import lombok.Getter;
 public enum Set {
 
         @SerializedName("HealthSet")
-        HEALTH(0, 2, new int[] { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        HEALTH(0, 2,
                         new int[] { 0, 0 },
                         "HealthSet"),
         @SerializedName("DefenseSet")
-        DEFENSE(1, 2, new int[] { 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        DEFENSE(1, 2,
                         new int[] { 1, 1 },
                         "DefenseSet"),
         @SerializedName("AttackSet")
-        ATTACK(2, 4, new int[] { 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        ATTACK(2, 4,
                         new int[] { 2, 2, 2, 2 }, "AttackSet"),
         @SerializedName("SpeedSet")
-        SPEED(3, 4, new int[] { 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        SPEED(3, 4,
                         new int[] { 3, 3, 3, 3 }, "SpeedSet"),
         @SerializedName("CriticalSet")
-        CRIT(4, 2, new int[] { 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        CRIT(4, 2,
                         new int[] { 4, 4 },
                         "CriticalSet"),
         @SerializedName("HitSet")
-        HIT(5, 2, new int[] { 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        HIT(5, 2,
                         new int[] { 5, 5 },
                         "HitSet"),
         @SerializedName("DestructionSet")
-        DESTRUCTION(6, 4, new int[] { 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        DESTRUCTION(6, 4,
                         new int[] { 6, 6, 6, 6 }, "DestructionSet"),
         @SerializedName("LifestealSet")
-        LIFESTEAL(7, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        LIFESTEAL(7, 4,
                         new int[] { 7, 7, 7, 7 }, "LifestealSet"),
         @SerializedName("CounterSet")
-        COUNTER(8, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        COUNTER(8, 4,
                         new int[] { 8, 8, 8, 8 }, "CounterSet"),
         @SerializedName("ResistSet")
-        RESIST(9, 2, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        RESIST(9, 2,
                         new int[] { 9, 9 },
                         "ResistSet"),
         @SerializedName("UnitySet")
-        UNITY(10, 2, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        UNITY(10, 2,
                         new int[] { 10, 10 },
                         "UnitySet"),
         @SerializedName("RageSet")
-        RAGE(11, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        RAGE(11, 4,
                         new int[] { 11, 11, 11, 11 }, "RageSet"),
         @SerializedName("ImmunitySet")
-        IMMUNITY(12, 2, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        IMMUNITY(12, 2,
                         new int[] { 12, 12 }, "ImmunitySet"),
         @SerializedName("PenetrationSet")
-        PENETRATION(13, 2, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        PENETRATION(13, 2,
                         new int[] { 13, 13 }, "PenetrationSet"),
         @SerializedName("RevengeSet")
-        REVENGE(14, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        REVENGE(14, 4,
                         new int[] { 14, 14, 14, 14 }, "RevengeSet"),
         @SerializedName("InjurySet")
-        INJURY(15, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        INJURY(15, 4,
                         new int[] { 15, 15, 15, 15 }, "InjurySet"),
         @SerializedName("ProtectionSet")
-        PROTECTION(16, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0 },
+        PROTECTION(16, 4,
                         new int[] { 16, 16, 16, 16 }, "ProtectionSet"),
         @SerializedName("TorrentSet")
-        TORRENT(17, 2, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 },
+        TORRENT(17, 2,
                         new int[] { 17, 17 },
                         "TorrentSet"),
         @SerializedName("ReversalSet")
-        REVERSAL(18, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0 },
+        REVERSAL(18, 4,
                         new int[] { 18, 18, 18, 18 }, "ReversalSet"),
         @SerializedName("RiposteSet")
-        RIPOSTE(19, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0 },
+        RIPOSTE(19, 4,
                         new int[] { 19, 19, 19, 19 }, "RiposteSet"),
         @SerializedName("WarfareSet")
-        OPENER(20, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0 },
+        OPENER(20, 4,
                         new int[] { 20, 20, 20, 20 }, "WarfareSet"),
         @SerializedName("PursuitSet")
-        CHASE(21, 2, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0 },
+        CHASE(21, 2,
                         new int[] { 21, 21 },
                         "PursuitSet"),
         @SerializedName("FervorSet")
-        MIGHT(22, 2, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 },
+        MIGHT(22, 2,
                         new int[] { 22, 22 },
                         "FervorSet"),
         @SerializedName("WeakeningSet")
-        WEAK(23, 4, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0 },
+        WEAK(23, 4,
                         new int[] { 23, 23, 23, 23 }, "WeakeningSet");
 
         public int index;
         private int count;
-        private int[] arr;
         private int[] indices;
         private String name;
 

@@ -30,7 +30,9 @@ setting and extension list lives, and how apply-to-all settings override a profi
   GPU change is never verified by a local run.
 - The Java language server shares `target/` with Maven, so with VS Code open `mvn test` can print
   "Nothing to compile" and test the language server's classes. To prove a change compiles under
-  javac without `clean`, compile to a scratch folder (project memory `java-build`).
+  javac without `clean`, compile to a scratch folder (project memory `java-build`). Its classes also
+  shift SpotBugs counts (430 against 427 on the same source, 2026-10-31), so compare a count only
+  straight after `mvn clean test`; `touch` does not force a recompile.
 - Run one `mvn` at a time: concurrent runs collide in `target/`.
 - `gh` is not installed here. Read public GitHub data with a scratch `.mjs` that calls the REST API.
 - `mvn` is not on `PATH`. Use the Maven path above, or the repo scripts, which set it themselves.

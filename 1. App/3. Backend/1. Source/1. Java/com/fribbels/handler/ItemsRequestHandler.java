@@ -17,7 +17,6 @@ import com.fribbels.request.ItemsRequest;
 import com.fribbels.request.MergeRequest;
 import com.fribbels.response.GetAllItemsResponse;
 import com.fribbels.response.GetItemByIdResponse;
-import com.google.common.collect.ImmutableList;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import lombok.AllArgsConstructor;
@@ -28,6 +27,7 @@ import com.fribbels.model.Stat;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Collections;
 import java.util.Deque;
@@ -111,7 +111,7 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
                     logger.warning("No handler found for " + path);
             }
         } catch (final RuntimeException e) {
-            logger.severe("Error handling request: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error handling request", e);
         }
 
         sendResponse(exchange, "ERROR");
@@ -469,7 +469,7 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
                     return;
 
                 final List<Item> equippedItems = itemsByIngameEquippedId.getOrDefault(mergeHero.getId(),
-                        ImmutableList.of());
+                        List.of());
                 heroesRequestHandler.equipItemsOnHero(EquipItemsOnHeroRequest.builder()
                         .heroId(hero.getId())
                         .itemIds(equippedItems.stream().map(Item::getId).collect(Collectors.toList()))
@@ -625,7 +625,7 @@ public class ItemsRequestHandler extends RequestHandler implements HttpHandler {
         if (hero == null)
             return;
 
-        final List<Item> equippedItems = itemsByIngameEquippedId.getOrDefault(ingameHeroId, ImmutableList.of());
+        final List<Item> equippedItems = itemsByIngameEquippedId.getOrDefault(ingameHeroId, List.of());
         heroesRequestHandler.equipItemsOnHero(EquipItemsOnHeroRequest.builder()
                 .heroId(hero.getId())
                 .itemIds(equippedItems.stream().map(Item::getId).collect(Collectors.toList()))

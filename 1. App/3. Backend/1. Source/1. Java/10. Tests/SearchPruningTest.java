@@ -12,6 +12,8 @@ import com.fribbels.request.OptimizationRequest;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Timeout.ThreadMode;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -30,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * loop built, {@code results} the ones that passed the filter. Every expected number below was
  * worked out from the pool and the rules stated in the comments, not read off a run.
  */
+// A search that spins (B39) must fail the run, not hang it: the timeout runs each test on its own thread.
+@Timeout(value = 120, threadMode = ThreadMode.SEPARATE_THREAD)
 public class SearchPruningTest {
 
     private static final Gson GSON = new Gson();

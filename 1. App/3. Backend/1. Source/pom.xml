@@ -19,21 +19,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.15.0</version>
-        </dependency>        <!-- https://mvnrepository.com/artifact/com.google.guava/guava/versions -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>33.7.2-jre</version>
-        </dependency>        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.6.0</version>
-        </dependency>        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.22.0</version>
         </dependency>        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -100,6 +85,11 @@
                     <!-- JDK 23+ no longer runs annotation processors found only on the classpath;
                          declare Lombok explicitly as a processor and force full processing. -->
                     <proc>full</proc>
+                    <!-- Warnings only (B8): the build never fails on a lint warning, so no -Werror. -->
+                    <showWarnings>true</showWarnings>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -114,6 +104,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
+                    <!-- A run that finds no test is a failure, not BUILD SUCCESS (B29). -->
+                    <failIfNoTests>true</failIfNoTests>
                     <argLine>@{argLine}                        --add-opens java.base/java.lang=ALL-UNNAMED                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED                        --add-opens java.base/java.nio=ALL-UNNAMED                        --add-opens java.base/java.util=ALL-UNNAMED                    </argLine>
                 </configuration>
             </plugin>

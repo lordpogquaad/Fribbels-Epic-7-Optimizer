@@ -41,7 +41,7 @@ Wrap a command that may run long in `timeout <seconds> <command>`. A run you mus
 
 ## Gates
 
-- `pwsh -NoProfile -NonInteractive -File "1. Master/2. PS1/build_backend.ps1"` from `1. App/` must exit 0 and print Maven `BUILD SUCCESS` with no test failures or errors, then `SUCCESS: backend.jar updated`, and `1. Master/3. Jar/backend.jar` must be newer than the build's start. While fix-list item `B7` is open the exit code alone proves nothing, because the script exits 0 when the built jar is missing; read its last block to see which applies.
+- `pwsh -NoProfile -NonInteractive -File "1. Master/2. PS1/build_backend.ps1"` from `1. App/` must exit 0 and print Maven `BUILD SUCCESS` with no test failures or errors, then `SUCCESS: backend.jar updated`, and `1. Master/3. Jar/backend.jar` must be newer than the build's start.
 - A change to optimizer results also needs a before-and-after run on the same request. Copy `backend.jar` outside the repo before building, because the build overwrites it. Compare through a JUnit test or a `timeout <seconds> java -jar` run that exits on its own, using the JDK `build_backend.ps1` sets as `JAVA_HOME`, not the first `java` on PATH, and report the counts and the top row. If neither works, report NOT RUN.
 - GPU kernels cannot run on this machine. CPU `StatCalculator` is the reference: list every kernel edit under NOT RUN, never as matching.
 

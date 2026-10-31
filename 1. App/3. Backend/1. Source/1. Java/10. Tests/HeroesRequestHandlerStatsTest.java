@@ -172,6 +172,26 @@ public class HeroesRequestHandlerStatsTest {
         assertEquals(0, build.getCustomScore(), "a hero with no saved request has no priorities to weigh");
     }
 
+    // B44: mergeHeroes calls equipItemsOnHero with an empty list for a null-id scan unit. It was
+    // suspected of stripping that hero's gear; it only equips what it is given.
+    @Test
+    public void equipItemsOnHero_withAnEmptyList_leavesTheGearAlone() {
+        final Fixture f = new Fixture(new StatCalculator());
+        final Hero hero = Hero.builder().id("h1").name("Ras").stars(6).equipment(new java.util.HashMap<>()).build();
+        f.heroDb.setHeroes(new ArrayList<>(List.of(hero)));
+        f.itemDb.equipItemOnHero("item0", "h1");
+        f.itemDb.equipItemOnHero("item1", "h1");
+
+        f.handler.equipItemsOnHero(com.fribbels.request.EquipItemsOnHeroRequest.builder()
+                .heroId("h1")
+                .itemIds(new ArrayList<>())
+                .useReforgeStats(true)
+                .build());
+
+        assertEquals(2, hero.getEquipment().size(), "the hero's gear must survive an empty equip list");
+        assertEquals("h1", f.itemDb.getItemById("item0").getEquippedById());
+    }
+
     @Test
     public void concurrentAddStatsToBuild_neverUsesAnotherRequestsBaseValues() throws Exception {
         final ProbeCalculator probe = new ProbeCalculator();

@@ -32,9 +32,7 @@ import com.fribbels.response.OptimizationResponse;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
@@ -86,18 +84,8 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
 
     private static final Gson gson = new Gson();
     private static final Logger logger = Logger.getLogger(OptimizationRequestHandler.class.getName());
-    @Getter
-    private AtomicLong searchedCounter = new AtomicLong(0);
-    private AtomicLong resultsCounter = new AtomicLong(0);
 
     private volatile long[] setSolutionBitMasks;
-
-    private float[] pooledWeaponAccs = new float[0];
-    private float[] pooledHelmetAccs = new float[0];
-    private float[] pooledArmorAccs = new float[0];
-    private float[] pooledNecklaceAccs = new float[0];
-    private float[] pooledRingAccs = new float[0];
-    private float[] pooledBootAccs = new float[0];
 
     private GpuOptimizerKernel cachedKernel = null;
     private String cachedKernelHeroId = null;
@@ -368,12 +356,25 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     }
 
     public String handleGetProgressRequest() {
-        // Sum progress across all active executions so single-optimizer tab polling
-        // still works
+        // Sum progress across the executions still running, so single-optimizer tab polling
+        // still works. The handler keeps a few finished ones too; counting them would start a
+        // new run at the last run's total. With none running (a poll landing just after the
+        // end), report the most recently used one.
         long searched = 0;
         long results = 0;
         synchronized (optimizationDbs) {
+            final List<OptimizationDb> counted = new ArrayList<>();
+            OptimizationDb mostRecent = null;
             for (final OptimizationDb db : optimizationDbs.values()) {
+                mostRecent = db;
+                if (!db.isDone()) {
+                    counted.add(db);
+                }
+            }
+            if (counted.isEmpty() && mostRecent != null) {
+                counted.add(mostRecent);
+            }
+            for (final OptimizationDb db : counted) {
                 searched += db.getSearchedCounter().get();
                 // In keep-best-N mode report the bounded heap size (kept builds), not
                 // the raw passer count which can run into the billions.
@@ -395,7 +396,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
             return "";
         }
 
-        final boolean hasExcludedGearIds = CollectionUtils.isNotEmpty(request.getExcludedGearIds());
+        final boolean hasExcludedGearIds = request.getExcludedGearIds() != null && !request.getExcludedGearIds().isEmpty();
         final Map<String, String> excludedGearIds = new HashMap<>();
         if (hasExcludedGearIds) {
             for (final String gearId : request.getExcludedGearIds()) {
@@ -407,30 +408,20 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         if (!request.isNoSave()) {
             heroDb.saveOptimizationRequest(request);
         }
-        final HeroStats[] heroStats = optimizationDb.getAllHeroStats();
-        final java.util.Set<String> ids = new HashSet<>();
-        int count = 0;
-
-        for (final HeroStats heroStatsInstance : heroStats) {
-            if (passesUpdatedFilter(request, heroStatsInstance)) {
-                boolean passesGearIdFilter = true;
-                if (hasExcludedGearIds) {
-                    for (final String gearId : heroStatsInstance.items) {
-                        if (excludedGearIds.containsKey(gearId)) {
-                            passesGearIdFilter = false;
-                            break;
-                        }
+        // The db walks its rows under its own lock, so a sort cannot reorder them mid-walk.
+        optimizationDb.applyFilter(heroStatsInstance -> {
+            if (!passesUpdatedFilter(request, heroStatsInstance)) {
+                return false;
+            }
+            if (hasExcludedGearIds) {
+                for (final String gearId : heroStatsInstance.items) {
+                    if (excludedGearIds.containsKey(gearId)) {
+                        return false;
                     }
                 }
-
-                if (passesGearIdFilter) {
-                    ids.add(heroStatsInstance.getId());
-                    count++;
-                }
             }
-        }
-
-        optimizationDb.setFilteredIds(ids, count);
+            return true;
+        });
 
         return "";
     }
@@ -550,15 +541,18 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
             return gson.toJson(response);
         }
         final OptimizationDb optimizationDb = optimizationDbs.get(request.getExecutionId());
-        logger.fine("[getResultRows] executionId=" + request.getExecutionId()
-                + " dbFound=" + (optimizationDb != null)
-                + " knownIds=" + optimizationDbs.keySet()
-                + (optimizationDb != null
-                        ? " maximum=" + optimizationDb.getMaximum()
-                                + " done=" + optimizationDb.isDone()
-                                + " results=" + optimizationDb.getResultsCounter().get()
-                                + " searched=" + optimizationDb.getSearchedCounter().get()
-                        : ""));
+        // Built only when FINE is on: a grid fetch comes every few hundred milliseconds.
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("[getResultRows] executionId=" + request.getExecutionId()
+                    + " dbFound=" + (optimizationDb != null)
+                    + " knownIds=" + optimizationDbs.keySet()
+                    + (optimizationDb != null
+                            ? " maximum=" + optimizationDb.getMaximum()
+                                    + " done=" + optimizationDb.isDone()
+                                    + " results=" + optimizationDb.getResultsCounter().get()
+                                    + " searched=" + optimizationDb.getSearchedCounter().get()
+                            : ""));
+        }
         if (optimizationDb == null) {
             return "";
         }
@@ -572,9 +566,11 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         optimizationDb.sort(request.getSortColumn(), request.getSortOrder(), request.getSpdEffWeight());
         final HeroStats[] heroStats = optimizationDb.getRows(request.getStartRow(), request.getEndRow());
         final long maximum = optimizationDb.getMaximum();
-        logger.fine("[getResultRows] getRows(" + request.getStartRow() + "," + request.getEndRow() + ")"
-                + " => heroStats.length=" + (heroStats != null ? heroStats.length : "null")
-                + " maximum=" + maximum);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("[getResultRows] getRows(" + request.getStartRow() + "," + request.getEndRow() + ")"
+                    + " => heroStats.length=" + (heroStats != null ? heroStats.length : "null")
+                    + " maximum=" + maximum);
+        }
 
         if (heroStats != null) {
             for (final HeroStats build : heroStats) {
@@ -696,19 +692,6 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         return output;
     }
 
-    // Compute a power of two less than or equal to `n`
-    public static int findPreviousPowerOf2(int n) {
-        // set all bits after the last set bit
-        n = n | (n >> 1);
-        n = n | (n >> 2);
-        n = n | (n >> 4);
-        n = n | (n >> 8);
-        n = n | (n >> 16);
-
-        // drop all but the last set bit from `n`
-        return n - (n >> 1);
-    }
-
     @SneakyThrows
     public String optimize(final OptimizationRequest request, final HeroStats unused) {
         final OptimizationDb optimizationDb = optimizationDbs.get(request.getExecutionId());
@@ -777,6 +760,18 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         // if a parallel run is already active, don't clear its interrupt state.
         if (runningCount.get() <= 1) {
             Main.interrupt = false;
+        }
+
+        // Formats 1 to 5 require a set from the first list (a 4-piece one for 1 and 2, a 2-piece one
+        // for 3 to 5). With that list empty there is nothing to require (B39); search every set
+        // combination, as format 0 does. Left alone, "any set" fills the empty list with every set
+        // (4-piece ones included), the permutation table throws for 1 and 2, and for 3 to 5 it
+        // permutes 8 to 12 indices over 24^2 to 24^4 combinations: it never finishes.
+        if (request.getSetFormat() >= 1 && request.getSetFormat() <= 5
+                && (request.getInputSetsOne() == null || request.getInputSetsOne().isEmpty())) {
+            logger.warning("[optimizeInternal] setFormat=" + request.getSetFormat()
+                    + " with an empty first set list; searching every set combination (format 0)");
+            request.setSetFormat(0);
         }
 
         long startTime = System.currentTimeMillis();
@@ -972,7 +967,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         // multiplyExact keeps it exact; any overflow is treated as "over the ceiling".
         long maxPermsTmp;
         try {
-            maxPermsTmp = Math.multiplyExact((long) wSize, hSize);
+            maxPermsTmp = Math.multiplyExact(wSize, hSize);
             maxPermsTmp = Math.multiplyExact(maxPermsTmp, aSize);
             maxPermsTmp = Math.multiplyExact(maxPermsTmp, nSize);
             maxPermsTmp = Math.multiplyExact(maxPermsTmp, rSize);
@@ -982,7 +977,8 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         }
         final long maxPerms = maxPermsTmp;
         final int MAXIMUM_RESULTS_PREVIEW = (int) Math.min(maxPerms, SETTING_MAXIMUM_RESULTS);
-        final boolean useGpuPreview = SETTING_GPU && canUseGpu && maxPerms >= 20_000_000 && runningCount.get() <= 1;
+        final boolean useGpuPreview = SETTING_GPU && canUseGpu && request.getSetPermutationIndicesPlusOne() != null
+                && maxPerms >= 20_000_000 && runningCount.get() <= 1;
         logger.info("[optimizeInternal] maxPerms=" + maxPerms
                 + " MAXIMUM_RESULTS=" + MAXIMUM_RESULTS_PREVIEW
                 + " useGPU=" + useGpuPreview
@@ -1089,7 +1085,8 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
 
         // Disable GPU when running in parallel — the GPU kernel is not thread-safe
         // across concurrent executions
-        final boolean useGpu = SETTING_GPU && canUseGpu && maxPerms >= 20_000_000 && runningCount.get() <= 1;
+        final boolean useGpu = SETTING_GPU && canUseGpu && request.getSetPermutationIndicesPlusOne() != null
+                && maxPerms >= 20_000_000 && runningCount.get() <= 1;
 
         if (useGpu) {
             // GPU Optimize
@@ -1360,7 +1357,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
             Arrays.sort(slotOrder, Comparator.comparingLong(i -> allSizes[i]));
 
             @SuppressWarnings("unchecked")
-            final List<Item>[] orderedItems = new List[6];
+            final List<Item>[] orderedItems = (List<Item>[]) new List<?>[6];
             final long[] orderedSizes = new long[6];
             for (int i = 0; i < 6; i++) {
                 orderedItems[i] = itemsByGear.get(CANONICAL_GEARS[slotOrder[i]]);
@@ -1773,7 +1770,7 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
     private static final int POW_24_2 = 576;
     private static final int POW_24_1 = 24;
 
-    public int calculateSetIndex(final int[] indices) { // sorted, size 6, elements [0-17]
+    public int calculateSetIndex(final int[] indices) { // sorted, size 6, elements [0, SET_COUNT)
         return indices[0] * POW_24_5
                 + indices[1] * POW_24_4
                 + indices[2] * POW_24_3
@@ -1824,7 +1821,8 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                 + request.getInputSetsTwo() + ":"
                 + request.getInputSetsThree();
         final BoolArrEntry cachedEntry = cachedBoolArrEntry;
-        if (cachedEntry != null && boolArrCacheKey.equals(cachedEntry.key)) {
+        if (cachedEntry != null && boolArrCacheKey.equals(cachedEntry.key)
+                && (cachedEntry.setPermIndices != null || !(SETTING_GPU && canUseGpu))) {
             request.setBoolArr(cachedEntry.boolArr);
             request.setSetPermutationIndicesPlusOne(cachedEntry.setPermIndices);
             return;
@@ -1834,7 +1832,9 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
         // These local variables shadow the (now-unused) instance fields of the same
         // name.
         final boolean[] permutations = new boolean[SET_EXPONENTIAL];
-        final int[] setPermutationIndicesPlusOne = new int[SET_EXPONENTIAL];
+        // Only the GPU kernel reads the index table (24^6 ints, about 760 MB), so a run with the GPU
+        // off or unusable does not build it. A cached entry without it is rebuilt if the GPU comes on.
+        final int[] setPermutationIndicesPlusOne = SETTING_GPU && canUseGpu ? new int[SET_EXPONENTIAL] : null;
 
         final List<Set> inputSets1 = getSetsOrElseAll(request.getInputSetsOne());
         final List<Set> inputSets2 = getSetsOrElseAll(request.getInputSetsTwo());
@@ -1845,7 +1845,9 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
             // [0][0][0] All valid
 
             Arrays.fill(permutations, true);
-            setPermutationIndicesPlusOne[0] = 1;
+            if (setPermutationIndicesPlusOne != null) {
+                setPermutationIndicesPlusOne[0] = 1;
+            }
         } else if (setFormat == 1) {
             // [4][2][0]
 
@@ -1860,7 +1862,9 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                         final int index1D = calculateSetIndex(solution);
 
                         permutations[index1D] = true;
-                        setPermutationIndicesPlusOne[index1D] = i + 1;
+                        if (setPermutationIndicesPlusOne != null) {
+                            setPermutationIndicesPlusOne[index1D] = i + 1;
+                        }
                     }
                 }
             }
@@ -1883,7 +1887,9 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                             final int index1D = calculateSetIndex(solution);
 
                             permutations[index1D] = true;
-                            setPermutationIndicesPlusOne[index1D] = i + 1;
+                            if (setPermutationIndicesPlusOne != null) {
+                                setPermutationIndicesPlusOne[index1D] = i + 1;
+                            }
                         }
                     }
                 }
@@ -1910,7 +1916,9 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                                     final int index1D = calculateSetIndex(solution);
 
                                     permutations[index1D] = true;
-                                    setPermutationIndicesPlusOne[index1D] = i + 1;
+                                    if (setPermutationIndicesPlusOne != null) {
+                                        setPermutationIndicesPlusOne[index1D] = i + 1;
+                                    }
                                 }
                             }
                         }
@@ -1939,7 +1947,9 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                                 final int index1D = calculateSetIndex(solution);
 
                                 permutations[index1D] = true;
-                                setPermutationIndicesPlusOne[index1D] = i + 1;
+                                if (setPermutationIndicesPlusOne != null) {
+                                    setPermutationIndicesPlusOne[index1D] = i + 1;
+                                }
                             }
                         }
                     }
@@ -1961,7 +1971,9 @@ public class OptimizationRequestHandler extends RequestHandler implements HttpHa
                             final int index1D = calculateSetIndex(solution);
 
                             permutations[index1D] = true;
-                            setPermutationIndicesPlusOne[index1D] = i + 1;
+                            if (setPermutationIndicesPlusOne != null) {
+                                setPermutationIndicesPlusOne[index1D] = i + 1;
+                            }
                         }
                     }
                 }

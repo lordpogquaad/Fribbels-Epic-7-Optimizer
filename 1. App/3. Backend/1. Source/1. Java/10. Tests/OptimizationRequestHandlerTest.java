@@ -23,6 +23,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Timeout.ThreadMode;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -35,6 +37,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,6 +46,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Drives the real handler on a small gear pool (the sample request's 32 items) with the
  * hero in a real {@link HeroDb}: what a run leaves on the stored hero (B15, B19).
  */
+// A search that spins (B39) must fail the run, not hang it: the timeout runs each test on its own thread.
+@Timeout(value = 120, threadMode = ThreadMode.SEPARATE_THREAD)
 public class OptimizationRequestHandlerTest {
 
     private static final Gson GSON = new Gson();
@@ -265,5 +270,130 @@ public class OptimizationRequestHandlerTest {
         assertEquals(fromHero.length, fromRequest.length);
         assertEquals(fromHero[0].getS1(), fromRequest[0].getS1());
         assertEquals(fromHero[0].getS2(), fromRequest[0].getS2());
+    }
+
+    // B39: set format 1 or 2 names a 4-piece set (3 to 5 a 2-piece one) in the first list. With that list empty there is
+    // no set to require: the permutation table threw (the "any set" default includes 2-piece sets)
+    // and the 4-piece short-circuit would have stopped at once. The UI cannot send it, so a
+    // programmatic one is searched as format 0, every set combination.
+    @Test
+    void formats1To5WithAnEmptyFirstSetListSearchEverySetCombination() throws Exception {
+        final OptimizationRequest anySet = request(true);
+        anySet.setSetFormat(0);
+        handler.handleOptimizationRequest(anySet);
+        final long expected = dbOf(anySet).getMaximum();
+        assertTrue(expected > 0, "the sample pool must have builds for this comparison to mean anything");
+
+        for (final int format : new int[] { 1, 2, 3, 4, 5 }) {
+            final OptimizationRequest empty = request(true);
+            empty.setSetFormat(format);
+            empty.setInputSetsOne(List.of());
+            empty.setInputSetsTwo(List.of());
+            handler.handleOptimizationRequest(empty);
+            assertEquals(expected, dbOf(empty).getMaximum(), "format " + format + " with an empty first list");
+        }
+    }
+
+    // B27: the progress poll summed every execution the handler still held, finished ones
+    // included, so a new run started its counter at the last run's total.
+    @Test
+    void progressCountsOnlyTheRunsStillGoing() throws Exception {
+        final OptimizationRequest finished = request(true);
+        handler.handleOptimizationRequest(finished);
+        assertTrue(dbOf(finished).getSearchedCounter().get() > 0, "the finished run must have searched something");
+
+        final String runningId = handler.prepareExecution();
+        final OptimizationRequest running = request(true);
+        running.setExecutionId(runningId);
+        dbOf(running).getSearchedCounter().set(7);
+
+        final JsonObject progress = JsonParser.parseString(handler.handleGetProgressRequest()).getAsJsonObject();
+        assertEquals(7, progress.get("searched").getAsLong(), "the finished run's count leaked into the progress");
+    }
+
+    // B27: the set-permutation index table is read only by the GPU kernel, and is 24^6 ints
+    // (about 760 MB). A run with the GPU switched off must not build it, and switching the GPU on
+    // afterwards must still get it, not the cached table without it.
+    @Test
+    void theGpuOnlyIndexTableIsBuiltOnlyWhenTheGpuIsOn() throws Exception {
+        final boolean before = OptimizationRequestHandler.SETTING_GPU;
+        try {
+            OptimizationRequestHandler.SETTING_GPU = false;
+            final OptimizationRequest cpu = request(true);
+            cpu.setSetFormat(2);
+            handler.addCalculatedFields(cpu);
+            assertNotNull(cpu.getBoolArr(), "the CPU filter reads the allowed-set table");
+            assertNull(cpu.getSetPermutationIndicesPlusOne(), "built for a run that cannot use it");
+
+            OptimizationRequestHandler.SETTING_GPU = true;
+            final OptimizationRequest gpu = request(true);
+            gpu.setSetFormat(2);
+            handler.addCalculatedFields(gpu);
+            final Field usable = OptimizationRequestHandler.class.getDeclaredField("canUseGpu");
+            usable.setAccessible(true);
+            if (usable.getBoolean(handler)) {
+                assertNotNull(gpu.getSetPermutationIndicesPlusOne(), "the cached CPU-only table was reused");
+            }
+        } finally {
+            OptimizationRequestHandler.SETTING_GPU = before;
+        }
+    }
+
+    // B41: the execution bookkeeping the renderer drives around a run.
+    @Test
+    void theHandlerKeepsOnlyTheThreeNewestExecutions() throws Exception {
+        final List<String> ids = new java.util.ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            ids.add(handler.prepareExecution());
+        }
+        assertNull(dbOfId(ids.get(0)), "the oldest execution should have been dropped");
+        for (final String kept : ids.subList(1, 4)) {
+            assertNotNull(dbOfId(kept));
+        }
+    }
+
+    @Test
+    void deletingAnExecutionDropsItsDbAndIgnoresAnUnknownOrMissingId() throws Exception {
+        final String id = handler.prepareExecution();
+        handler.deleteExecutionRequest(com.fribbels.request.IdRequest.builder().id(id).build());
+        assertNull(dbOfId(id));
+
+        assertEquals("", handler.deleteExecutionRequest(com.fribbels.request.IdRequest.builder().id(null).build()));
+        assertEquals("", handler.deleteExecutionRequest(com.fribbels.request.IdRequest.builder().id("nope").build()));
+    }
+
+    @Test
+    void interruptAllCancelsEveryKeptExecution() throws Exception {
+        final String first = handler.prepareExecution();
+        final String second = handler.prepareExecution();
+
+        handler.interruptAll();
+
+        assertTrue(dbOfId(first).isInterrupted());
+        assertTrue(dbOfId(second).isInterrupted());
+    }
+
+    @Test
+    void nothingIsInProgressBeforeARunStarts() {
+        assertEquals(false, JsonParser.parseString(handler.handleInProgressRequest()).getAsJsonObject()
+                .get("inProgress").getAsBoolean());
+    }
+
+    @SuppressWarnings("unchecked")
+    private OptimizationDb dbOfId(final String executionId) throws Exception {
+        final Field field = OptimizationRequestHandler.class.getDeclaredField("optimizationDbs");
+        field.setAccessible(true);
+        return ((Map<String, OptimizationDb>) field.get(handler)).get(executionId);
+    }
+
+    // B27: a poll that lands after the last run ended still reports that run, not zero.
+    @Test
+    void progressAfterTheLastRunEndedStillReportsIt() throws Exception {
+        final OptimizationRequest finished = request(true);
+        handler.handleOptimizationRequest(finished);
+        final long searched = dbOf(finished).getSearchedCounter().get();
+
+        final JsonObject progress = JsonParser.parseString(handler.handleGetProgressRequest()).getAsJsonObject();
+        assertEquals(searched, progress.get("searched").getAsLong());
     }
 }

@@ -86,10 +86,10 @@ public class SorterTest {
     }
 
     @Test
-    public void everyColumnHasAFieldMappingOrIsSpdEff() {
+    public void everyColumnHasAFieldMappingOrIsSpdEffOrSets() {
         final List<OptimizationColumn> unmapped = new ArrayList<>(Arrays.asList(OptimizationColumn.values()));
         unmapped.removeAll(FIELD_OF.keySet());
-        assertEquals(List.of(OptimizationColumn.SPDEFF), unmapped,
+        assertEquals(List.of(OptimizationColumn.SPDEFF, OptimizationColumn.SETS), unmapped,
                 "a new column needs an entry here, and a case in Sorter");
     }
 
@@ -200,5 +200,56 @@ public class SorterTest {
         final List<String> before = ids(rows);
         Sorter.sortHeroes(rows, OptimizationColumn.ATK, null);
         assertEquals(before, ids(rows));
+    }
+
+    // A null column takes the same path as an unknown one: it prints and leaves the array as it
+    // was. It used to throw a NullPointerException from the switch before that check.
+    @Test
+    public void nullColumnLeavesTheArrayUnsorted() {
+        final HeroStats[] rows = rowsDiffering(HeroStats::setAtk);
+        final List<String> before = ids(rows);
+        Sorter.sortHeroes(rows, null, SortOrder.ASC);
+        assertEquals(before, ids(rows));
+    }
+
+    // Every sortable column of the optimizer grid and the multi-hero grid sends its field name as
+    // the sort column (B43). The names below are the AG-Grid `field`s of optimizerGrid.js and
+    // multiOptimizerTab.js. modCount and property are not sortable there; the hero library and gear
+    // grids sort in the renderer and never reach the backend.
+    private static final List<String> GRID_SORT_FIELDS = List.of("sets", "atk", "def", "hp", "spd", "cr", "cd",
+            "eff", "res", "cp", "hpps", "ehp", "ehpps", "dmg", "dmgps", "mcdmg", "mcdmgps", "dmgh", "dmgd",
+            "hmcdmgs", "dmcdmgs", "hdmg", "hdmgs", "ddmg", "ddmgs", "s1", "s2", "s3", "score", "bs", "priority",
+            "buildScore", "customScore", "eq", "upgrades", "finalSpeed", "spdEff");
+
+    @Test
+    public void everySortableGridFieldBindsToAColumn() {
+        final com.google.gson.Gson gson = new com.google.gson.Gson();
+        final List<String> unbound = GRID_SORT_FIELDS.stream()
+                .filter(field -> gson.fromJson("\"" + field + "\"", OptimizationColumn.class) == null)
+                .toList();
+        assertEquals(List.of(), unbound, "these grid columns would sort nothing");
+    }
+
+    @Test
+    public void setsSortGroupsIdenticalSetsAndOrdersByTheCountsInSetOrder() {
+        final HeroStats speed4 = withSets("speed4", 0, 0, 0, 4);
+        final HeroStats speed4Again = withSets("speed4b", 0, 0, 0, 4);
+        final HeroStats health2 = withSets("health2", 2, 0, 0, 0);
+        final HeroStats none = new HeroStats();
+        none.setId("none");
+
+        final HeroStats[] rows = { speed4, health2, none, speed4Again };
+        Sorter.sortHeroes(rows, OptimizationColumn.SETS, SortOrder.ASC);
+        assertEquals(List.of("none", "speed4", "speed4b", "health2"), ids(rows));
+
+        Sorter.sortHeroes(rows, OptimizationColumn.SETS, SortOrder.DESC);
+        assertEquals(List.of("health2", "speed4", "speed4b", "none"), ids(rows));
+    }
+
+    private static HeroStats withSets(final String id, final int... counts) {
+        final HeroStats row = new HeroStats();
+        row.setId(id);
+        row.setSets(counts);
+        return row;
     }
 }

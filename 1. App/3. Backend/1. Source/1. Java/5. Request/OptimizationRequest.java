@@ -62,10 +62,6 @@ public class OptimizationRequest extends Request {
     private int spd;
     private int dac;
 
-    private float artifactAttack;
-    private float artifactHealth;
-    private float artifactDefense;
-
     public int inputAtkMinLimit;
     public int inputAtkMaxLimit = Integer.MAX_VALUE;
     public int inputHpMinLimit;
@@ -181,7 +177,6 @@ public class OptimizationRequest extends Request {
     private List<String> enhanceLimit;
 
     private Integer inputForceNumberSelect;
-    private Integer inputForceMode;
     private Integer inputWeaponFilterPriority;
     private Integer inputHelmetFilterPriority;
     private Integer inputArmorFilterPriority;

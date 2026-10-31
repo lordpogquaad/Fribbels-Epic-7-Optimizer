@@ -30,6 +30,9 @@ public class Sorter {
     // Ascending comparator for a sort column; DESC reverses it. Null for an unknown
     // column.
     private static Comparator<HeroStats> comparatorFor(final OptimizationColumn column, final double spdEffWeight) {
+        if (column == null) {
+            return null;
+        }
         switch (column) {
             case ATK:
                 return Comparator.comparingInt(HeroStats::getAtk);
@@ -106,6 +109,9 @@ public class Sorter {
             case FINALSPEED:
                 // Final Speed = spd / (1 - crp); monotonic in spd, so spd order suffices.
                 return Comparator.comparingInt(HeroStats::getSpd);
+            case SETS:
+                // Lexicographic on the per-set piece counts (null first); the grid shows these as set icons.
+                return Comparator.comparing(HeroStats::getSets, Arrays::compare);
             case SPDEFF:
                 return Comparator.<HeroStats>comparingDouble(h -> h.getSpd() + h.getEff() * spdEffWeight);
             default:

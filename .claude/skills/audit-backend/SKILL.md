@@ -52,7 +52,7 @@ Both write only to the ignored `3. Backend/1. Source/target/`.
   shared state touched from concurrent requests.
 - **Persistence and models:** `final` on Gson-bound fields, and data lost between save and load.
 - **Tests and build:** a test that cannot fail, disabled tests, and `build_backend.ps1` reporting
-  success after a failure (`B7`).
+  success after a failure.
 
 ## Not run in an audit
 

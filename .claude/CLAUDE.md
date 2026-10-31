@@ -54,7 +54,7 @@ pwsh -File "1. Master/2. PS1/build_backend.ps1"      backend jar
 
 Acceptance gate before claiming a JS/config change works: `yarn lint` → `yarn typecheck` → `yarn build`.
 Backend changes: `build_backend.ps1` must produce a fresh `backend.jar`. Check the `SUCCESS` line and the
-jar's timestamp: until `B7` is fixed, the script exits 0 when the built jar is missing.
+jar's timestamp.
 
 ## Windows/session traps
 

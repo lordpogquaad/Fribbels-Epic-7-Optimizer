@@ -49,20 +49,6 @@ public class ItemDb {
         items = new ArrayList<>(deduped.values());
     }
 
-    public void replaceItems(final Item newItem) {
-        if (importable(List.of(newItem)).isEmpty()) {
-            return;
-        }
-        calculateWss(newItem);
-        for (int i = 0; i < items.size(); i++) {
-            if (Strings.CS.equals(items.get(i).getId(), newItem.getId())) {
-                items.set(i, newItem);
-                return;
-            }
-        }
-        items.add(newItem);
-    }
-
     public List<Item> getAllItems() {
         return items;
     }

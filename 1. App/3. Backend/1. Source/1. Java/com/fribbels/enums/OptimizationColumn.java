@@ -80,4 +80,7 @@ public enum OptimizationColumn {
     FINALSPEED,
     @SerializedName("spdEff")
     SPDEFF,
+    // The sets column: piece counts per set, so builds with the same sets sit together.
+    @SerializedName("sets")
+    SETS,
 }
