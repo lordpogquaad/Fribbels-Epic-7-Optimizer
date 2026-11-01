@@ -1,0 +1,6 @@
+{
+  "config": {
+    // Each note opens with frontmatter whose `name:` is its title, then prose, so the first body line is not a heading.
+    "MD041": { "front_matter_title": "^\\s*name\\s*:" }
+  }
+}

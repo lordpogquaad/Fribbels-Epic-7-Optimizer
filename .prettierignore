@@ -1,6 +1,13 @@
 # Prettier's ignore file. Stylelint and ESLint do not use it: `yarn lint:styles` names its own folder,
 # and ESLint's ignores live in "1. App/eslint.config.mjs" (globalIgnores).
 # Patterns carry no folder prefix so they match from the repo root and from "1. App/".
+#
+# Prettier walks every folder below its target before this file filters the files out, so the
+# `format:base` script in "1. App/package.json" runs it from the repo root (where its built-in
+# node_modules and .git prunes apply; from "1. App" with ".." they never match) and passes the
+# biggest ignored trees as `!` patterns, which keep the walk out of them (2026-10-31: 69,000
+# walked entries for 171 candidates before, about 230 after). A tree missing there costs time
+# only; a tree missing here gets formatted.
 
 # Dependencies and lockfiles
 node_modules
@@ -43,10 +50,14 @@ translation.missing.json
 # Backend: nothing Prettier owns, and its stray IDE folders can hold long paths
 3. Backend
 
-# Session state, personal folders and Copilot leftovers
+# Session state, personal folders and Copilot leftovers (`.github/` stays until R8 removes it)
 .remember
 2. Personal
 trashcan
+.github
+
+# A translated copy of the upstream README, not edited here (markdownlint skips it too)
+localization
 
 # Intentionally not Prettier-formatted (npm/yarn + the IDE manage it)
 package.json

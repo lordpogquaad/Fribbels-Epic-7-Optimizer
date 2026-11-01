@@ -1,8 +1,10 @@
 // Report-only import-graph check, run from "1. App/" with the roots passed on the command line:
 //   yarn lint:deps-graph
 // The renderer's packages live in "2. Frontend/1. Source/node_modules" (a second manifest); Node
-// resolution reaches it by walking up from each renderer file. "5. Dev Only" files do not, so their
-// imports of renderer packages show as unresolvable.
+// resolution reaches it by walking up from each renderer file. "5. Dev Only" files do not, so an
+// import of a renderer package from there shows as unresolvable. The one exception is LogControl.js:
+// app.html loads it as a raw <script>, so Electron resolves its requires from the renderer tree, and
+// the rule below exempts the one package it needs that way.
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
   forbidden: [
@@ -36,8 +38,16 @@ module.exports = {
       severity: 'error',
       comment:
         'An import that resolves to nothing: a typo, a deleted file or an uninstalled package.',
-      from: {},
+      from: { pathNot: ['^5. Dev Only/LogControl[.]js$'] },
       to: { couldNotResolve: true },
+    },
+    {
+      name: 'not-to-unresolvable-logcontrol',
+      severity: 'error',
+      comment:
+        'LogControl.js runs from app.html, so "@electron/remote" resolves from "2. Frontend/1. Source/node_modules" at run time (the inner manifest declares it). Anything else it cannot resolve is a defect.',
+      from: { path: '^5. Dev Only/LogControl[.]js$' },
+      to: { couldNotResolve: true, pathNot: ['^@electron/remote$'] },
     },
     {
       name: 'no-non-package-json',

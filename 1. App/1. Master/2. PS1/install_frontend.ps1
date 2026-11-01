@@ -25,7 +25,7 @@ try {
     # The manifest is canonical here now (no temp copy). Only the lockfile is transient.
     Write-Host "Removing transient package-lock.json ..."
     Remove-Item (Join-Path $sourceDir 'package-lock.json') -Force -ErrorAction SilentlyContinue
-    # Remove electron if npm installed it as a peer dep — the binary lives in
+    # Remove electron if npm installed it as a peer dep: the binary lives in
     # 1. App/node_modules/electron, not here; a stub here breaks @electron/remote.
     $electronStub = Join-Path $sourceDir 'node_modules\electron'
     if (Test-Path $electronStub) {

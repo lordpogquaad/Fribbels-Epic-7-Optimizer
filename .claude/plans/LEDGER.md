@@ -6,6 +6,21 @@ Dated record of findings and finished work, newest first, with the evidence behi
 
 ## 2026-10-31
 
+- `[Repo]` **`R15` closed: `@babel/core` 8.0.10 and knip 6.44 installed.** `yarn up` of each once it passed Yarn's 24-hour age gate; `yarn.lock` carries `@babel/generator`, `helpers`, `parser`, `traverse` and `types` to 8.0.10 with it. `yarn lint`, `yarn typecheck` and `yarn build` green on 2026-10-31 (the commit that lands this).
+
+- `[Repo]` **`R29` closed: `yarn lint:styles` and `yarn lint:deps-graph` are green.** `yarn lint:styles:fix` added the one blank line (`2. CSS/style.css`, `comment-empty-line-before`). The import-graph lint's `not-to-unresolvable` rule now skips `5. Dev Only/LogControl.js`, and a second rule covers that file alone with `@electron/remote` exempted: `app.html` loads the file as a raw `<script>`, so Electron resolves its requires from the renderer tree, where the inner manifest declares the package. A depcruise JSON run shows the unresolved dependency's `resolved` field is the raw specifier, so the exemption is that one name and a typo there still fails. 0 errors, 4 info rows.
+
+- `[Repo]` **`R16` narrowed: `yarn lint:ps` and `yarn lint:md` are green.** The two PSScriptAnalyzer warnings were one em dash each in comments (`install_frontend.ps1:28`, `sync-upstream-data.ps1:15`), so the BOM-less UTF-8 files tripped `PSUseBOMForUnicodeEncodedFile`; replaced with ASCII (8 files, 0 failing findings; one Information row stays). The four MD041 findings were `backend-sonnet` agent-memory notes whose frontmatter `name:` is the title: `.claude/agent-memory/.markdownlint-cli2.jsonc`, copied from the fork, tells markdownlint so (195 files, 0 issues). `yarn hooks:lint` reports 1 note and 0 warnings. `.github/` and `localization/` joined `.prettierignore` for the reasons markdownlint already skips them (Copilot-era files `R8` removes; a translated upstream README), which takes `format:check` from 118 differing files to 66.
+
+- `[Repo]` **`yarn format:check` 869 s → 12 s, same 66 reds.** The time was Prettier's glob walk: run from `1. App` with `..` as the target, its built-in `node_modules` and `.git` prunes never match the `..`-prefixed paths, so it enumerated about 69,000 entries for 171 candidate files before `.prettierignore` filtered them. `format:base` in `1. App/package.json` now runs Prettier from the repo root with a `!` pattern per big ignored tree (about 230 entries walked), the content cache pinned under `1. App/node_modules/.cache/prettier/`; `format` and `format:check` add the mode. Measured 2026-10-31, the old shape under disk load: old 868.8 s; new 13.6 s, 56.3 s and 12.0 s; the red set is byte-identical. The `.prettierignore` header says what the prunes are and what a missing one costs.
+
+- `[Repo]` **`R13` closed: the TypeScript language server has a tsserver to load again.** Marcus pinned the global `typescript` to 6.0.3 on
+  2026-10-31 (`npm install -g typescript@6`). The global `typescript-language-server` looks for tsserver in this order (read from its own `cli.mjs`): an
+  explicit `--tsserver-path`, the workspace's `node_modules/typescript/lib/tsserver.js`, then `require.resolve('typescript')` beside itself. This repo's
+  root has no `node_modules` (the app's tree is under `1. App/`), so it reached the global copy, and 7.0.2 ships only `lib/tsc.js`. The global `lib/` now
+  holds `tsserver.js`. Live check at the next session start. Why the global stays on 6.x: the config repo's `memory/machine-toolchain-and-updates.md`,
+  "Global packages".
+
 - `[Frontend]` **Swept the June plans in `F:/VSCode-Data/Projects` before Marcus deleted them, read-only.** Plan 2 and 3 (constants), plan 4 (optimizer tab), plan 5 (gear and optimizer
   tabs), and his `deep dive report.md` (scoring-mod display, Gear Analysis): 123 claims checked against code by four readers. Filed `F36` and `F37`. Almost everything else is fixed or stale. Lead
   rechecked what survived. Dropped two reader findings: `OFFICIAL_SpeedSets` lacking `Revenge` and `Reversal` matches the sheet's `OFFICIAL_SPEED_SETS`, and `buildItemPanel` escapes its only

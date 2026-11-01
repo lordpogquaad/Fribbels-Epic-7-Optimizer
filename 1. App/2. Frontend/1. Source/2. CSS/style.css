@@ -3418,6 +3418,7 @@ body.dark-theme input {
   text-indent: -150%;
   color: transparent;
   user-select: none;
+
   /* NOTE: do NOT add `clip-path: inset(50%)` here. The toggle pill is drawn by
      .switch-label::before/::after, which are this label's generated content — a
      clip-path on the label clips those pseudo-elements away too, making the whole

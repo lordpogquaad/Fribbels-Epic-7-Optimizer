@@ -145,6 +145,7 @@
                         <ruleset>${project.basedir}/pmd-ruleset.xml</ruleset>
                     </rulesets>
                     <targetJdk>27</targetJdk>
+                    <analysisCache>true</analysisCache>
                     <!-- Same exclusion as the compiler: the numbered folders are junctions to com/fribbels/*,
                          so each file is analysed once. Tests are added back through includeTests. -->
                     <excludes>

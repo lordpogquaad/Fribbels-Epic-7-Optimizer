@@ -12,7 +12,7 @@
 #   4. Records the synced upstream/main and upstream/feat/offline commits in
 #      1. Master/upstream-sync.json.
 #   5. Prints the non-data code diff between the previously-recorded
-#      feat/offline commit and the current one, for manual review — Rex's
+#      feat/offline commit and the current one, for manual review, because Rex's
 #      feat/offline branch carries code main.json data alone won't show.
 #
 # Idempotent: run it twice back to back and the second run reports 0 added/updated.
