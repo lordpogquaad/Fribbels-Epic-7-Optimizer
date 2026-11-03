@@ -1,5 +1,8 @@
 {
   "$schema": "file:///F:/VSCode-Data/.claude/tools/metrics/claude-code-settings.editor.schema.json",
+  "env": {
+    "CLAUDE_PROJECT_DIR": "F:/Epic Seven Screenshots Only/New folder/Gear simulator files/Fribbels-Epic-7-Optimizer"
+  },
   "permissions": {
     "allow": [
       "Bash(yarn lint*)",
