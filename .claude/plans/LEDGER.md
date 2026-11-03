@@ -4,6 +4,11 @@ Dated record of findings and finished work, newest first, with the evidence behi
 `[Repo]`, `[Backend]`, `[Frontend]`, `[Scanner]`, `[UI]`. Open work lives in
 [FIX LIST.md](FIX LIST.md). Entries from 2026-06 and earlier were moved here unchanged from the old change logs on 2026-10-30. They were confirmed applied at the time, and Java fixes needed a JAR rebuild unless noted.
 
+## 2026-11-01
+
+- `[Repo]` **`yarn scripts:flags` writes `.claude/plans/script-flags.json`, every script with its `--flags`.** Marcus (01:27): a script in each repo that makes a JSON of the scripts with their flags. The generator is the config repo's `tools/tools/script-flags.mjs`, reached through `$CLAUDE_CONFIG_DIR` the way `lint:claude` is (Yarn's own shell expands it): each `package.json` script split into the steps it runs, each node step's entry file, its argument parser, every flag its argv code accepts with its type, header-only flags, env reads, and the Yarn line to type; `pwsh -File` steps carry their `param()` block. `yarn scripts:flags:check` reports drift and is not in a gate here. First run: 46 scripts, 15 steps scanned, 7 header-only flags, 3 forwarders. Left uncommitted for Marcus's word.
+- `[Repo]` **`yarn scripts:aliases` writes one `<script>:<flag>` script per boolean flag into `1. App/package.json`.** Marcus (03:22): he runs scripts from VS Code's NPM Scripts sidebar one entry per click and wants the variations of each. The config tool `script-aliases.mjs` reads the flags JSON, places each alias after its base script and lists it in the `//script-aliases` array; `:check` reports drift. Three aliases for one script here (`scan`), since the other scripts are PowerShell, webpack or chains. The scanner behind the JSON now follows one relative `parse…Args` import and drops header placeholders and spawn literals, so the JSON is regenerated too. Order after a flag change: `scripts:flags`, `scripts:aliases`, `scripts:flags`.
+
 ## 2026-10-31
 
 - `[Repo]` **`R15` closed: `@babel/core` 8.0.10 and knip 6.44 installed.** `yarn up` of each once it passed Yarn's 24-hour age gate; `yarn.lock` carries `@babel/generator`, `helpers`, `parser`, `traverse` and `types` to 8.0.10 with it. `yarn lint`, `yarn typecheck` and `yarn build` green on 2026-10-31 (the commit that lands this).

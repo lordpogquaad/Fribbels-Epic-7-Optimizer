@@ -45,6 +45,8 @@ yarn typecheck:strict:report   report-only: checkJs on, writes .claude/plans/TYP
 yarn lint:spotbugs      report-only SpotBugs, writes target/spotbugsXml.xml; RC 1 only when Maven cannot run
 yarn coverage:java      JaCoCo through mvn -Pcoverage test; report at target/site/jacoco/index.html; no gate
 yarn outdated:java      lists newer Maven dependencies and plugins; updates nothing
+yarn scripts:flags      writes .claude/plans/script-flags.json: every script, its steps and --flags (config tool); :check reports drift
+yarn scripts:aliases    writes one <script>:<flag> script per boolean flag into package.json from that JSON (config tool); :check reports drift
 yarn build              copy-assets + webpack main/renderer prod bundles
 yarn dev                hot renderer dev server
 yarn package-win        electron-builder NSIS + zip → release/

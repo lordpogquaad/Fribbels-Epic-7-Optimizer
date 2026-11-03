@@ -1,0 +1,1373 @@
+{
+  "generator": "script-flags.mjs",
+  "repo": "pog-e7-optimizer",
+  "packageManager": "yarn",
+  "runPrefix": "yarn",
+  "scripts": [
+    {
+      "name": "build",
+      "command": "yarn copy-assets && concurrently \"yarn build-main\" \"yarn build-renderer\"",
+      "run": "yarn build",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "copy-assets"
+        },
+        {
+          "kind": "external",
+          "bin": "concurrently",
+          "args": ["yarn build-main", "yarn build-renderer"]
+        }
+      ]
+    },
+    {
+      "name": "copy-assets",
+      "command": "node \"./4. Both/2. Build/1. Scripts/CopyAssets.js\"",
+      "run": "yarn copy-assets",
+      "steps": [
+        {
+          "kind": "node",
+          "entry": "4. Both/2. Build/1. Scripts/CopyAssets.js",
+          "bakedArgs": [],
+          "cwd": ".",
+          "parser": "none",
+          "strict": null,
+          "flags": [],
+          "positionals": null,
+          "env": ["E7_BUILD_QUIET"],
+          "scanned": ["4. Both/2. Build/1. Scripts/CopyAssets.js"]
+        }
+      ]
+    },
+    {
+      "name": "build-main",
+      "command": "cross-env NODE_ENV=production webpack --config \"./4. Both/1. Webpack/webpack.config.main.prod.js\"",
+      "run": "yarn build-main",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "webpack",
+          "args": ["--config", "./4. Both/1. Webpack/webpack.config.main.prod.js"],
+          "envSet": {
+            "NODE_ENV": "production"
+          }
+        }
+      ]
+    },
+    {
+      "name": "build-renderer",
+      "command": "cross-env NODE_ENV=production webpack --config \"./4. Both/1. Webpack/webpack.config.renderer.prod.js\"",
+      "run": "yarn build-renderer",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "webpack",
+          "args": ["--config", "./4. Both/1. Webpack/webpack.config.renderer.prod.js"],
+          "envSet": {
+            "NODE_ENV": "production"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dev",
+      "command": "yarn copy-assets && cross-env START_HOT=1 node -r @babel/register \"./4. Both/2. Build/1. Scripts/CheckPortInUse.js\" && cross-env START_HOT=1 yarn start-renderer-dev",
+      "run": "yarn dev",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "copy-assets"
+        },
+        {
+          "kind": "node",
+          "entry": "4. Both/2. Build/1. Scripts/CheckPortInUse.js",
+          "bakedArgs": [],
+          "cwd": ".",
+          "nodeArgs": ["-r", "@babel/register"],
+          "parser": "none",
+          "strict": null,
+          "flags": [],
+          "positionals": null,
+          "env": ["PORT"],
+          "scanned": ["4. Both/2. Build/1. Scripts/CheckPortInUse.js"],
+          "envSet": {
+            "START_HOT": "1"
+          }
+        },
+        {
+          "kind": "npm-run",
+          "script": "start-renderer-dev",
+          "envSet": {
+            "START_HOT": "1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "electron-rebuild",
+      "command": "electron-rebuild --parallel --force --types prod,dev,optional --module-dir \"2. Frontend/1. Source\"",
+      "run": "yarn electron-rebuild",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "electron-rebuild",
+          "args": [
+            "--parallel",
+            "--force",
+            "--types",
+            "prod,dev,optional",
+            "--module-dir",
+            "2. Frontend/1. Source"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "lint",
+      "command": "cross-env NODE_ENV=development eslint . --cache --cache-strategy content --cache-location node_modules/.cache/eslint/",
+      "run": "yarn lint",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "eslint",
+          "args": [
+            ".",
+            "--cache",
+            "--cache-strategy",
+            "content",
+            "--cache-location",
+            "node_modules/.cache/eslint/"
+          ],
+          "envSet": {
+            "NODE_ENV": "development"
+          }
+        }
+      ]
+    },
+    {
+      "name": "lint:strict",
+      "command": "eslint -c eslint.strict.config.mjs . --cache --cache-strategy content --cache-location node_modules/.cache/eslint-strict/",
+      "run": "yarn lint:strict",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "eslint",
+          "args": [
+            "-c",
+            "eslint.strict.config.mjs",
+            ".",
+            "--cache",
+            "--cache-strategy",
+            "content",
+            "--cache-location",
+            "node_modules/.cache/eslint-strict/"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "format:base",
+      "command": "cd .. && prettier --ignore-path .prettierignore --cache --cache-strategy content --cache-location \"1. App/node_modules/.cache/prettier/.prettier-cache\" . \"!1. App/release\" \"!1. App/.mypy_cache\" \"!1. App/.yarn\" \"!1. App/3. Backend\" \"!1. App/2. Frontend/1. Source/1. HTML/assets\" \"!1. App/2. Frontend/1. Source/8. DIST\" \"!1. App/2. Frontend/1. Source/3. ASSETS\" \"!1. App/2. Frontend/1. Source/2. CSS\" \"!1. App/2. Frontend/1. Source/6. JSON/2. CACHE\" \"!.mypy_cache\" \"!2. Personal\" \"!trashcan\" \"!.remember\" \"!.github\" \"!localization\"",
+      "run": "yarn format:base",
+      "steps": [
+        {
+          "kind": "cd",
+          "dir": ".."
+        },
+        {
+          "kind": "external",
+          "bin": "prettier",
+          "args": [
+            "--ignore-path",
+            ".prettierignore",
+            "--cache",
+            "--cache-strategy",
+            "content",
+            "--cache-location",
+            "1. App/node_modules/.cache/prettier/.prettier-cache",
+            ".",
+            "!1. App/release",
+            "!1. App/.mypy_cache",
+            "!1. App/.yarn",
+            "!1. App/3. Backend",
+            "!1. App/2. Frontend/1. Source/1. HTML/assets",
+            "!1. App/2. Frontend/1. Source/8. DIST",
+            "!1. App/2. Frontend/1. Source/3. ASSETS",
+            "!1. App/2. Frontend/1. Source/2. CSS",
+            "!1. App/2. Frontend/1. Source/6. JSON/2. CACHE",
+            "!.mypy_cache",
+            "!2. Personal",
+            "!trashcan",
+            "!.remember",
+            "!.github",
+            "!localization"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "format",
+      "command": "yarn format:base --write",
+      "run": "yarn format",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "format:base",
+          "args": ["--write"]
+        }
+      ]
+    },
+    {
+      "name": "format:check",
+      "command": "yarn format:base --check",
+      "run": "yarn format:check",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "format:base",
+          "args": ["--check"]
+        }
+      ]
+    },
+    {
+      "name": "lint:md",
+      "command": "markdownlint-cli2 --config ../.markdownlint-cli2.jsonc \"../**/*.md\" \"#**/node_modules/**\"",
+      "run": "yarn lint:md",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "markdownlint-cli2",
+          "args": ["--config", "../.markdownlint-cli2.jsonc", "../**/*.md", "#**/node_modules/**"]
+        }
+      ]
+    },
+    {
+      "name": "lint:ps",
+      "command": "cd .. && node \"$CLAUDE_CONFIG_DIR/tools/tools/lint-ps.mjs\"",
+      "run": "yarn lint:ps <flags>",
+      "steps": [
+        {
+          "kind": "cd",
+          "dir": ".."
+        },
+        {
+          "kind": "config-tool",
+          "tool": "lint-ps.mjs",
+          "bakedArgs": [],
+          "cwd": "..",
+          "parser": "hand-rolled",
+          "strict": null,
+          "flags": [
+            {
+              "name": "json",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "no-cache",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": null,
+          "env": [],
+          "forwardsArgv": true,
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--json", "--no-cache"]
+              }
+            ]
+          },
+          "scanned": [
+            "$CLAUDE_CONFIG_DIR/tools/tools/lint-ps.mjs",
+            "$CLAUDE_CONFIG_DIR/tools/tools/lib/lint-ps-cache.mjs"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "lint:claude",
+      "command": "cd .. && node \"$CLAUDE_CONFIG_DIR/tools/tools/check-yaml.mjs\" .claude/agents .claude/skills && node \"$CLAUDE_CONFIG_DIR/tools/tools/audit-agent-frontmatter.mjs\" && node \"$CLAUDE_CONFIG_DIR/tools/tools/audit-skill-wiring.mjs\"",
+      "run": "yarn lint:claude <flags>",
+      "steps": [
+        {
+          "kind": "cd",
+          "dir": ".."
+        },
+        {
+          "kind": "config-tool",
+          "tool": "check-yaml.mjs",
+          "bakedArgs": [".claude/agents", ".claude/skills"],
+          "cwd": "..",
+          "parser": "hand-rolled",
+          "strict": null,
+          "flags": [
+            {
+              "name": "tracked",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "json",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "no-cache",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "exclude",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": null,
+          "env": [],
+          "forwardsArgv": true,
+          "usage": {
+            "forms": [
+              {
+                "requires": ["<file-or-folder>"],
+                "depends": {},
+                "mentions": ["--json", "--no-cache"]
+              },
+              {
+                "requires": ["--tracked"],
+                "depends": {},
+                "mentions": ["--exclude", "--json", "--no-cache", "--tracked"]
+              }
+            ]
+          },
+          "scanned": [
+            "$CLAUDE_CONFIG_DIR/tools/tools/check-yaml.mjs",
+            "$CLAUDE_CONFIG_DIR/tools/tools/lib/check-yaml-cache.mjs"
+          ]
+        },
+        {
+          "kind": "config-tool",
+          "tool": "audit-agent-frontmatter.mjs",
+          "bakedArgs": [],
+          "cwd": "..",
+          "parser": "hand-rolled",
+          "strict": null,
+          "flags": [
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "json",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "orphans",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "fix",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "dry-run",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": null,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--help", "--json", "--orphans"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/audit-agent-frontmatter.mjs"]
+        },
+        {
+          "kind": "config-tool",
+          "tool": "audit-skill-wiring.mjs",
+          "bakedArgs": [],
+          "cwd": "..",
+          "parser": "hand-rolled",
+          "strict": null,
+          "flags": [
+            {
+              "name": "json",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": null,
+          "env": [
+            "SKILL_AUDIT_HOMES_CONFIG",
+            "SKILL_AUDIT_MCP_MIRROR",
+            "SKILL_AUDIT_MCP_ROSTER",
+            "SKILL_AUDIT_PLUGINS_FILE",
+            "SKILL_AUDIT_SIBLING_ROOTS",
+            "SKILL_AUDIT_SYNCED_ROOT",
+            "SKILL_AUDIT_USER_ROOT"
+          ],
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/audit-skill-wiring.mjs"]
+        }
+      ]
+    },
+    {
+      "name": "hooks:lint",
+      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/lint-hooks.mjs\" --dir ../.claude/hooks",
+      "run": "yarn hooks:lint <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "lint-hooks.mjs",
+          "bakedArgs": ["--dir", "../.claude/hooks"],
+          "cwd": ".",
+          "parser": "hand-rolled",
+          "strict": null,
+          "flags": [
+            {
+              "name": "dir",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "user",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "json",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": null,
+          "env": ["CLAUDE_CONFIG_DIR", "HOME", "LINT_HOOKS_ROOT", "USERPROFILE"],
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--dir", "--json", "--user"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/lint-hooks.mjs"]
+        }
+      ]
+    },
+    {
+      "name": "lint:strict:report",
+      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/lint-strict-report.mjs\" --repo . --out \"../.claude/plans/LINT-STRICT-REPORT.md\"",
+      "run": "yarn lint:strict:report <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "lint-strict-report.mjs",
+          "bakedArgs": ["--repo", ".", "--out", "../.claude/plans/LINT-STRICT-REPORT.md"],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "out",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "render",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "forwardsArgv": true,
+          "usage": {
+            "forms": [
+              {
+                "requires": ["--out", "<file.md>"],
+                "depends": {},
+                "mentions": ["--out", "--repo"]
+              },
+              {
+                "requires": ["--render", "<eslint.json>"],
+                "depends": {},
+                "mentions": ["--out", "--render", "--repo"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/lint-strict-report.mjs"]
+        }
+      ]
+    },
+    {
+      "name": "sonar:report",
+      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/diag-scan-repo.mjs\" --repo .. --report --out \"../.claude/plans/SONAR-REPORT.md\"",
+      "run": "yarn sonar:report <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "diag-scan-repo.mjs",
+          "bakedArgs": ["--repo", "..", "--report", "--out", "../.claude/plans/SONAR-REPORT.md"],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "path",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "batch",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "out",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "render",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "ignore",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "no-server",
+              "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "profile",
+              "type": "string",
+              "short": null,
+              "default": "auto",
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "program",
+              "type": "string",
+              "short": null,
+              "default": "orphan",
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "problems",
+              "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "report",
+              "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--batch", "--out", "--path", "--repo"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/diag-scan-repo.mjs"]
+        }
+      ]
+    },
+    {
+      "name": "scripts:flags",
+      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/script-flags.mjs\" --repo . --out \"../.claude/plans/script-flags.json\"",
+      "run": "yarn scripts:flags <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "script-flags.mjs",
+          "bakedArgs": ["--repo", ".", "--out", "../.claude/plans/script-flags.json"],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "out",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "check",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": ["--out", "<file.json>"],
+                "depends": {},
+                "mentions": ["--check", "--out", "--repo"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-flags.mjs"]
+        }
+      ]
+    },
+    {
+      "name": "scripts:flags:check",
+      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/script-flags.mjs\" --repo . --out \"../.claude/plans/script-flags.json\" --check",
+      "run": "yarn scripts:flags:check <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "script-flags.mjs",
+          "bakedArgs": ["--repo", ".", "--out", "../.claude/plans/script-flags.json", "--check"],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "out",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "check",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": ["--out", "<file.json>"],
+                "depends": {},
+                "mentions": ["--check", "--out", "--repo"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-flags.mjs"]
+        }
+      ]
+    },
+    {
+      "name": "scripts:aliases",
+      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/script-aliases.mjs\" --repo . --flags \"../.claude/plans/script-flags.json\"",
+      "run": "yarn scripts:aliases <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "script-aliases.mjs",
+          "bakedArgs": ["--repo", ".", "--flags", "../.claude/plans/script-flags.json"],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "flags",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "manifest",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "skip",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": true,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "check",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": ["--flags", "--repo", "<dir>", "<script-flags.json>"],
+                "depends": {},
+                "mentions": ["--check", "--flags", "--manifest", "--repo", "--skip"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-aliases.mjs"]
+        }
+      ]
+    },
+    {
+      "name": "scripts:aliases:check",
+      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/script-aliases.mjs\" --repo . --flags \"../.claude/plans/script-flags.json\" --check",
+      "run": "yarn scripts:aliases:check <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "script-aliases.mjs",
+          "bakedArgs": ["--repo", ".", "--flags", "../.claude/plans/script-flags.json", "--check"],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "flags",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "manifest",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "skip",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": true,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "check",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": ["--flags", "--repo", "<dir>", "<script-flags.json>"],
+                "depends": {},
+                "mentions": ["--check", "--flags", "--manifest", "--repo", "--skip"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-aliases.mjs"]
+        }
+      ]
+    },
+    {
+      "name": "lint:fix",
+      "command": "yarn lint --fix",
+      "run": "yarn lint:fix",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "lint",
+          "args": ["--fix"]
+        }
+      ]
+    },
+    {
+      "name": "lint:styles",
+      "command": "stylelint '2. Frontend/1. Source/2. CSS/*.css' --cache --cache-strategy content --cache-location node_modules/.cache/stylelint-cli/",
+      "run": "yarn lint:styles",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "stylelint",
+          "args": [
+            "2. Frontend/1. Source/2. CSS/*.css",
+            "--cache",
+            "--cache-strategy",
+            "content",
+            "--cache-location",
+            "node_modules/.cache/stylelint-cli/"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "lint:styles:fix",
+      "command": "yarn lint:styles --fix",
+      "run": "yarn lint:styles:fix",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "lint:styles",
+          "args": ["--fix"]
+        }
+      ]
+    },
+    {
+      "name": "lint:dead",
+      "command": "knip --cache",
+      "run": "yarn lint:dead",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "knip",
+          "args": ["--cache"]
+        }
+      ]
+    },
+    {
+      "name": "lint:deps-graph",
+      "command": "depcruise --config .dependency-cruiser.cjs \"2. Frontend/1. Source/4. JS\" \"5. Dev Only\" \"4. Both\" --cache --cache-strategy content",
+      "run": "yarn lint:deps-graph",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "depcruise",
+          "args": [
+            "--config",
+            ".dependency-cruiser.cjs",
+            "2. Frontend/1. Source/4. JS",
+            "5. Dev Only",
+            "4. Both",
+            "--cache",
+            "--cache-strategy",
+            "content"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "lint:dupes",
+      "command": "jscpd",
+      "run": "yarn lint:dupes",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "jscpd",
+          "args": []
+        }
+      ]
+    },
+    {
+      "name": "lint:java",
+      "command": "pwsh -NoProfile -NonInteractive -File \"1. Master/2. PS1/lint_java.ps1\"",
+      "run": "yarn lint:java",
+      "steps": [
+        {
+          "kind": "pwsh",
+          "entry": "1. Master/2. PS1/lint_java.ps1",
+          "bakedArgs": [],
+          "cwd": ".",
+          "params": []
+        }
+      ]
+    },
+    {
+      "name": "lint:spotbugs",
+      "command": "pwsh -NoProfile -NonInteractive -File \"1. Master/2. PS1/lint_spotbugs.ps1\"",
+      "run": "yarn lint:spotbugs",
+      "steps": [
+        {
+          "kind": "pwsh",
+          "entry": "1. Master/2. PS1/lint_spotbugs.ps1",
+          "bakedArgs": [],
+          "cwd": ".",
+          "params": []
+        }
+      ]
+    },
+    {
+      "name": "coverage:java",
+      "command": "pwsh -NoProfile -NonInteractive -File \"1. Master/2. PS1/coverage_java.ps1\"",
+      "run": "yarn coverage:java",
+      "steps": [
+        {
+          "kind": "pwsh",
+          "entry": "1. Master/2. PS1/coverage_java.ps1",
+          "bakedArgs": [],
+          "cwd": ".",
+          "params": []
+        }
+      ]
+    },
+    {
+      "name": "outdated:java",
+      "command": "pwsh -NoProfile -NonInteractive -File \"1. Master/2. PS1/outdated_java.ps1\"",
+      "run": "yarn outdated:java",
+      "steps": [
+        {
+          "kind": "pwsh",
+          "entry": "1. Master/2. PS1/outdated_java.ps1",
+          "bakedArgs": [],
+          "cwd": ".",
+          "params": []
+        }
+      ]
+    },
+    {
+      "name": "lint:py",
+      "command": "ruff check .. --exit-zero",
+      "run": "yarn lint:py",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "ruff",
+          "args": ["check", "..", "--exit-zero"]
+        }
+      ]
+    },
+    {
+      "name": "lint:py:types",
+      "command": "mypy \"2. Frontend/1. Source/7. PY/1. Scanner/1. Core/scanner.py\" --ignore-missing-imports",
+      "run": "yarn lint:py:types",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "mypy",
+          "args": [
+            "2. Frontend/1. Source/7. PY/1. Scanner/1. Core/scanner.py",
+            "--ignore-missing-imports"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "package",
+      "command": "yarn build && electron-builder build --publish never",
+      "run": "yarn package",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "build"
+        },
+        {
+          "kind": "external",
+          "bin": "electron-builder",
+          "args": ["build", "--publish", "never"]
+        }
+      ]
+    },
+    {
+      "name": "package-all",
+      "command": "yarn build && electron-builder build -mwl",
+      "run": "yarn package-all",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "build"
+        },
+        {
+          "kind": "external",
+          "bin": "electron-builder",
+          "args": ["build", "-mwl"]
+        }
+      ]
+    },
+    {
+      "name": "package-mac",
+      "command": "yarn build && electron-builder build --mac",
+      "run": "yarn package-mac",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "build"
+        },
+        {
+          "kind": "external",
+          "bin": "electron-builder",
+          "args": ["build", "--mac"]
+        }
+      ]
+    },
+    {
+      "name": "package-linux",
+      "command": "yarn build && electron-builder build --linux",
+      "run": "yarn package-linux",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "build"
+        },
+        {
+          "kind": "external",
+          "bin": "electron-builder",
+          "args": ["build", "--linux"]
+        }
+      ]
+    },
+    {
+      "name": "package-win",
+      "command": "yarn build && electron-builder build --win --x64",
+      "run": "yarn package-win",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "build"
+        },
+        {
+          "kind": "external",
+          "bin": "electron-builder",
+          "args": ["build", "--win", "--x64"]
+        }
+      ]
+    },
+    {
+      "name": "postinstall",
+      "command": "node -r @babel/register \"4. Both/2. Build/1. Scripts/CheckNativeDep.js\" && electron-builder install-app-deps",
+      "run": "yarn postinstall",
+      "steps": [
+        {
+          "kind": "node",
+          "entry": "4. Both/2. Build/1. Scripts/CheckNativeDep.js",
+          "bakedArgs": [],
+          "cwd": ".",
+          "nodeArgs": ["-r", "@babel/register"],
+          "parser": "none",
+          "strict": null,
+          "flags": [],
+          "positionals": null,
+          "env": [],
+          "scanned": ["4. Both/2. Build/1. Scripts/CheckNativeDep.js"]
+        },
+        {
+          "kind": "external",
+          "bin": "electron-builder",
+          "args": ["install-app-deps"]
+        }
+      ]
+    },
+    {
+      "name": "preinstall",
+      "command": "node \"./4. Both/2. Build/1. Scripts/CheckYarn.js\"",
+      "run": "yarn preinstall",
+      "steps": [
+        {
+          "kind": "node",
+          "entry": "4. Both/2. Build/1. Scripts/CheckYarn.js",
+          "bakedArgs": [],
+          "cwd": ".",
+          "parser": "none",
+          "strict": null,
+          "flags": [],
+          "positionals": null,
+          "env": ["npm_execpath"],
+          "scanned": ["4. Both/2. Build/1. Scripts/CheckYarn.js"]
+        }
+      ]
+    },
+    {
+      "name": "start",
+      "command": "yarn build && cross-env NODE_ENV=production electron \"./2. Frontend/1. Source/main.prod.js\"",
+      "run": "yarn start",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "build"
+        },
+        {
+          "kind": "external",
+          "bin": "electron",
+          "args": ["./2. Frontend/1. Source/main.prod.js"],
+          "envSet": {
+            "NODE_ENV": "production"
+          }
+        }
+      ]
+    },
+    {
+      "name": "start-main-debug",
+      "command": "yarn start-main-dev --inspect=5858 --remote-debugging-port=9223",
+      "run": "yarn start-main-debug",
+      "steps": [
+        {
+          "kind": "npm-run",
+          "script": "start-main-dev",
+          "args": ["--inspect=5858", "--remote-debugging-port=9223"]
+        }
+      ]
+    },
+    {
+      "name": "start-main-dev",
+      "command": "cross-env START_HOT=1 NODE_ENV=development electron .",
+      "run": "yarn start-main-dev",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "electron",
+          "args": ["."],
+          "envSet": {
+            "START_HOT": "1",
+            "NODE_ENV": "development"
+          }
+        }
+      ]
+    },
+    {
+      "name": "start-renderer-dev",
+      "command": "cross-env NODE_ENV=development webpack serve --config \"4. Both/1. Webpack/webpack.config.renderer.dev.js\"",
+      "run": "yarn start-renderer-dev",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "webpack",
+          "args": ["serve", "--config", "4. Both/1. Webpack/webpack.config.renderer.dev.js"],
+          "envSet": {
+            "NODE_ENV": "development"
+          }
+        }
+      ]
+    },
+    {
+      "name": "scan",
+      "command": "node \"./4. Both/2. Build/1. Scripts/ScanReport.mjs\"",
+      "run": "yarn scan",
+      "steps": [
+        {
+          "kind": "node",
+          "entry": "4. Both/2. Build/1. Scripts/ScanReport.mjs",
+          "bakedArgs": [],
+          "cwd": ".",
+          "parser": "hand-rolled",
+          "strict": null,
+          "flags": [],
+          "positionals": null,
+          "env": [],
+          "scanned": ["4. Both/2. Build/1. Scripts/ScanReport.mjs"]
+        }
+      ]
+    },
+    {
+      "name": "test:hooks",
+      "command": "node --test \"../.claude/hooks-test/*.test.js\"",
+      "run": "yarn test:hooks",
+      "steps": [
+        {
+          "kind": "node-test",
+          "glob": "../.claude/hooks-test/*.test.js",
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "name": "typecheck",
+      "command": "node node_modules/tsc7/bin/tsc -p ./ --noEmit",
+      "run": "yarn typecheck",
+      "steps": [
+        {
+          "kind": "external",
+          "bin": "tsc7",
+          "args": ["node_modules/tsc7/bin/tsc", "-p", "./", "--noEmit"]
+        }
+      ]
+    },
+    {
+      "name": "typecheck:strict:report",
+      "command": "node \"./4. Both/2. Build/1. Scripts/TypecheckReport.mjs\"",
+      "run": "yarn typecheck:strict:report",
+      "steps": [
+        {
+          "kind": "node",
+          "entry": "4. Both/2. Build/1. Scripts/TypecheckReport.mjs",
+          "bakedArgs": [],
+          "cwd": ".",
+          "parser": "none",
+          "strict": null,
+          "flags": [],
+          "positionals": null,
+          "env": [],
+          "scanned": ["4. Both/2. Build/1. Scripts/TypecheckReport.mjs"]
+        }
+      ]
+    }
+  ]
+}
