@@ -1,7 +1,18 @@
 {
-  "eslint.workingDirectories": [{ "directory": "1. App" }],
+  "eslint.workingDirectories": [
+    {
+      "directory": "1. App"
+    }
+  ],
   "sonarlint.connectedMode.project": {
     "connectionId": "lordpogquaad",
     "projectKey": "lordpogquaad_Fribbels-Epic-7-Optimizer"
-  }
+  },
+  "python-envs.pythonProjects": [
+    {
+      "path": ".",
+      "envManager": "ms-python.python:system",
+      "packageManager": "ms-python.python:pip"
+    }
+  ]
 }
