@@ -8,11 +8,38 @@
     "connectionId": "lordpogquaad",
     "projectKey": "lordpogquaad_Fribbels-Epic-7-Optimizer"
   },
+  "files.watcherExclude": {
+    "**/1. App/release/**": true,
+    "**/8. DIST/**": true,
+    "**/5. Dev Only/logs/**": true
+  },
+  "search.exclude": {
+    "**/1. App/release": true,
+    "**/8. DIST": true,
+    "**/5. Dev Only/logs": true,
+    "**/3. Backend/1. Source/target": true,
+    "**/1. HTML/assets": true
+  },
   "python-envs.pythonProjects": [
     {
       "path": ".",
       "envManager": "ms-python.python:system",
       "packageManager": "ms-python.python:pip"
+    }
+  ],
+  // Testing-view runs get the same JVM flags as `mvn test`: surefire's argLine in pom.xml, plus
+  // aparapi's native-access flag (project memory jdk25-migration-fixes).
+  "java.test.config": [
+    {
+      "name": "backend",
+      "workingDirectory": "${workspaceFolder}/1. App/3. Backend/1. Source",
+      "vmArgs": [
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--enable-native-access=ALL-UNNAMED"
+      ]
     }
   ]
 }

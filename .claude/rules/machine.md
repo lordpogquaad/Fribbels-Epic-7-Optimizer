@@ -2,7 +2,7 @@
 
 Where this repo's tools live on Marcus's Windows machine. The global `rules/machine.md` owns the
 machine-wide paths (Node, Git, Python, the config dir) and how to update them; this file holds only
-what is specific to this repo. Paths as last derived on 2026-10-30: re-run the last column before
+what is specific to this repo. Paths as last derived on 2026-11-05: re-run the last column before
 relying on one for anything version-sensitive.
 
 | What                | Where                                                                                      | Re-derive with                                  |
