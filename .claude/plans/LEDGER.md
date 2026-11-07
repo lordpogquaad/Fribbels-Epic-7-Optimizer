@@ -4,6 +4,12 @@ Dated record of findings and finished work, newest first, with the evidence behi
 `[Repo]`, `[Backend]`, `[Frontend]`, `[Scanner]`, `[UI]`. Open work lives in
 [FIX LIST.md](FIX LIST.md). Entries from 2026-06 and earlier were moved here unchanged from the old change logs on 2026-10-30. They were confirmed applied at the time, and Java fixes needed a JAR rebuild unless noted.
 
+## 2026-11-07
+
+- `[Repo]` **The nine config-repo tool scripts run again, through `4. Both/2. Build/1. Scripts/config-tool.mjs`; committed on Marcus's word.** Marcus pasted `npm run lint:strict:report` failing with `MODULE_NOT_FOUND` on a literal `$CLAUDE_CONFIG_DIR` path: npm runs scripts under cmd.exe on Windows, which does not expand `$VAR`. The shim resolves `CLAUDE_CONFIG_DIR` (else `~/.claude`) through `realpath` and spawns `tools/tools/<name>`. `lint:ps`, `lint:claude`, `hooks:lint`, `lint:strict:report`, `sonar:report`, `scripts:flags`, `scripts:flags:check`, `scripts:aliases` and `scripts:aliases:check` in `1. App/package.json` now call it; `script-flags.json` was regenerated and `LINT-STRICT-REPORT.md` rewritten by the proof run. `SONAR-REPORT.md` also changed at 09:49 with no Claude command behind it (Marcus re-ran `sonar:report` after the ESLint fix to refresh it; committed with it).
+- `[Repo]` **`.vscode/settings.json` `eslint.workingDirectories` is the plain string form `["1. App"]`; committed on Marcus's word.** It answers the ESLint diagnostic "Use the new !cwd form." on the old `{ "directory": "1. App" }` object.
+- `[Repo]` **Deep infrastructure audit, filed.** The read-only audit of the user scope and this repo's `.claude/` (config repo `tools/docs/CONFIG LEDGER.md` → "2026-11-07 — Deep infrastructure audit run") filed 16 HIGH or MEDIUM findings here, 3 duplicate agent findings merged into them: R30 to R44 for the 2 HIGH (both verified) and 13 MEDIUM, the 14th MEDIUM as new evidence on R26, and R45 bundling the 23 LOW.
+
 ## 2026-11-06
 
 - `[Repo]` **Patch bumps from the 2026-11-05 machine audit, committed on Marcus's "commit and push everything" (2026-11-06).** `yarn up` in `1. App/`: electron 45.2.3 with `yarn.lock`; `install_frontend.ps1`: i18next 26.7.2; `pom.xml`: versions-maven-plugin 2.24.0; `build_backend.ps1` SUCCESS and a fresh `backend.jar` (21:14). `yarn lint`, `yarn typecheck` and `yarn build` exit 0 (the dynamic-require warning in `main.dev.js` predates the change). @babel/core, dependency-cruiser and webpack-bundle-analyzer still sit behind Yarn's age gate: `R27` stays open.

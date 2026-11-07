@@ -1,12 +1,12 @@
 # Strict lint — 1. App
 
 Every ESLint problem of the `lint:strict` lane (`eslint.strict.config.mjs`: typescript-eslint and
-eslint-plugin-regexp) over the targets of that package.json script in `1. App`, linted 2026-10-30 14:36 UTC by
+eslint-plugin-regexp) over the targets of that package.json script in `1. App`, linted 2026-11-07 15:22 UTC by
 `tools/tools/lint-strict-report.mjs`. Report only: nothing was fixed. Re-render from the raw JSON
 with `--render`.
 
-- Files: 96 linted, 58 with problems.
-- Problems: **936** (0 error(s), 936 warning(s)).
+- Files: 98 linted, 60 with problems.
+- Problems: **942** (0 error(s), 942 warning(s)).
 - Runtime rules: 1.
 
 ## Runtime findings first
@@ -24,27 +24,28 @@ Rules whose id or message is about runtime, backtracking or complexity.
 
 ## Totals by rule
 
-| Rule                                                      | Errors | Warnings | Example message                                                                                                                                                            |
-| --------------------------------------------------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| no-undef                                                  | 0      | 341      | 'module' is not defined.                                                                                                                                                   |
-| @typescript-eslint/no-floating-promises                   | 0      | 222      | Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.        |
-| @typescript-eslint/no-unnecessary-condition               | 0      | 161      | Unnecessary optional chain on a non-nullish value.                                                                                                                         |
-| @typescript-eslint/no-misused-promises                    | 0      | 73       | Promise returned in function argument where a void return was expected.                                                                                                    |
-| @typescript-eslint/require-await                          | 0      | 45       | Async method 'getRows' has no 'await' expression.                                                                                                                          |
-| require-atomic-updates                                    | 0      | 20       | Possible race condition: `slotPriorityConfigByIndex['']` might be assigned based on an outdated state of `slotPriorityConfigByIndex`.                                      |
-| no-unused-vars                                            | 0      | 16       | 'params' is defined but never used.                                                                                                                                        |
-| n/no-unpublished-import                                   | 0      | 12       | "chalk" is not published.                                                                                                                                                  |
-| n/no-process-exit                                         | 0      | 8        | Don't use process.exit(); throw an error instead.                                                                                                                          |
-| @typescript-eslint/await-thenable                         | 0      | 7        | Unexpected `await` of a non-Promise (non-"Thenable") value.                                                                                                                |
-| @typescript-eslint/prefer-promise-reject-errors           | 0      | 7        | Expected the Promise rejection reason to be an Error.                                                                                                                      |
-| @typescript-eslint/restrict-plus-operands                 | 0      | 7        | Invalid operand for a '+' operation. Operands must each be a number or string, allowing a string + any of: `any`, `boolean`, `null`, `RegExp`, `undefined`. Got `unknown`. |
-| regexp/no-super-linear-move                               | 0      | 6        | Any attack string /\\s+/ plus some rejecting suffix will cause quadratic runtime because of this quantifier.                                                               |
-| regexp/no-dupe-characters-character-class                 | 0      | 4        | '\\s' is already included in '\\D'.                                                                                                                                        |
-| @typescript-eslint/no-unnecessary-boolean-literal-compare | 0      | 2        | This expression unnecessarily compares a boolean value to a boolean instead of using it directly.                                                                          |
-| promise/catch-or-return                                   | 0      | 2        | Expected catch() or return                                                                                                                                                 |
-| @typescript-eslint/no-implied-eval                        | 0      | 1        | Implied eval. Consider passing a function.                                                                                                                                 |
-| no-unmodified-loop-condition                              | 0      | 1        | 'interrupt' is not modified in this loop.                                                                                                                                  |
-| promise/no-callback-in-promise                            | 0      | 1        | Avoid calling back inside of a promise.                                                                                                                                    |
+| Rule                                                      | Errors | Warnings | Example message                                                                                                                                                                                                                 |
+| --------------------------------------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| no-undef                                                  | 0      | 341      | 'module' is not defined.                                                                                                                                                                                                        |
+| @typescript-eslint/no-floating-promises                   | 0      | 222      | Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.                                                             |
+| @typescript-eslint/no-unnecessary-condition               | 0      | 161      | Unnecessary optional chain on a non-nullish value.                                                                                                                                                                              |
+| @typescript-eslint/no-misused-promises                    | 0      | 73       | Promise returned in function argument where a void return was expected.                                                                                                                                                         |
+| @typescript-eslint/require-await                          | 0      | 45       | Async method 'getRows' has no 'await' expression.                                                                                                                                                                               |
+| require-atomic-updates                                    | 0      | 20       | Possible race condition: `slotPriorityConfigByIndex['']` might be assigned based on an outdated state of `slotPriorityConfigByIndex`.                                                                                           |
+| no-unused-vars                                            | 0      | 16       | 'params' is defined but never used.                                                                                                                                                                                             |
+| n/no-process-exit                                         | 0      | 12       | Don't use process.exit(); throw an error instead.                                                                                                                                                                               |
+| n/no-unpublished-import                                   | 0      | 12       | "chalk" is not published.                                                                                                                                                                                                       |
+| @typescript-eslint/await-thenable                         | 0      | 7        | Unexpected `await` of a non-Promise (non-"Thenable") value.                                                                                                                                                                     |
+| @typescript-eslint/prefer-promise-reject-errors           | 0      | 7        | Expected the Promise rejection reason to be an Error.                                                                                                                                                                           |
+| @typescript-eslint/restrict-plus-operands                 | 0      | 7        | Invalid operand for a '+' operation. Operands must each be a number or string, allowing a string + any of: `any`, `boolean`, `null`, `RegExp`, `undefined`. Got `unknown`.                                                      |
+| regexp/no-super-linear-move                               | 0      | 6        | Any attack string /\\s+/ plus some rejecting suffix will cause quadratic runtime because of this quantifier.                                                                                                                    |
+| regexp/no-dupe-characters-character-class                 | 0      | 4        | '\\s' is already included in '\\D'.                                                                                                                                                                                             |
+| @typescript-eslint/no-unnecessary-boolean-literal-compare | 0      | 2        | This expression unnecessarily compares a boolean value to a boolean instead of using it directly.                                                                                                                               |
+| promise/catch-or-return                                   | 0      | 2        | Expected catch() or return                                                                                                                                                                                                      |
+| regexp/no-contradiction-with-assertion                    | 0      | 2        | The quantifier '\[^>\]\*?' is always entered despite having a minimum of 0. This is because the assertion '\\b' contradicts with the element(s) after the quantifier. Either set the minimum to 1 (+?) or change the assertion. |
+| @typescript-eslint/no-implied-eval                        | 0      | 1        | Implied eval. Consider passing a function.                                                                                                                                                                                      |
+| no-unmodified-loop-condition                              | 0      | 1        | 'interrupt' is not modified in this loop.                                                                                                                                                                                       |
+| promise/no-callback-in-promise                            | 0      | 1        | Avoid calling back inside of a promise.                                                                                                                                                                                         |
 
 ## By file
 
@@ -144,123 +145,123 @@ Rules whose id or message is about runtime, backtracking or complexity.
 - [ ] L2163:7 · warning · no-undef · 'Log' is not defined.
 - [ ] L2195:5 · warning · no-undef · 'Log' is not defined.
 - [ ] L2288:5 · warning · no-undef · 'Log' is not defined.
-- [ ] L2832:7 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L2920:33 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always falsy.
-- [ ] L3068:7 · warning · no-undef · 'Log' is not defined.
-- [ ] L3074:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3078:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3082:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3166:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3167:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3179:5 · warning · no-undef · 'Log' is not defined.
-- [ ] L3181:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L2834:7 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L2922:33 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always falsy.
+- [ ] L3070:7 · warning · no-undef · 'Log' is not defined.
+- [ ] L3076:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3080:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3084:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3168:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3169:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3181:5 · warning · no-undef · 'Log' is not defined.
 - [ ] L3183:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3224:34 · warning · @typescript-eslint/no-implied-eval · Implied eval. Consider passing a function.
-- [ ] L3338:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L3353:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3354:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3185:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3226:34 · warning · @typescript-eslint/no-implied-eval · Implied eval. Consider passing a function.
+- [ ] L3340:3 · warning · no-undef · 'Log' is not defined.
 - [ ] L3355:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 - [ ] L3356:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3359:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3365:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L3377:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3378:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3357:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3358:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3361:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3367:3 · warning · no-undef · 'Log' is not defined.
 - [ ] L3379:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3382:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3398:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3399:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3380:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3381:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3384:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 - [ ] L3400:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3402:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3484:36 · warning · @typescript-eslint/no-misused-promises · Promise returned in function argument where a void return was expected.
-- [ ] L3516:1 · warning · @typescript-eslint/require-await · Async function 'getAllItemsCached' has no 'await' expression.
-- [ ] L3530:1 · warning · @typescript-eslint/require-await · Async function 'getAllHeroesCached' has no 'await' expression.
-- [ ] L3547:3 · warning · require-atomic-updates · Possible race condition: `listEl.innerHTML` might be assigned based on an outdated state of `listEl`.
-- [ ] L3568:7 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3620:5 · warning · no-undef · 'Log' is not defined.
-- [ ] L3647:23 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
-- [ ] L3647:40 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
-- [ ] L3648:23 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
-- [ ] L3648:40 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
-- [ ] L3649:22 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
-- [ ] L3649:39 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
-- [ ] L3650:25 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
-- [ ] L3650:42 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
-- [ ] L3651:21 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
-- [ ] L3651:38 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
-- [ ] L3652:21 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
-- [ ] L3652:38 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
-- [ ] L3863:14 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
-- [ ] L3885:7 · warning · no-undef · 'Log' is not defined.
-- [ ] L3894:5 · warning · no-undef · 'Log' is not defined.
-- [ ] L4058:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L4080:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4081:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3401:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3402:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3404:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3486:36 · warning · @typescript-eslint/no-misused-promises · Promise returned in function argument where a void return was expected.
+- [ ] L3518:1 · warning · @typescript-eslint/require-await · Async function 'getAllItemsCached' has no 'await' expression.
+- [ ] L3532:1 · warning · @typescript-eslint/require-await · Async function 'getAllHeroesCached' has no 'await' expression.
+- [ ] L3549:3 · warning · require-atomic-updates · Possible race condition: `listEl.innerHTML` might be assigned based on an outdated state of `listEl`.
+- [ ] L3570:7 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3622:5 · warning · no-undef · 'Log' is not defined.
+- [ ] L3649:23 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
+- [ ] L3649:40 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
+- [ ] L3650:23 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
+- [ ] L3650:40 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
+- [ ] L3651:22 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
+- [ ] L3651:39 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
+- [ ] L3652:25 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
+- [ ] L3652:42 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
+- [ ] L3653:21 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
+- [ ] L3653:38 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
+- [ ] L3654:21 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined.
+- [ ] L3654:38 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
+- [ ] L3865:14 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary optional chain on a non-nullish value.
+- [ ] L3887:7 · warning · no-undef · 'Log' is not defined.
+- [ ] L3896:5 · warning · no-undef · 'Log' is not defined.
+- [ ] L4060:3 · warning · no-undef · 'Log' is not defined.
 - [ ] L4082:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4098:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L4110:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4111:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4083:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4084:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4100:3 · warning · no-undef · 'Log' is not defined.
 - [ ] L4112:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4161:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4162:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4113:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4114:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 - [ ] L4163:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4210:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4164:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4165:5 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 - [ ] L4212:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4213:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4235:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4236:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4248:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4249:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4261:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4262:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4294:7 · warning · no-undef · 'Log' is not defined.
-- [ ] L4312:7 · warning · no-undef · 'Log' is not defined.
-- [ ] L4331:13 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, comparison is always true, since `null === null` is true.
-- [ ] L4344:9 · warning · no-undef · 'Log' is not defined.
-- [ ] L4348:9 · warning · no-undef · 'Log' is not defined.
-- [ ] L4354:5 · warning · no-undef · 'Log' is not defined.
-- [ ] L4372:5 · warning · no-undef · 'Log' is not defined.
-- [ ] L4441:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator. A rejection handler that is not a function will be ignored.
-- [ ] L4443:7 · warning · no-undef · 'Log' is not defined.
-- [ ] L4447:12 · warning · no-undef · 'Log' is not defined.
-- [ ] L4469:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator. A rejection handler that is not a function will be ignored.
-- [ ] L4474:12 · warning · no-undef · 'Log' is not defined.
-- [ ] L4510:5 · warning · require-atomic-updates · Possible race condition: `_submitInFlight` might be reassigned based on an outdated value of `_submitInFlight`.
-- [ ] L4515:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4527:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L4558:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L4569:7 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always falsy.
-- [ ] L4573:7 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always falsy.
-- [ ] L4587:5 · warning · no-undef · 'Log' is not defined.
-- [ ] L4594:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L4610:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L4646:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L4656:3 · warning · require-atomic-updates · Possible race condition: `currentExecutionId` might be reassigned based on an outdated value of `currentExecutionId`.
-- [ ] L4660:3 · warning · require-atomic-updates · Possible race condition: `progressTimer` might be reassigned based on an outdated value of `progressTimer`.
-- [ ] L4660:31 · warning · @typescript-eslint/no-misused-promises · Promise returned in function argument where a void return was expected.
-- [ ] L4661:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L4697:7 · warning · no-undef · 'Log' is not defined.
-- [ ] L4707:9 · warning · no-undef · 'Log' is not defined.
-- [ ] L4752:7 · warning · no-undef · 'Log' is not defined.
-- [ ] L4757:7 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4765:7 · warning · no-undef · 'Log' is not defined.
-- [ ] L4782:3 · warning · no-undef · 'Log' is not defined.
-- [ ] L4845:1 · warning · @typescript-eslint/require-await · Async function 'drawPreview' has no 'await' expression.
-- [ ] L4848:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4915:56 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always falsy.
-- [ ] L4922:9 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always truthy.
-- [ ] L5071:11 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always truthy.
-- [ ] L5095:11 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always truthy.
-- [ ] L5119:11 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always truthy.
-- [ ] L5138:39 · warning · no-unused-vars · 'params' is defined but never used.
-- [ ] L5138:47 · warning · no-unused-vars · 'heroId' is defined but never used.
-- [ ] L5143:41 · warning · no-unused-vars · 'params' is defined but never used.
-- [ ] L5143:49 · warning · no-unused-vars · 'heroes' is defined but never used.
-- [ ] L5143:57 · warning · no-unused-vars · 'hero' is defined but never used.
-- [ ] L5143:63 · warning · no-unused-vars · 'allowedHeroIds' is defined but never used.
-- [ ] L5148:45 · warning · no-unused-vars · 'params' is defined but never used.
-- [ ] L5148:53 · warning · no-unused-vars · 'hero' is defined but never used.
-- [ ] L5173:38 · warning · no-unused-vars · 'params' is defined but never used.
-- [ ] L5281:5 · warning · no-undef · 'Log' is not defined.
+- [ ] L4214:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4215:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4237:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4238:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4250:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4251:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4263:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4264:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4296:7 · warning · no-undef · 'Log' is not defined.
+- [ ] L4314:7 · warning · no-undef · 'Log' is not defined.
+- [ ] L4333:13 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, comparison is always true, since `null === null` is true.
+- [ ] L4346:9 · warning · no-undef · 'Log' is not defined.
+- [ ] L4350:9 · warning · no-undef · 'Log' is not defined.
+- [ ] L4356:5 · warning · no-undef · 'Log' is not defined.
+- [ ] L4374:5 · warning · no-undef · 'Log' is not defined.
+- [ ] L4443:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator. A rejection handler that is not a function will be ignored.
+- [ ] L4445:7 · warning · no-undef · 'Log' is not defined.
+- [ ] L4449:12 · warning · no-undef · 'Log' is not defined.
+- [ ] L4471:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator. A rejection handler that is not a function will be ignored.
+- [ ] L4476:12 · warning · no-undef · 'Log' is not defined.
+- [ ] L4512:5 · warning · require-atomic-updates · Possible race condition: `_submitInFlight` might be reassigned based on an outdated value of `_submitInFlight`.
+- [ ] L4517:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4529:3 · warning · no-undef · 'Log' is not defined.
+- [ ] L4560:3 · warning · no-undef · 'Log' is not defined.
+- [ ] L4571:7 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always falsy.
+- [ ] L4575:7 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always falsy.
+- [ ] L4589:5 · warning · no-undef · 'Log' is not defined.
+- [ ] L4596:3 · warning · no-undef · 'Log' is not defined.
+- [ ] L4612:3 · warning · no-undef · 'Log' is not defined.
+- [ ] L4648:3 · warning · no-undef · 'Log' is not defined.
+- [ ] L4658:3 · warning · require-atomic-updates · Possible race condition: `currentExecutionId` might be reassigned based on an outdated value of `currentExecutionId`.
+- [ ] L4662:3 · warning · require-atomic-updates · Possible race condition: `progressTimer` might be reassigned based on an outdated value of `progressTimer`.
+- [ ] L4662:31 · warning · @typescript-eslint/no-misused-promises · Promise returned in function argument where a void return was expected.
+- [ ] L4663:3 · warning · no-undef · 'Log' is not defined.
+- [ ] L4699:7 · warning · no-undef · 'Log' is not defined.
+- [ ] L4709:9 · warning · no-undef · 'Log' is not defined.
+- [ ] L4754:7 · warning · no-undef · 'Log' is not defined.
+- [ ] L4759:7 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4767:7 · warning · no-undef · 'Log' is not defined.
+- [ ] L4784:3 · warning · no-undef · 'Log' is not defined.
+- [ ] L4847:1 · warning · @typescript-eslint/require-await · Async function 'drawPreview' has no 'await' expression.
+- [ ] L4850:3 · warning · @typescript-eslint/no-floating-promises · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4917:56 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always falsy.
+- [ ] L4924:9 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always truthy.
+- [ ] L5073:11 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always truthy.
+- [ ] L5097:11 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always truthy.
+- [ ] L5121:11 · warning · @typescript-eslint/no-unnecessary-condition · Unnecessary conditional, value is always truthy.
+- [ ] L5140:39 · warning · no-unused-vars · 'params' is defined but never used.
+- [ ] L5140:47 · warning · no-unused-vars · 'heroId' is defined but never used.
+- [ ] L5145:41 · warning · no-unused-vars · 'params' is defined but never used.
+- [ ] L5145:49 · warning · no-unused-vars · 'heroes' is defined but never used.
+- [ ] L5145:57 · warning · no-unused-vars · 'hero' is defined but never used.
+- [ ] L5145:63 · warning · no-unused-vars · 'allowedHeroIds' is defined but never used.
+- [ ] L5150:45 · warning · no-unused-vars · 'params' is defined but never used.
+- [ ] L5150:53 · warning · no-unused-vars · 'hero' is defined but never used.
+- [ ] L5175:38 · warning · no-unused-vars · 'params' is defined but never used.
+- [ ] L5283:5 · warning · no-undef · 'Log' is not defined.
 
 ### 2\. Frontend/1. Source/4. JS/3. Hero Tab/heroesTab.js — 82
 
@@ -1100,6 +1101,18 @@ Rules whose id or message is about runtime, backtracking or complexity.
 - [ ] L2:24 · warning · n/no-unpublished-import · "detect-port" is not published.
 - [ ] L14:5 · warning · n/no-process-exit · Don't use process.exit(); throw an error instead.
 
+### 4\. Both/2. Build/1. Scripts/ScanReport.mjs — 3
+
+- [ ] L92:45 · warning · regexp/no-contradiction-with-assertion · The quantifier '\[^>\]\*?' is always entered despite having a minimum of 0. This is because the assertion '\\b' contradicts with the element(s) after the quantifier. Either set the minimum to 1 (+?) or change the assertion.
+- [ ] L92:45 · warning · regexp/no-contradiction-with-assertion · The quantifier '\[^>\]\*?' is always entered despite having a minimum of 0. This is because the assertion '\\b' contradicts with the element(s) after the quantifier. Either set the minimum to 1 (+?) or change the assertion.
+- [ ] L345:5 · warning · n/no-process-exit · Don't use process.exit(); throw an error instead.
+
+### 4\. Both/2. Build/1. Scripts/config-tool.mjs — 3
+
+- [ ] L29:3 · warning · n/no-process-exit · Don't use process.exit(); throw an error instead.
+- [ ] L36:3 · warning · n/no-process-exit · Don't use process.exit(); throw an error instead.
+- [ ] L43:1 · warning · n/no-process-exit · Don't use process.exit(); throw an error instead.
+
 ### 5\. Dev Only/FileLog.js — 3
 
 - [ ] L26:12 · warning · no-undef · 'require' is not defined.
@@ -1128,7 +1141,7 @@ Rules whose id or message is about runtime, backtracking or complexity.
 
 ### .dependency-cruiser.cjs — 1
 
-- [ ] L7:1 · warning · no-undef · 'module' is not defined.
+- [ ] L9:1 · warning · no-undef · 'module' is not defined.
 
 ### 2\. Frontend/1. Source/4. JS/2. Gear \& Enhancing Tab/1. Gear Tab/forceFilter.js — 1
 

@@ -243,7 +243,7 @@
     },
     {
       "name": "lint:ps",
-      "command": "cd .. && node \"$CLAUDE_CONFIG_DIR/tools/tools/lint-ps.mjs\"",
+      "command": "cd .. && node \"1. App/4. Both/2. Build/1. Scripts/config-tool.mjs\" lint-ps.mjs",
       "run": "yarn lint:ps <flags>",
       "steps": [
         {
@@ -292,7 +292,7 @@
     },
     {
       "name": "lint:claude",
-      "command": "cd .. && node \"$CLAUDE_CONFIG_DIR/tools/tools/check-yaml.mjs\" .claude/agents .claude/skills && node \"$CLAUDE_CONFIG_DIR/tools/tools/audit-agent-frontmatter.mjs\" && node \"$CLAUDE_CONFIG_DIR/tools/tools/audit-skill-wiring.mjs\"",
+      "command": "cd .. && node \"1. App/4. Both/2. Build/1. Scripts/config-tool.mjs\" check-yaml.mjs .claude/agents .claude/skills && node \"1. App/4. Both/2. Build/1. Scripts/config-tool.mjs\" audit-agent-frontmatter.mjs && node \"1. App/4. Both/2. Build/1. Scripts/config-tool.mjs\" audit-skill-wiring.mjs",
       "run": "yarn lint:claude <flags>",
       "steps": [
         {
@@ -369,6 +369,18 @@
               "inCode": true
             },
             {
+              "name": "write-roster",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "inventory",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
               "name": "json",
               "type": "boolean",
               "inHeader": true,
@@ -400,7 +412,7 @@
               {
                 "requires": [],
                 "depends": {},
-                "mentions": ["--help", "--json", "--orphans"]
+                "mentions": ["--help", "--inventory", "--json", "--orphans"]
               }
             ]
           },
@@ -419,10 +431,17 @@
               "type": "boolean",
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "inventory",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": null,
           "env": [
+            "SKILL_AUDIT_BUILTIN_ROSTER",
             "SKILL_AUDIT_HOMES_CONFIG",
             "SKILL_AUDIT_MCP_MIRROR",
             "SKILL_AUDIT_MCP_ROSTER",
@@ -431,13 +450,22 @@
             "SKILL_AUDIT_SYNCED_ROOT",
             "SKILL_AUDIT_USER_ROOT"
           ],
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--inventory", "--json"]
+              }
+            ]
+          },
           "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/audit-skill-wiring.mjs"]
         }
       ]
     },
     {
       "name": "hooks:lint",
-      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/lint-hooks.mjs\" --dir ../.claude/hooks",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" lint-hooks.mjs --dir ../.claude/hooks",
       "run": "yarn hooks:lint <flags>",
       "steps": [
         {
@@ -446,7 +474,7 @@
           "bakedArgs": ["--dir", "../.claude/hooks"],
           "cwd": ".",
           "parser": "hand-rolled",
-          "strict": null,
+          "strict": true,
           "flags": [
             {
               "name": "dir",
@@ -461,7 +489,19 @@
               "inCode": true
             },
             {
+              "name": "inventory",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
               "name": "json",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "no-inventory",
               "type": "boolean",
               "inHeader": true,
               "inCode": true
@@ -474,7 +514,7 @@
               {
                 "requires": [],
                 "depends": {},
-                "mentions": ["--dir", "--json", "--user"]
+                "mentions": ["--dir", "--inventory", "--json", "--no-inventory", "--user"]
               }
             ]
           },
@@ -484,7 +524,7 @@
     },
     {
       "name": "lint:strict:report",
-      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/lint-strict-report.mjs\" --repo . --out \"../.claude/plans/LINT-STRICT-REPORT.md\"",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" lint-strict-report.mjs --repo . --out \"../.claude/plans/LINT-STRICT-REPORT.md\"",
       "run": "yarn lint:strict:report <flags>",
       "steps": [
         {
@@ -546,7 +586,7 @@
     },
     {
       "name": "sonar:report",
-      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/diag-scan-repo.mjs\" --repo .. --report --out \"../.claude/plans/SONAR-REPORT.md\"",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" diag-scan-repo.mjs --repo .. --report --out \"../.claude/plans/SONAR-REPORT.md\"",
       "run": "yarn sonar:report <flags>",
       "steps": [
         {
@@ -674,7 +714,7 @@
     },
     {
       "name": "scripts:flags",
-      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/script-flags.mjs\" --repo . --out \"../.claude/plans/script-flags.json\"",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" script-flags.mjs --repo . --out \"../.claude/plans/script-flags.json\"",
       "run": "yarn scripts:flags <flags>",
       "steps": [
         {
@@ -739,7 +779,7 @@
     },
     {
       "name": "scripts:flags:check",
-      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/script-flags.mjs\" --repo . --out \"../.claude/plans/script-flags.json\" --check",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" script-flags.mjs --repo . --out \"../.claude/plans/script-flags.json\" --check",
       "run": "yarn scripts:flags:check <flags>",
       "steps": [
         {
@@ -804,7 +844,7 @@
     },
     {
       "name": "scripts:aliases",
-      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/script-aliases.mjs\" --repo . --flags \"../.claude/plans/script-flags.json\"",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" script-aliases.mjs --repo . --flags \"../.claude/plans/script-flags.json\"",
       "run": "yarn scripts:aliases <flags>",
       "steps": [
         {
@@ -878,7 +918,7 @@
     },
     {
       "name": "scripts:aliases:check",
-      "command": "node \"$CLAUDE_CONFIG_DIR/tools/tools/script-aliases.mjs\" --repo . --flags \"../.claude/plans/script-flags.json\" --check",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" script-aliases.mjs --repo . --flags \"../.claude/plans/script-flags.json\" --check",
       "run": "yarn scripts:aliases:check <flags>",
       "steps": [
         {

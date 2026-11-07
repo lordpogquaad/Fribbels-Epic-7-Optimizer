@@ -1,25 +1,27 @@
 # Sonar scan — Fribbels-Epic-7-Optimizer
 
-Every open SonarJS finding in the JS/TS files of `F:\Epic Seven Screenshots Only\New folder\Gear simulator files\Fribbels-Epic-7-Optimizer`, scanned 2026-10-30 14:46 UTC by
+Every open SonarJS finding in the JS/TS files of `F:\Epic Seven Screenshots Only\New folder\Gear simulator files\Fribbels-Epic-7-Optimizer`, scanned 2026-11-07 15:49 UTC by
 `tools/tools/diag-scan-repo.mjs` (the SonarQube for IDE engine, through diag-scan). Scan only:
 nothing was fixed. Re-render from the raw JSON with `--render`, adding `--ignore` to drop accepted
 findings.
 
-- Files: 95 listed, 94 scanned, 1 unscanned.
-- File list: 93 tracked, 2 untracked-added, 0 deleted skipped, 2 declaration files skipped.
+- Files: 100 listed, 98 scanned, 2 unscanned.
+- File list: 99 tracked, 1 untracked-added, 0 deleted skipped, 2 declaration files skipped.
 - Open findings: **458** in 41 file(s); exit 2.
 - Left out: 0 already closed on the server (none); 0 matched the ignore file.
 - Rule source: server profile lordpogquaad\_Fribbels-Epic-7-Optimizer.
 - TypeScript program: per-file orphan (no tsconfig); type-aware rules can differ from the IDE, which uses the project program (--program project)
 - extension 6.2.0 is not the probed 6.1.1; its server protocol matched the expected field numbers
 - rule parameters: engine defaults (N profile rule(s) carry parameters, not applied; list them with --params)
+- server status not looked up: the lookup budget was spent (F:\\Epic Seven Screenshots Only\\New folder\\Gear simulator files\\Fribbels-Epic-7-Optimizer)
 - server status: N finding(s) tagged from N issue(s) marked resolved, accepted or false positive in lordpogquaad\_Fribbels-Epic-7-Optimizer on sonarcloud.io (F:\\Epic Seven Screenshots Only\\New folder\\Gear simulator files\\Fribbels-Epic-7-Optimizer)
 
 ## Unscanned (never clean)
 
-| File                                                                  | Reason               |
-| --------------------------------------------------------------------- | -------------------- |
-| 1. App/2. Frontend/1. Source/4. JS/7. Gear Analysis Tab/gearScorer.js | not scanned by sonar |
+| File                                                                                 | Reason               |
+| ------------------------------------------------------------------------------------ | -------------------- |
+| 1. App/2. Frontend/1. Source/4. JS/2. Gear \& Enhancing Tab/3. Gear/itemAugmenter.js | not scanned by sonar |
+| 1. App/2. Frontend/1. Source/4. JS/7. Gear Analysis Tab/gearScorer.js                | not scanned by sonar |
 
 ## Runtime findings first
 
@@ -29,10 +31,10 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 
 - [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerGrid.js L426:9 · Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.
 - [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerTab.js L521:32 · Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.
-- [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerTab.js L3575:16 · Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.
-- [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerTab.js L3974:36 · Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.
-- [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerTab.js L4274:16 · Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.
-- [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerTab.js L5037:10 · Refactor this function to reduce its Cognitive Complexity from 43 to the 15 allowed.
+- [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerTab.js L3577:16 · Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.
+- [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerTab.js L3976:36 · Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.
+- [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerTab.js L4276:16 · Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.
+- [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/optimizerTab.js L5039:10 · Refactor this function to reduce its Cognitive Complexity from 43 to the 15 allowed.
 - [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/priorityFilter.js L330:10 · Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.
 - [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/priorityFilter.js L684:10 · Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.
 - [ ] 1. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/priorityFilter.js L1177:10 · Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.
@@ -74,7 +76,7 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 | Rule  | Count | Runtime | Example message                                                                                                                                                     |
 | ----- | ----- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | S9383 | 150   |         | Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator. |
-| S6582 | 85    |         | Prefer using an optional chain expression instead, as it's more concise and easier to read.                                                                         |
+| S6582 | 83    |         | Prefer using an optional chain expression instead, as it's more concise and easier to read.                                                                         |
 | S7773 | 36    |         | Prefer `Number.parseInt` over `parseInt`.                                                                                                                           |
 | S3776 | 32    | yes     | Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.                                                                                |
 | S3358 | 30    |         | Extract this nested ternary operation into an independent statement.                                                                                                |
@@ -85,19 +87,19 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 | S2871 | 6     |         | Provide a compare function to avoid sorting elements alphabetically.                                                                                                |
 | S8786 | 6     | yes     | Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.                                                     |
 | S1940 | 5     |         | Use the opposite operator (\<=) instead.                                                                                                                            |
+| S4624 | 5     |         | Refactor this code to not use nested template literals.                                                                                                             |
 | S4036 | 4     |         | Make sure the "PATH" variable only contains fixed, unwriteable directories.                                                                                         |
-| S4123 | 4     |         | This "await" does not apply to a "Promise". Remove it or fix the expression.                                                                                        |
-| S4624 | 4     |         | Refactor this code to not use nested template literals.                                                                                                             |
+| S7778 | 4     |         | Merge these Array#push() calls into a single call with multiple arguments.                                                                                          |
 | S107  | 3     |         | Method 'applyPriorityFilters' has too many parameters (8). Maximum allowed is 7.                                                                                    |
+| S1523 | 3     |         | Make sure that this dynamic injection or execution of code is safe.                                                                                                 |
 | S4043 | 3     |         | Move this array "sort" operation to a separate statement or replace it with "toSorted".                                                                             |
-| S6397 | 3     |         | Replace this character class by the character itself.                                                                                                               |
 | S7721 | 3     |         | Move function 'globalSelectHtml' to the outer scope.                                                                                                                |
 | S7776 | 3     |         | `_SLOTS` should be a `Set`, and use `_SLOTS.has()` to check existence or non-existence.                                                                             |
 | S1121 | 2     |         | Extract the assignment of "buckets\[g\]" from this expression.                                                                                                      |
 | S2004 | 2     |         | Refactor this code to not nest functions more than 5 levels deep.                                                                                                   |
 | S3579 | 2     |         | Make it an object if it must have named properties; otherwise, use a numeric index here.                                                                            |
+| S4123 | 2     |         | This "await" does not apply to a "Promise". Remove it or fix the expression.                                                                                        |
 | S7755 | 2     |         | Prefer `.at(…)` over `[….length - index]`.                                                                                                                          |
-| S7758 | 2     |         | Prefer `String.fromCodePoint()` over `String.fromCharCode()`.                                                                                                       |
 | S7772 | 2     |         | Prefer `node:fs` over `fs`.                                                                                                                                         |
 | S1135 | 1     |         | Complete the task associated to this "TODO" comment.                                                                                                                |
 | S1481 | 1     |         | Remove unused function '\_td'.                                                                                                                                      |
@@ -110,6 +112,7 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 | S6644 | 1     |         | Unnecessary use of conditional expression for default assignment.                                                                                                   |
 | S6660 | 1     |         | Replace this nested "if" with a more direct "else if".                                                                                                              |
 | S7727 | 1     |         | Do not pass function `fn` directly to `.map(…)`.                                                                                                                    |
+| S7758 | 1     |         | Prefer `String.fromCodePoint()` over `String.fromCharCode()`.                                                                                                       |
 | S7760 | 1     |         | Prefer default parameters over reassignment.                                                                                                                        |
 | S7767 | 1     |         | Use `Math.trunc` instead of `\| 0`.                                                                                                                                 |
 | S7785 | 1     |         | Prefer top-level await over using a promise chain.                                                                                                                  |
@@ -257,42 +260,42 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 - [ ] L1904:9 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 - [ ] L1942:9 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 - [ ] L1962:9 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L2832:7 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3074:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3078:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3082:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3166:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3167:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3353:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3377:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3398:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L3507:21 · S7773 · Prefer `Number.parseInt` over `parseInt`.
-- [ ] L3508:42 · S7781 · Use `replaceAll()` with a string literal instead of this global regex.
-- [ ] L3575:16 · S3776 · Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.
-- [ ] L3974:36 · S3776 · Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.
-- [ ] L4081:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4111:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4162:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4212:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4235:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4248:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4261:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4274:16 · S3776 · Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.
-- [ ] L4323:15 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-- [ ] L4325:22 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-- [ ] L4438:26 · S6661 · Use an object spread instead of `Object.assign` eg: `{ ...foo }`.
-- [ ] L4466:26 · S6661 · Use an object spread instead of `Object.assign` eg: `{ ...foo }`.
-- [ ] L4515:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4681:24 · S6661 · Use an object spread instead of `Object.assign` eg: `{ ...foo }`.
-- [ ] L4757:7 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4848:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-- [ ] L4887:15 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-- [ ] L4892:13 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-- [ ] L4919:19 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-- [ ] L4920:25 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-- [ ] L4922:9 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-- [ ] L4950:37 · S3358 · Extract this nested ternary operation into an independent statement.
-- [ ] L5037:10 · S3776 · Refactor this function to reduce its Cognitive Complexity from 43 to the 15 allowed.
+- [ ] L2834:7 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3076:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3080:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3084:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3168:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3169:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3355:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3379:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3400:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L3509:21 · S7773 · Prefer `Number.parseInt` over `parseInt`.
+- [ ] L3510:42 · S7781 · Use `replaceAll()` with a string literal instead of this global regex.
+- [ ] L3577:16 · S3776 · Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.
+- [ ] L3976:36 · S3776 · Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.
+- [ ] L4083:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4113:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4164:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4214:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4237:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4250:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4263:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4276:16 · S3776 · Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.
+- [ ] L4325:15 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
+- [ ] L4327:22 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
+- [ ] L4440:26 · S6661 · Use an object spread instead of `Object.assign` eg: `{ ...foo }`.
+- [ ] L4468:26 · S6661 · Use an object spread instead of `Object.assign` eg: `{ ...foo }`.
+- [ ] L4517:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4683:24 · S6661 · Use an object spread instead of `Object.assign` eg: `{ ...foo }`.
+- [ ] L4759:7 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4850:3 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+- [ ] L4889:15 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
+- [ ] L4894:13 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
+- [ ] L4921:19 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
+- [ ] L4922:25 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
+- [ ] L4924:9 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
+- [ ] L4952:37 · S3358 · Extract this nested ternary operation into an independent statement.
+- [ ] L5039:10 · S3776 · Refactor this function to reduce its Cognitive Complexity from 43 to the 15 allowed.
 
 ### 1\. App/2. Frontend/1. Source/4. JS/1. Optimizer \& Multi-Hero Optimizer Tab/1. Optimizer/1. Optimizer/priorityFilter.js — 41
 
@@ -554,6 +557,16 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 - [ ] L555:82 · S4624 · Refactor this code to not use nested template literals.
 - [ ] L670:3 · S3776 · Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.
 
+### 1\. App/3. Backend/1. Source/1. Java/10. Tests/generate-damage-parity.mjs — 7
+
+- [ ] L81:30 · S1523 · Make sure that this dynamic injection or execution of code is safe.
+- [ ] L100:31 · S1523 · Make sure that this dynamic injection or execution of code is safe.
+- [ ] L123:24 · S1523 · Make sure that this dynamic injection or execution of code is safe.
+- [ ] L159:11 · S7778 · Merge these Array#push() calls into a single call with multiple arguments.
+- [ ] L160:11 · S7778 · Merge these Array#push() calls into a single call with multiple arguments.
+- [ ] L161:11 · S7778 · Merge these Array#push() calls into a single call with multiple arguments.
+- [ ] L173:9 · S7778 · Merge these Array#push() calls into a single call with multiple arguments.
+
 ### 1\. App/2. Frontend/1. Source/4. JS/4. Importer Tab/3. Saves/saves.js — 6
 
 - [ ] L145:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
@@ -571,14 +584,6 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 - [ ] L288:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 - [ ] L293:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 - [ ] L298:28 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-
-### .claude/hooks/guard-package-root.mjs — 5
-
-- [ ] L31:24 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-- [ ] L34:26 · S7758 · Prefer `String.fromCodePoint()` over `String.fromCharCode()`.
-- [ ] L45:27 · S6397 · Replace this character class by the character itself.
-- [ ] L45:51 · S6397 · Replace this character class by the character itself.
-- [ ] L45:55 · S6397 · Replace this character class by the character itself.
 
 ### 1\. App/2. Frontend/1. Source/4. JS/6. Shared/3. Services/communityBuilds.js — 5
 
@@ -609,13 +614,6 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 - [ ] L366:36 · S1121 · Extract the assignment of "multiVariantCaches\[index\]" from this expression.
 - [ ] L374:59 · S2871 · Provide a compare function to avoid sorting elements alphabetically.
 
-### 1\. App/2. Frontend/1. Source/4. JS/6. Shared/3. Services/heroData.js — 4
-
-- [ ] L240:31 · S4123 · This "await" does not apply to a "Promise". Remove it or fix the expression.
-- [ ] L249:34 · S4123 · This "await" does not apply to a "Promise". Remove it or fix the expression.
-- [ ] L319:35 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-- [ ] L340:22 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
-
 ### 1\. App/2. Frontend/1. Source/4. JS/6. Shared/3. Services/subprocess.js — 4
 
 - [ ] L59:9 · S4036 · Make sure the "PATH" variable only contains fixed, unwriteable directories.
@@ -640,6 +638,11 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 - [ ] L803:9 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 - [ ] L946:5 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
 
+### 1\. App/2. Frontend/1. Source/4. JS/6. Shared/3. Services/heroData.js — 2
+
+- [ ] L319:35 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
+- [ ] L340:22 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
+
 ### 1\. App/4. Both/2. Build/1. Scripts/CheckNativeDep.js — 2
 
 - [ ] L1:16 · S7772 · Prefer `node:fs` over `fs`.
@@ -657,10 +660,6 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 ### 1\. App/2. Frontend/1. Source/4. JS/2. Gear \& Enhancing Tab/2. Enhancing Tab/enhancingTab.js — 1
 
 - [ ] L235:11 · S9383 · Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
-
-### 1\. App/2. Frontend/1. Source/4. JS/2. Gear \& Enhancing Tab/3. Gear/itemAugmenter.js — 1
-
-- [ ] L41:7 · S6582 · Prefer using an optional chain expression instead, as it's more concise and easier to read.
 
 ### 1\. App/2. Frontend/1. Source/4. JS/4. Importer Tab/1. Scanner/scanner.js — 1
 
@@ -689,6 +688,10 @@ Rules whose message is about runtime, backtracking or complexity (S8786, S5843, 
 ### 1\. App/4. Both/2. Build/1. Scripts/CheckYarn.js — 1
 
 - [ ] L1:6 · S6557 · Use the 'String#endsWith' method instead.
+
+### 1\. App/4. Both/2. Build/1. Scripts/ScanReport.mjs — 1
+
+- [ ] L25:65 · S4624 · Refactor this code to not use nested template literals.
 
 ### 1\. App/4. Both/2. Build/1. Scripts/TypecheckReport.mjs — 1
 
