@@ -216,7 +216,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.23.0</version>
+                <version>2.24.0</version>
             </plugin>
             <!-- Report-only (yarn lint:spotbugs). No executions: bound to no phase, never runs in build_backend.ps1.
                  failOnError=false so findings never fail a run. Report: target/spotbugsXml.xml -->

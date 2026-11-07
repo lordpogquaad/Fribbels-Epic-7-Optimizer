@@ -4,6 +4,11 @@ Dated record of findings and finished work, newest first, with the evidence behi
 `[Repo]`, `[Backend]`, `[Frontend]`, `[Scanner]`, `[UI]`. Open work lives in
 [FIX LIST.md](FIX LIST.md). Entries from 2026-06 and earlier were moved here unchanged from the old change logs on 2026-10-30. They were confirmed applied at the time, and Java fixes needed a JAR rebuild unless noted.
 
+## 2026-11-06
+
+- `[Repo]` **Patch bumps from the 2026-11-05 machine audit, committed on Marcus's "commit and push everything" (2026-11-06).** `yarn up` in `1. App/`: electron 45.2.3 with `yarn.lock`; `install_frontend.ps1`: i18next 26.7.2; `pom.xml`: versions-maven-plugin 2.24.0; `build_backend.ps1` SUCCESS and a fresh `backend.jar` (21:14). `yarn lint`, `yarn typecheck` and `yarn build` exit 0 (the dynamic-require warning in `main.dev.js` predates the change). @babel/core, dependency-cruiser and webpack-bundle-analyzer still sit behind Yarn's age gate: `R27` stays open.
+- `[Repo]` **VS Code folder settings committed as `48465c0`** (`/audit-vs-setting` follow-up 1): `files.watcherExclude` and `search.exclude` keep the watcher and search out of `8. DIST/`, `1. HTML/assets/`, `release/` and `target/`; `java.test.config` carries the Testing-view JVM flags; `.claude/rules/machine.md` re-dated. The first push was refused by the auto-mode classifier and went out with this entry.
+
 ## 2026-11-02
 
 - `[Repo]` **Both manifests bumped.** `yarn up` in `1. App/`: electron 45.2.1, eslint 10.14.0, eslint-plugin-regexp 3.3.3, globals 17.14.0, knip 6.44.1 and webpack-cli 7.3.1, with `yarn.lock`. `install_frontend.ps1` for the renderer: @electron/remote 2.1.4, i18next 26.7.1, i18next-browser-languagedetector 8.3.0, i18next-chained-backend 5.0.8, i18next-http-backend 4.0.9 and i18next-localstorage-backend 4.3.3. `yarn lint`, `yarn typecheck`, `yarn build` (main and renderer bundles compiled) and `yarn install --immutable --mode=skip-build` all exit 0. The first `yarn up` was killed by its 550 s timeout during the postinstall; `electron-builder install-app-deps` run by hand finished it, and the cause was not found (one-off). @babel/core, dependency-cruiser and webpack-bundle-analyzer stayed behind Yarn's 24 h age gate: `R27`. The Electron 45 window was not launched visually.
