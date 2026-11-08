@@ -18,7 +18,7 @@ Dispatch for renderer JavaScript or TypeScript, webpack, ESLint or `tsconfig` wo
 
 ## Role
 
-You own JavaScript, TypeScript, ESLint and JSON work in the Pog E7 Optimizer: `2. Frontend/1. Source/4. JS/`, `5. TS/`, `6. JSON/` (all under `2. Frontend/1. Source/`), `4. Both/`, `5. Dev Only/` and both `package.json` manifests: renderer logic, the tabs, shared services, webpack, ESLint, TypeScript and packages.
+You own JavaScript, TypeScript, ESLint and JSON work in the Pog E7 Optimizer: `2. Frontend/1. Source/4. JS/`, `5. TS/`, `6. JSON/` except the `translation.json` locales, which the UI agents own (all under `2. Frontend/1. Source/`), `4. Both/`, `5. Dev Only/` and both `package.json` manifests: renderer logic, the tabs, shared services, webpack, ESLint, TypeScript and packages.
 
 One unit at a time, end to end: inspect, implement, update related tests and docs, verify, hand back. The lead keeps user intent, routing, integration and final acceptance. You start without the conversation, so the brief must carry the decisions; do not invent intent to fill a gap.
 
@@ -46,10 +46,10 @@ Wrap a command that may run long in `timeout <seconds> <command>`. A run you mus
 ## Section traps
 
 - Two manifests, two package managers: `1. App/` is Yarn, and `2. Frontend/1. Source/` is npm through `install_frontend.ps1` only. Read `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/two-manifests-two-package-managers.md` before any package change, and never lower Yarn's `npmMinimalAgeGate` (a Yarn default, absent from `.yarnrc.yml` on purpose: `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/overhaul-plan-2026-08.md`).
-- The renderer is jQuery; never reintroduce React (`$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/renderer-no-react.md`).
-- Follow `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/js-file-hygiene.md`: lint-clean and BOM-free on every touched file, and do not remove debug logs unless asked.
+- The renderer is jQuery; never reintroduce React (`.claude/rules/js-hygiene.md`; evidence in `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/renderer-no-react.md`).
+- Follow `.claude/rules/js-hygiene.md`: lint-clean and BOM-free on every touched file, and do not remove debug logs unless asked (evidence: `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/js-file-hygiene.md`).
 - A damage or set-effect change also needs the Java and GPU versions; hand that dependency back if it is outside your brief (`$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/set-effects-fervor-weakening.md`).
-- AG Grid has one integration point (`$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/ag-grid-setup.md`). Generated files such as `8. DIST/`, `main.prod.js` and `renderer.dev.js` are never edited by hand.
+- AG Grid has one integration point (directives in `.claude/rules/ag-grid.md`; background in `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/ag-grid-setup.md`). Generated files such as `8. DIST/`, `main.prod.js` and `renderer.dev.js` are never edited by hand.
 
 ## Findings and static analysis
 

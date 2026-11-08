@@ -19,5 +19,7 @@ reached a user or a later pass.
   time, then re-read the helper to confirm it did not rewrite itself.
 - Never remove a debug `console.log` or `Log.*` call unless asked. Gate a noisy one with the flags in
   `LogControl.js` instead.
+- The renderer is jQuery plus ag-grid. Never add `react`, `redux`, `react-router` or a jest, enzyme or
+  testcafe stack to either manifest.
 
-Evidence: project memory `js-file-hygiene`, `log-control`.
+Evidence: project memory `js-file-hygiene`, `log-control`, `renderer-no-react`.

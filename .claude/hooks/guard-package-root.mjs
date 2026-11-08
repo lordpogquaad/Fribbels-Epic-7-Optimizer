@@ -10,6 +10,11 @@
 //
 // The command is read the way a shell reads it: heredoc bodies dropped, statements split, words
 // tokenized, and each statement judged at its own folder (cwd, then `cd`, `--prefix`, `--cwd`).
+// The wrappers in WRAPPERS (sudo, env, timeout, nice, nohup, stdbuf) are stripped with the options
+// and operands their spec lists, and `env -C` / `sudo -D` move that one command's folder; other
+// prefix words (exec, command, xargs, ...) drop only their flag words. Under a POSIX shell a
+// `( ... )` or `$( ... )` subshell restores the folder at its close; a `case` pattern's `)` closes
+// no subshell. PowerShell and cmd parentheses do not restore, so there a `cd` inside them counts.
 // DENY, inside this repo only:
 //   * npm/pnpm mutations anywhere except the frontend Source dir
 //   * npm/pnpm mutations in the frontend Source dir, unless npm carries both installer flags
@@ -21,7 +26,8 @@
 // a timeout or exit 1 block the call, so a bad payload exits 1 here on purpose.
 // A shell reader lives in the user-scope hooks, but this one stays self-contained: importing it
 // would throw on a clone without the config repo and block every shell call.
-// This file deliberately contains no backslash characters (tool-call escape normalization trap).
+// Outside the newline, return and tab string escapes this file holds no backslash characters (the
+// tool-call escape normalization trap); a literal backslash is BACKSLASH.
 import { realpathSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -42,7 +48,41 @@ const normalize = (p) => trimSlashes(path.resolve(p).split(BACKSLASH).join('/'))
 const REPO_ROOT = normalize(fileURLToPath(new URL('../..', import.meta.url)));
 const FRONTEND_ROOT = `${REPO_ROOT}/1. app/2. frontend/1. source`;
 
-const CD_PROGRAMS = new Set(['cd', 'chdir', 'pushd', 'set-location', 'sl']);
+const CD_PROGRAMS = new Set(['cd', 'chdir', 'pushd', 'push-location', 'set-location', 'sl']);
+const POP_PROGRAMS = new Set(['popd', 'pop-location']);
+// Wrappers that run a command: value-taking short letters and long names (prefix-matched, as
+// getopt does), how many operands precede the command (timeout's DURATION), the option that runs
+// the command in another folder, and whether a lone `-` is an option (env's `-i`).
+const WRAPPERS = new Map([
+  ['timeout', { short: 'ks', long: ['kill-after', 'signal'], operands: 1 }],
+  ['nice', { short: 'n', long: ['adjustment'], operands: 0 }],
+  ['nohup', { short: '', long: [], operands: 0 }],
+  ['stdbuf', { short: 'ioe', long: ['input', 'output', 'error'], operands: 0 }],
+  [
+    'sudo',
+    {
+      short: 'CDgprRtTUu',
+      long: [
+        'close-from',
+        'chdir',
+        'group',
+        'host',
+        'prompt',
+        'chroot',
+        'role',
+        'type',
+        'command-timeout',
+        'other-user',
+        'user',
+      ],
+      operands: 0,
+      chdir: 'D',
+    },
+  ],
+  ['env', { short: 'uC', long: ['unset', 'chdir'], operands: 0, chdir: 'C', dash: true }],
+]);
+const SUBSHELL_OPEN = Object.freeze(['(']);
+const SUBSHELL_CLOSE = Object.freeze([')']);
 const SHELL_PROGRAMS = new Set(['bash', 'sh', 'zsh', 'dash']);
 const POWERSHELL_PROGRAMS = new Set(['pwsh', 'powershell']);
 const PREFIX_WORDS = new Set([
@@ -56,8 +96,6 @@ const PREFIX_WORDS = new Set([
   'time',
   'exec',
   'command',
-  'sudo',
-  'env',
   'call',
   'corepack',
   'xargs',
@@ -113,8 +151,25 @@ const NODE_MUTATIONS = new Set([
   'ddp',
   'link',
   'ln',
+  'rebuild',
+  'rb',
+  'shrinkwrap',
 ]);
-const YARN_MUTATIONS = new Set(['install', 'add', 'remove', 'up', 'upgrade', 'dedupe']);
+const PKG_WRITES = new Set(['set', 'delete', 'fix']);
+const YARN_MUTATIONS = new Set([
+  'install',
+  'add',
+  'remove',
+  'up',
+  'upgrade',
+  'upgrade-interactive',
+  'dedupe',
+  'link',
+  'unlink',
+  'set',
+  'import',
+  'patch-commit',
+]);
 const YARN_READ_FLAGS = new Set(['--version', '-v', '--help', '-h']);
 
 const INSTALLER = 'pwsh -File "1. App/1. Master/2. PS1/install_frontend.ps1"';
@@ -165,9 +220,46 @@ function stripHeredocs(text) {
   return kept.join('\n');
 }
 
+// Words that may precede a `case` or `esac` keyword in its command position.
+const CASE_LEADS = new Set([
+  'then',
+  'do',
+  'else',
+  'elif',
+  'if',
+  'while',
+  'until',
+  'time',
+  '!',
+  '{',
+]);
+
+/**
+ * Tracks `case WORD in ... esac` on each finished word; true when the word is consumed. Each open
+ * case is a frame: 'head' until `in`, then 'pattern' until `)`, then 'body' until `;;` or `esac`.
+ */
+function caseWord(s, word) {
+  const top = s.cases.at(-1);
+  if (top?.state === 'head') {
+    top.words++;
+    if (top.words < 2 || word !== 'in') return false;
+    top.state = 'pattern';
+    s.words = [];
+    return true;
+  }
+  if (s.wordQuoted || !s.words.every((w) => CASE_LEADS.has(w))) return false;
+  if (word === 'esac' && top) {
+    s.cases.pop();
+    return true;
+  }
+  if (word === 'case' && top?.state !== 'pattern') s.cases.push({ state: 'head', words: 0 });
+  return false;
+}
+
 const endWord = (s) => {
-  if (s.word !== null) s.words.push(s.word);
+  if (s.word !== null && !caseWord(s, s.word)) s.words.push(s.word);
   s.word = null;
+  s.wordQuoted = false;
 };
 
 const endStatement = (s) => {
@@ -198,7 +290,36 @@ function readEscape(s, c, next) {
 }
 
 const endsStatement = (c, previous, next) =>
-  '\n;()|'.includes(c) || (c === '&' && previous !== '>' && next !== '>');
+  '\n;|'.includes(c) || (c === '&' && previous !== '>' && next !== '>');
+
+/** Ends the statement at a parenthesis and records it as a subshell marker. */
+function readParen(s, c) {
+  endStatement(s);
+  s.statements.push(c === '(' ? SUBSHELL_OPEN : SUBSHELL_CLOSE);
+}
+
+/**
+ * Reads a character that means something else inside an open case: in a pattern, `|` and a newline
+ * only end a word, `(` is dropped and `)` ends the pattern (its words are not a command); in a
+ * body, `;;`, `;&` and `;;&` end the item. False when the character reads as usual.
+ */
+function readCaseChar(s, c, next) {
+  const top = s.cases.at(-1);
+  if (top.state === 'pattern') {
+    if (!'()|\n'.includes(c)) return false;
+    endWord(s);
+    if (c !== ')') return true;
+    if (s.cases.at(-1) !== top) return false;
+    s.words = [];
+    top.state = 'body';
+    return true;
+  }
+  if (top.state !== 'body' || c !== ';' || (next !== ';' && next !== '&')) return false;
+  endStatement(s);
+  s.i += next === ';' && s.text[s.i + 2] === '&' ? 2 : 1;
+  top.state = 'pattern';
+  return true;
+}
 
 /** Reads one character, or a whole comment, and moves past it. */
 function readNext(s) {
@@ -213,8 +334,12 @@ function readNext(s) {
   else if (c === BACKSLASH || c === '`') readEscape(s, c, next);
   else if (c === '"' || c === "'") {
     s.word ??= '';
+    s.wordQuoted = true;
     s.quote = c;
-  } else if (endsStatement(c, s.text[s.i - 1], next)) endStatement(s);
+  } else if (s.cases.length && readCaseChar(s, c, next)) {
+    // consumed by the open case
+  } else if (c === '(' || c === ')') readParen(s, c);
+  else if (endsStatement(c, s.text[s.i - 1], next)) endStatement(s);
   else if (' \t\r'.includes(c)) endWord(s);
   else appendToWord(s, c);
   s.i++;
@@ -222,7 +347,16 @@ function readNext(s) {
 
 /** Splits text into statements of words, honoring quotes and escapes. */
 function parseStatements(text) {
-  const s = { text, i: 0, word: null, quote: null, words: [], statements: [] };
+  const s = {
+    text,
+    i: 0,
+    word: null,
+    wordQuoted: false,
+    quote: null,
+    words: [],
+    statements: [],
+    cases: [],
+  };
   while (s.i < text.length) readNext(s);
   endStatement(s);
   return s.statements;
@@ -241,16 +375,67 @@ function withoutRedirections(statement) {
   return words;
 }
 
-/** Removes redirections, assignments and wrapper words, leaving program + arguments. */
-function commandWords(statement) {
+/**
+ * One wrapper option: its width in words (2 when its value is the next word), and its value when
+ * it is the spec's change-folder option (`env -C`, `sudo -D`, `--chdir`), else undefined.
+ */
+function readOption(word, next, spec) {
+  if (word.startsWith('--')) {
+    const [name, attached] = word.slice(2).split(/=(.*)/s);
+    const match = spec.long.find((l) => l.startsWith(name));
+    const width = attached === undefined && match ? 2 : 1;
+    const chdir = match === 'chdir' ? (attached ?? next) : undefined;
+    return { width, chdir };
+  }
+  const at = [...word.slice(1)].findIndex((ch) => spec.short.includes(ch));
+  const width = at >= 0 && at === word.length - 2 ? 2 : 1;
+  const value = width === 2 ? next : word.slice(at + 2);
+  return { width, chdir: at >= 0 && word[at + 1] === spec.chdir ? value : undefined };
+}
+
+/**
+ * Drops a wrapper such as timeout with its options and operands, leaving its command. Returns the
+ * folder its change-folder option names, or null.
+ */
+function stripWrapper(words, spec) {
+  words.shift();
+  let chdir = null;
+  while (words[0]?.startsWith('-') && (words[0] !== '-' || spec.dash)) {
+    if (words[0] === '--') {
+      words.shift();
+      break;
+    }
+    const option = readOption(words[0], words[1], spec);
+    if (option.chdir !== undefined) chdir = option.chdir;
+    words.splice(0, option.width);
+  }
+  words.splice(0, spec.operands);
+  return chdir;
+}
+
+/** The folder after a subshell marker: an open saves it, a close restores the saved one. */
+function afterMarker(marker, dir, saved) {
+  if (marker === SUBSHELL_OPEN) saved.push(dir);
+  else if (saved.length) return saved.pop();
+  return dir;
+}
+
+/**
+ * Removes redirections, assignments and wrapper words, leaving program + arguments. A wrapper's
+ * change-folder option moves `at.dir` for this command only.
+ */
+function commandWords(statement, at = { dir: null }) {
   const words = withoutRedirections(statement);
   while (words.length) {
     const first = words[0].toLowerCase();
+    const wrapper = WRAPPERS.get(programName(words[0]));
     if (ASSIGNMENT.test(words[0])) words.shift();
     else if (PREFIX_WORDS.has(first)) {
       words.shift();
-      if (first === 'env' && words[0] === '-u') words.splice(0, 2);
       while (words[0]?.startsWith('-')) words.shift();
+    } else if (wrapper) {
+      const chdir = stripWrapper(words, wrapper);
+      if (chdir !== null) at.dir = resolveDir(chdir, at.dir);
     } else break;
   }
   return words;
@@ -312,7 +497,9 @@ function judgeNodeManager(program, args, dir) {
   const lower = new Set(args.map((a) => a.toLowerCase()));
   const found = firstVerb(args, NODE_VALUE_OPTIONS);
   const auditFix = found?.verb === 'audit' && lower.has('fix');
-  if (!found || (!NODE_MUTATIONS.has(found.verb) && !auditFix)) return null;
+  const sub = found && firstVerb(args.slice(found.index + 1), NODE_VALUE_OPTIONS);
+  const pkgWrite = found?.verb === 'pkg' && PKG_WRITES.has(sub?.verb);
+  if (!found || (!NODE_MUTATIONS.has(found.verb) && !auditFix && !pkgWrite)) return null;
   if (lower.has('-g') || lower.has('--global') || lower.has('--location=global')) return null;
   const options = program === 'npm' ? ['--prefix', '-c'] : ['--dir', '-c', '--prefix'];
   const zone = zoneOf(targetDir(args, new Set(options), dir));
@@ -349,22 +536,33 @@ function cdTarget(args, dir) {
   return resolveDir(target, dir);
 }
 
-/** Returns a deny reason for the command text, or null to allow it. */
-export function judge(text, cwd, depth = 0) {
+/**
+ * Returns a deny reason for the command text, or null to allow it. `shell` is 'posix' when
+ * parentheses open a subshell (Bash), anything else when they only group (PowerShell, cmd).
+ */
+export function judge(text, cwd, depth = 0, shell = 'posix') {
   if (depth > MAX_DEPTH) return /npm|yarn/i.test(text) ? DENY_TOO_DEEP : null;
   let dir = depth === 0 ? normalize(cwd) : cwd;
+  const saved = [];
   for (const statement of parseStatements(stripHeredocs(text))) {
-    const words = commandWords(statement);
+    if (statement === SUBSHELL_OPEN || statement === SUBSHELL_CLOSE) {
+      if (shell === 'posix') dir = afterMarker(statement, dir, saved);
+      continue;
+    }
+    const at = { dir };
+    const words = commandWords(statement, at);
     if (!words.length) continue;
     const program = programName(words[0]);
     const args = words.slice(1);
     const nested = nestedCommand(program, args);
     let reason = null;
-    if (CD_PROGRAMS.has(program)) dir = cdTarget(args, dir);
-    else if (program === 'popd') dir = null;
-    else if (nested !== null) reason = judge(nested, dir, depth + 1);
-    else if (program === 'npm' || program === 'pnpm') reason = judgeNodeManager(program, args, dir);
-    else if (program === 'yarn') reason = judgeYarn(args, dir);
+    if (CD_PROGRAMS.has(program)) dir = cdTarget(args, at.dir);
+    else if (POP_PROGRAMS.has(program)) dir = null;
+    else if (nested !== null) {
+      reason = judge(nested, at.dir, depth + 1, SHELL_PROGRAMS.has(program) ? 'posix' : 'other');
+    } else if (program === 'npm' || program === 'pnpm')
+      reason = judgeNodeManager(program, args, at.dir);
+    else if (program === 'yarn') reason = judgeYarn(args, at.dir);
     if (reason) return reason;
   }
   return null;
@@ -390,7 +588,7 @@ async function main() {
   const command = input.tool_input?.command;
   if ((tool !== 'Bash' && tool !== 'PowerShell') || typeof command !== 'string') return;
   const cwd = normalize(typeof input.cwd === 'string' && input.cwd ? input.cwd : process.cwd());
-  const reason = judge(command, cwd);
+  const reason = judge(command, cwd, 0, tool === 'Bash' ? 'posix' : 'other');
   if (!reason) return;
   process.stdout.write(
     JSON.stringify({

@@ -42,6 +42,50 @@ const denied = [
   ['backslash path', 'cd "1. App\\2. Frontend\\1. Source"; yarn add x'],
   ['corepack yarn', `cd ${source} && corepack yarn install`],
   ['heredoc fed to a shell', 'bash <<EOF\nnpm install\nEOF'],
+  ['timeout wrapper', 'timeout 120 npm install'],
+  ['timeout with a kill-after value', 'timeout -k 5 120 npm install'],
+  ['timeout with an attached signal', 'timeout -sKILL 120 npm install'],
+  ['timeout with a long option', 'timeout --signal TERM 120 npm install'],
+  ['nohup wrapper', 'nohup npm install'],
+  ['nice wrapper', 'nice npm install'],
+  ['nice with an adjustment', 'nice -n 10 npm install'],
+  ['nice with a dash adjustment', 'nice -5 npm install'],
+  ['stdbuf wrapper', 'stdbuf -o L npm install'],
+  ['stacked wrappers', 'sudo timeout 60 nohup npm ci'],
+  ['timeout yarn in the renderer tree', `cd ${source} && timeout 300 yarn install`],
+  ['Push-Location into the renderer tree', `Push-Location ${source}; yarn install`],
+  ['yarn upgrade-interactive', `cd ${source} && yarn upgrade-interactive`],
+  ['yarn link', `cd ${source} && yarn link ../x`],
+  ['yarn unlink', `cd ${source} && yarn unlink x`],
+  ['yarn set version', `cd ${source} && yarn set version stable`],
+  ['yarn import', `cd ${source} && yarn import`],
+  ['yarn patch-commit', `cd ${source} && yarn patch-commit -s x`],
+  ['npm rebuild in the renderer tree', `cd ${source} && npm rebuild`],
+  ['npm rb', 'npm rb'],
+  ['npm shrinkwrap', 'npm shrinkwrap'],
+  ['npm pkg set', 'npm pkg set dependencies.x=1'],
+  ['npm pkg delete', 'npm pkg delete scripts.x'],
+  ['npm pkg fix', 'npm pkg fix'],
+  ['cd inside a subshell counts inside it', `(cd ${source} && yarn install)`],
+  ['an inner subshell restores one level', `(cd ${source} && (cd ..) && yarn install)`],
+  [
+    'PowerShell parentheses keep the folder',
+    `pwsh -Command '(Set-Location ${source}); yarn install'`,
+  ],
+  ['a case pattern ends no subshell', `(cd ${source}; case $x in a) echo;; esac; yarn add x)`],
+  ['a parenthesized case pattern', `(cd ${source}; case $x in (a) echo;; esac; yarn add x)`],
+  ['a nested case', `(cd ${source}; case $x in a) case $y in b) echo;; esac;; esac; yarn add x)`],
+  ['a cd in a case body stays in its subshell', '(case $x in a) cd /tmp;; esac); npm install'],
+  ['yarn in a case body', `cd ${source}; case $x in a) yarn add x;; esac`],
+  ['a function body cd still counts', `f() { cd ${source}; }; yarn add x`],
+  ['sudo with a user', 'sudo -u bob npm install'],
+  ['sudo with a group', 'sudo -g staff npm install'],
+  ['sudo with an attached user', 'sudo -ubob npm install'],
+  ['sudo --chdir into the renderer tree', `sudo -D ${source} yarn add x`],
+  ['env with an unset', 'env -u X npm install'],
+  ['env -C into the renderer tree', `env -C ${source} yarn add x`],
+  ['env --chdir= into the renderer tree', `env --chdir=${source} yarn add x`],
+  ['env with a dash and an assignment', 'env - FOO=1 npm install'],
 ];
 
 const allowed = [
@@ -77,6 +121,20 @@ const allowed = [
     'yarn install && npx electron-rebuild --module-dir "2. Frontend/1. Source"',
   ],
   ['stderr merge', 'yarn lint 2>&1'],
+  ['timeout read-only npm', 'timeout 60 npm ls'],
+  ['timeout yarn in 1. App', 'cd "1. App" && timeout 300 yarn install'],
+  [
+    'Push-Location with installer flags',
+    `Push-Location ${source}; npm i x --ignore-scripts --legacy-peer-deps`,
+  ],
+  ['Pop-Location leaves the renderer tree', `Push-Location ${source}; Pop-Location; yarn install`],
+  ['npm pkg get', 'npm pkg get set'],
+  ['subshell cd does not leak', `(cd ${source} && npm ls) && yarn install`],
+  ['substitution cd does not leak', `x=$(cd ${source} && pwd) && yarn install`],
+  ['a case closing its subshell', `(cd ${source}; case $x in a) echo;; esac); yarn add x`],
+  ['case patterns are not commands', `cd ${source}; case $x in\nyarn|npm) echo;;\nesac`],
+  ['env -C does not leak', `env -C ${source} pwd; yarn install`],
+  ['env -C out of the renderer tree', `cd ${source} && env -C .. yarn install`],
 ];
 
 for (const [name, command] of denied) {
@@ -138,6 +196,16 @@ test('spawned: a BOM-prefixed payload is still judged', () => {
     tool_input: { command: 'npm install' },
   });
   assert.match(run(String.fromCodePoint(0xfeff) + payload).stdout, /deny/);
+});
+
+test('spawned: a PowerShell payload keeps the folder set inside parentheses', () => {
+  const command = `(Set-Location ${source}); yarn install`;
+  const r = run(JSON.stringify({ tool_name: 'PowerShell', cwd: root, tool_input: { command } }));
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /deny/);
+  const bash = run(JSON.stringify({ tool_name: 'Bash', cwd: root, tool_input: { command } }));
+  assert.equal(bash.status, 0, bash.stderr);
+  assert.equal(bash.stdout, '');
 });
 
 test('spawned: other tools pass', () => {

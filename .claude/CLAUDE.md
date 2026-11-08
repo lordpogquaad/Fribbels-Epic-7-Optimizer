@@ -23,9 +23,9 @@ Code loads its `MEMORY.md` index as auto memory; read the relevant body on deman
   2. Frontend/1. Source/      renderer: 1. HTML  2. CSS  3. ASSETS  4. JS  5. TS  6. JSON  7. PY  8. DIST
     package.json              runtime manifest — npm, no lockfile by design
   3. Backend/1. Source/       Java sources + pom.xml
-  4. Both/1. Webpack/         four webpack configs (main/renderer × dev/prod)
+  4. Both/1. Webpack/         webpack configs (base, main.prod, renderer.dev, renderer.prod)
   4. Both/2. Build/1. Scripts/  CopyAssets, CheckPortInUse, CheckNativeDep, CheckYarn, regen-installed-transitives
-  5. Dev Only/                main.dev.js entry
+  5. Dev Only/                main.dev.js, the dev main-process entry
 2. Personal/                  gitignored
 ```
 
@@ -35,7 +35,7 @@ A PreToolUse hook (`hooks/guard-package-root.mjs`) denies npm package changes in
 ## Commands (run from `1. App/` unless noted)
 
 ```text
-yarn install            outer deps; postinstall also runs electron-builder install-app-deps on the inner tree
+yarn install            outer deps; postinstall also runs electron-builder install-app-deps
 yarn test:hooks         the project hooks' test mirrors in .claude/hooks-test/
 yarn lint:claude        real YAML parse, then frontmatter and wiring audits of .claude/agents and .claude/skills
 yarn lint               eslint (flat config, eslint.config.mjs)
@@ -50,7 +50,7 @@ yarn scripts:aliases    writes one <script>:<flag> script per boolean flag into 
 yarn build              copy-assets + webpack main/renderer prod bundles
 yarn dev                hot renderer dev server
 yarn package-win        electron-builder NSIS + zip → release/
-pwsh -File "1. Master/2. PS1/install_frontend.ps1"   inner (renderer) deps — never bare npm install
+pwsh -File "1. Master/2. PS1/install_frontend.ps1"   inner (renderer) deps
 pwsh -File "1. Master/2. PS1/build_backend.ps1"      backend jar
 ```
 
@@ -66,6 +66,10 @@ jar's timestamp.
 - Claude Code's shell exports `ELECTRON_RUN_AS_NODE=1`, so `electron --version` / `yarn start` run from the
   Bash tool execute Electron as plain Node (prints the Node version, no window). To probe or launch the
   real app from a tool call, prefix `env -u ELECTRON_RUN_AS_NODE`; otherwise launch from a normal terminal.
+- For a runtime question read `1. App/5. Dev Only/logs/latest.log` (and `prev-N.log`) before asking Marcus
+  for a console paste; format and greps are in project memory `runtime-log-file`.
+- `plansDirectory` in `.claude/settings.json` must stay a project-relative path (`./.claude/plans`): an
+  absolute or out-of-root value falls back to the default.
 - `node -e` with backslashes and MSYS `/f/...` paths to native binaries are machine-wide traps:
   `~/.claude/rules/shell-escapes.md`.
 

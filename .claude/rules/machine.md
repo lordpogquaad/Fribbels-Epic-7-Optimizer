@@ -37,7 +37,6 @@ Extensions are on or off per profile, not per repo. This repo's `.vscode/` (trac
   shift SpotBugs counts (430 against 427 on the same source, 2026-10-31), so compare a count only
   straight after `mvn clean test`; `touch` does not force a recompile.
 - Run one `mvn` at a time: concurrent runs collide in `target/`.
-- `gh` is not installed here. Read public GitHub data with a scratch `.mjs` that calls the REST API.
 - `mvn` is not on `PATH`. Use the Maven path above, or the repo scripts, which set it themselves.
 - Maven plugins and JaCoCo-style agents must support the JDK above, which is newer than many tools
   test against: run one before relying on it.

@@ -4,6 +4,6 @@
     "testDir": ".claude/hooks-test"
   },
   "rules": {
-    "alwaysLoadedTopicRules": ["README.md", "section-locations.md"]
+    "alwaysLoadedTopicRules": ["README.md", "section-locations.md", "machine.md"]
   }
 }

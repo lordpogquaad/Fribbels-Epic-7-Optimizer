@@ -15,7 +15,7 @@ This file supplies the backend's values. The agents are `backend-sonnet` and `ba
 ## Scope
 
 Under `1. App/3. Backend/1. Source/`: `1. Java/com/`, `1. Java/10. Tests/`, `pom.xml` and
-`pmd-ruleset.xml`. Under `1. App/1. Master/2. PS1/`: `build_backend.ps1` and `lint_java.ps1`.
+`pmd-ruleset.xml`. Under `1. App/1. Master/2. PS1/`: `build_backend.ps1`, `lint_java.ps1`, `lint_spotbugs.ps1`, `coverage_java.ps1` and `outdated_java.ps1`.
 
 Exclude the numbered junction paths `1. Core` to `8. GPU`: git lists those files twice, and auditing
 `com/fribbels/` covers them. Shard by package, with `Main.java` joining the `handler` shard and each
