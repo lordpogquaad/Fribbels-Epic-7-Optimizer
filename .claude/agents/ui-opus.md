@@ -10,6 +10,8 @@ experimental:
   cacheTtl: 5m
 ---
 
+<!-- rendered-from: repo:.claude/agent-families/section -->
+
 # Ui opus
 
 **Model/effort:** Opus · requests `medium`: layout across tabs needs Opus judgment, but a visual miss is caught when Marcus looks at it.

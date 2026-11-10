@@ -10,6 +10,8 @@ experimental:
   cacheTtl: 5m
 ---
 
+<!-- rendered-from: repo:.claude/agent-families/section -->
+
 # Scanner sonnet
 
 **Model/effort:** Sonnet · requests `medium`, for routine bounded work in this section. A unit that needs more goes to the Opus twin rather than raising this agent.

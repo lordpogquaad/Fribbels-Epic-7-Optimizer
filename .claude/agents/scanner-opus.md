@@ -10,6 +10,8 @@ experimental:
   cacheTtl: 5m
 ---
 
+<!-- rendered-from: repo:.claude/agent-families/section -->
+
 # Scanner opus
 
 **Model/effort:** Opus · requests `high`, because a miss here silently loses or corrupts imported account data.

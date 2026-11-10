@@ -10,6 +10,8 @@ experimental:
   cacheTtl: 5m
 ---
 
+<!-- rendered-from: repo:.claude/agent-families/section -->
+
 # Backend opus
 
 **Model/effort:** Opus · requests `high`, because a miss here silently changes optimizer results or the damage model.
