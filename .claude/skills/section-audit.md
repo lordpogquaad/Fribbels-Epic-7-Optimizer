@@ -47,6 +47,8 @@ agents, so the lead does not stop for approval.
 4. **Dispatch.** One `<section>-sonnet` per shard, or `<section>-opus` in `deep` mode. Each brief
    carries:
 
+   <!-- brief-agent: backend-sonnet -->
+
    ```text
    audit: /audit-<section> <standard|deep>
    files: <the exact file list>
@@ -54,6 +56,8 @@ agents, so the lead does not stop for approval.
    known rows: <fix-list ids touching these files>
    checks: <the section's "What the agents check">
    not run: <the section's "Not run in an audit">
+   constraints: no deletes, no process operations; never read settings.json, .credentials.json or
+                anything under tools/metrics/
    ```
 
 5. **Consolidate.** Each shard's coverage line must read N of N for the list sent; send any file it
