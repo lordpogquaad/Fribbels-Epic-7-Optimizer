@@ -8,6 +8,9 @@
 //   node driver.mjs eval '<js>'       evaluate in the renderer (Node integration is on), print JSON
 //   node driver.mjs click '<css>'     click the first element matching the selector
 //   node driver.mjs wait '<css>' [ms] wait until the selector exists (default 30000 ms)
+//   node driver.mjs console [--follow] [--errors] [--tail N]
+//                                     the DevTools Console as text: console.* with source line,
+//                                     uncaught exceptions, Chromium warnings; --follow streams live
 //   node driver.mjs logs [n]          last n lines of 1. App/5. Dev Only/logs/latest.log (default 40)
 //   node driver.mjs quit              close the window the app's own way, then stop the dev server
 //
@@ -18,6 +21,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // The skill folder is <repo>/.claude/skills/run-pog-e7-optimizer/; the app is <repo>/1. App/.
@@ -115,6 +119,168 @@ async function cdp(method, params = {}) {
   });
   ws.close();
   return result;
+}
+
+// A CDP session that stays open for events (console streaming); cdp() above is one call, one socket.
+async function openSession() {
+  const t = await pageTarget();
+  if (!t) die(`no app page on CDP port ${CDP_PORT}; run: node driver.mjs launch`);
+  const ws = new WebSocket(t.webSocketDebuggerUrl);
+  await new Promise((res, rej) => {
+    ws.onopen = res;
+    ws.onerror = () => rej(new Error('CDP websocket failed to open'));
+  });
+  let nextId = 1;
+  const pending = new Map();
+  const listeners = [];
+  ws.onmessage = (ev) => {
+    const msg = JSON.parse(ev.data);
+    if (msg.id && pending.has(msg.id)) {
+      const { res, rej } = pending.get(msg.id);
+      pending.delete(msg.id);
+      if (msg.error) rej(new Error(msg.error.message));
+      else res(msg.result);
+    } else if (msg.method) for (const l of listeners) l(msg.method, msg.params);
+  };
+  const closed = new Promise((res) => {
+    ws.onclose = res;
+  });
+  return {
+    send: (method, params = {}) =>
+      new Promise((res, rej) => {
+        const id = nextId++;
+        pending.set(id, { res, rej });
+        ws.send(JSON.stringify({ id, method, params }));
+      }),
+    on: (fn) => listeners.push(fn),
+    closed,
+    close: () => ws.close(),
+  };
+}
+
+// --- console: what the DevTools Console panel shows, as text -------------------------------------
+function fmtPreview(p) {
+  const isArray = p.subtype === 'array';
+  const items = (p.properties || []).map((x) => (isArray ? x.value : `${x.name}: ${x.value}`));
+  const body = items.join(', ') + (p.overflow ? ', …' : '');
+  return isArray ? `[${body}]` : `{${body}}`;
+}
+
+function fmtArg(a) {
+  if (a.type === 'string') return a.value;
+  if (a.unserializableValue) return a.unserializableValue;
+  if ('value' in a) return JSON.stringify(a.value);
+  if (a.preview) return fmtPreview(a.preview);
+  return a.description ?? a.type;
+}
+
+// Applies console format specifiers (%s %d %i %f %o %O %c) the way the Console panel does; %c's
+// CSS argument is consumed and dropped.
+function fmtArgs(args) {
+  if (!args.length) return '';
+  const [first, ...rest] = args;
+  if (first.type !== 'string' || !/%[sdifoOc]/.test(first.value)) return args.map(fmtArg).join(' ');
+  const queue = [...rest];
+  const head = first.value.replaceAll(/%([sdifoOc])/g, (_m, spec) => {
+    if (!queue.length) return `%${spec}`;
+    const a = queue.shift();
+    return spec === 'c' ? '' : fmtArg(a);
+  });
+  return [head, ...queue.map(fmtArg)].join(' ');
+}
+
+// The app's Log.* and its console tee live in LogControl.js, and Chromium records one stack frame for
+// log/info calls, so that file is every line's source: drop it rather than print a useless location.
+const WRAPPER_FILES = new Set(['LogControl.js']);
+
+function where(url, line) {
+  if (!url) return '';
+  const name = decodeURIComponent(url.split(/[\\/]/).pop() || url);
+  if (WRAPPER_FILES.has(name)) return '';
+  const lineSuffix = line == null ? '' : ':' + (line + 1);
+  return `  (${name}${lineSuffix})`;
+}
+
+const hhmmss = (ms) => new Date(ms).toTimeString().slice(0, 8);
+const LEVEL = { warning: 'WARN', error: 'ERROR', assert: 'ERROR', verbose: 'DEBUG' };
+
+function consoleLine(method, p) {
+  if (method === 'Runtime.consoleAPICalled') {
+    const top = p.stackTrace?.callFrames?.[0];
+    const level = LEVEL[p.type] || p.type.toUpperCase();
+    return {
+      ts: p.timestamp,
+      level,
+      line: `${hhmmss(p.timestamp)} ${level} ${fmtArgs(p.args)}${where(top?.url, top?.lineNumber)}`,
+    };
+  }
+  if (method === 'Runtime.exceptionThrown') {
+    const d = p.exceptionDetails;
+    const text = d.exception?.description || d.text;
+    return {
+      ts: p.timestamp,
+      level: 'ERROR',
+      line: `${hhmmss(p.timestamp)} UNCAUGHT ${text}${where(d.url, d.lineNumber)}`,
+    };
+  }
+  if (method === 'Log.entryAdded') {
+    const e = p.entry;
+    const level = LEVEL[e.level] || e.level.toUpperCase();
+    return {
+      ts: e.timestamp,
+      level,
+      line: `${hhmmss(e.timestamp)} ${level} [${e.source}] ${e.text}${where(e.url, e.lineNumber)}`,
+    };
+  }
+  return null;
+}
+
+async function consoleCmd(argv) {
+  let opts;
+  try {
+    opts = parseArgs({
+      args: argv,
+      strict: true,
+      options: {
+        follow: { type: 'boolean', short: 'f' },
+        errors: { type: 'boolean' },
+        tail: { type: 'string' },
+        quiet: { type: 'string' },
+      },
+    }).values;
+  } catch (e) {
+    die(`console: ${e.message}\nusage: console [--follow] [--errors] [--tail N] [--quiet MS]`, 2);
+  }
+  const tail = opts.tail == null ? Infinity : Number(opts.tail);
+  const quietMs = opts.quiet == null ? 1500 : Number(opts.quiet);
+  const notPositive = (n) => Number.isNaN(n) || n <= 0;
+  if (notPositive(tail) || notPositive(quietMs)) {
+    die('console: --tail and --quiet take a positive number', 2);
+  }
+
+  const s = await openSession();
+  const replayed = [];
+  let replaying = true;
+  let last = Date.now();
+  s.on((method, params) => {
+    const out = consoleLine(method, params);
+    if (!out || (opts.errors && out.level !== 'ERROR' && out.level !== 'WARN')) return;
+    last = Date.now();
+    if (opts.follow && !replaying) console.log(out.line);
+    else replayed.push(out);
+  });
+  // Enabling Runtime and Log makes Chromium replay the messages it buffered before we connected,
+  // then it streams new ones. The two domains replay one after the other, so sort by time.
+  await s.send('Runtime.enable');
+  await s.send('Log.enable');
+  while (Date.now() - last < quietMs) await sleep(100);
+  replaying = false;
+  const lines = replayed.sort((a, b) => a.ts - b.ts).map((o) => o.line);
+  console.log(lines.slice(-tail).join('\n') || '(no console messages)');
+  if (!opts.follow) return s.close();
+  console.log('--- following; Ctrl-C to stop ---');
+  await s.closed;
+  console.log('--- page closed ---');
 }
 
 async function evaluate(expression) {
@@ -275,6 +441,8 @@ async function main() {
       console.log(`found ${args[0]}`);
       return;
     }
+    case 'console':
+      return consoleCmd(args);
     case 'logs': {
       const n = Number(args[0] || 40);
       const lines = fs.readFileSync(path.join(LOG_DIR, 'latest.log'), 'utf8').split(/\r?\n/);
@@ -283,10 +451,14 @@ async function main() {
     }
     default:
       die(
-        'usage: node driver.mjs launch|status|ss <png>|eval <js>|click <css>|wait <css> [ms]|logs [n]|quit',
+        'usage: node driver.mjs launch|status|ss <png>|eval <js>|click <css>|wait <css> [ms]|console [--follow] [--errors] [--tail N]|logs [n]|quit',
         2,
       );
   }
 }
 
-main().catch((e) => die(e.message));
+try {
+  await main();
+} catch (e) {
+  die(e.message);
+}

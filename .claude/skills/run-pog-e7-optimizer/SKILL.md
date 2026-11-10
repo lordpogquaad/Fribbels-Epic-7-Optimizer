@@ -1,6 +1,6 @@
 ---
 name: run-pog-e7-optimizer
-description: Build, launch and drive the Pog E7 Optimizer Electron app (renderer dev server, Electron window, Java backend), click through its tabs, evaluate JS in the renderer and take screenshots. Use when asked to run, start, launch, rebuild or screenshot the app, or to check that a change works in the real running app rather than only in tests.
+description: Build, launch and drive the Pog E7 Optimizer Electron app (renderer dev server, Electron window, Java backend), click through its tabs, evaluate JS in the renderer, read its DevTools console and take screenshots. Use when asked to run, start, launch, rebuild or screenshot the app, to see what the app's console or errors say, or to check that a change works in the real running app rather than only in tests.
 ---
 
 # Run the Pog E7 Optimizer
@@ -52,6 +52,7 @@ node "$D" quit                                     # the app's own close path, t
 | `eval '<js>'`       | Evaluates in the renderer (Node integration is on) and prints the JSON result                      |
 | `click '<css>'`     | Clicks the first match                                                                             |
 | `wait '<css>' [ms]` | Waits until the selector exists (default 30000 ms)                                                 |
+| `console [opts]`    | The DevTools Console as text; see "Read the console" below                                         |
 | `logs [n]`          | The last n lines of `1. App/5. Dev Only/logs/latest.log` (both processes and the Java backend)     |
 | `quit`              | Closes the window the way the app does, which also stops `java.exe`; stops a dev server it started |
 
@@ -59,6 +60,19 @@ Tab labels are `#tab1label` (Optimizer) to `#tab5label` (Enhancing); the later t
 click them by text through `eval`. Grids: `#myGrid` (Optimizer), `#gear-grid`, `#heroes-table`,
 `#builds-table`. Launch output goes to `1. App/5. Dev Only/logs/driver-devserver.log` and
 `driver-electron.log`; the state file is `<os tmp>/pog-e7-driver.json`.
+
+## Read the console
+
+What the renderer's DevTools Console shows, without anyone copying it: `console.*` and `Log.*`
+output (including the Java backend's lines, which the app echoes there), uncaught exceptions with
+their stack, and Chromium's own warnings. Connecting replays everything logged since the page
+loaded, sorted by time, then `--follow` keeps streaming.
+
+```bash
+node "$D" console --errors --tail 3               # the last 3 errors, warnings and uncaught exceptions
+node "$D" console --tail 2                        # the last 2 lines of everything
+timeout 12 node "$D" console --follow --tail 2    # replay, then stream live (background it for long watches)
+```
 
 ## Run (human path)
 
@@ -88,6 +102,14 @@ attach to it.
 - **AG Grid renders only the visible rows.** Count rows from the paging summary
   (`.ag-paging-row-summary-panel`), not from `.ag-row` elements.
 - **Screenshot text is small.** Read numbers through `eval`, not from the PNG.
+- **Replayed objects print as `Object`.** Chromium keeps no object preview for messages logged
+  before the driver connected; a line caught live by `--follow` shows `{a: 1, b: Array(2)}`. For
+  the full value, `eval` the expression instead.
+- **Console lines carry no source location for `Log.*`.** `LogControl.js` wraps `console`, and
+  Chromium records one stack frame for log and info calls, so the driver drops that file's name
+  rather than print it on every line. Uncaught exceptions keep their full stack.
+- **The one warning at launch** is Electron's dev-only "Insecure Content-Security-Policy" notice
+  (`app.html` sets no CSP); it is part of the `F11` hardening work, not a regression.
 - **Images load after the rows.** A screenshot taken straight after `wait` showed an empty hero
   portrait column; the second `eval` above waits for the grid's images first.
 
