@@ -65,7 +65,8 @@ agents, so the lead does not stop for approval.
    for Marcus to rule on. Add one dated entry to `LEDGER.md`: the section, mode, tool results, shards,
    and the ids filed. Raw tool counts go in that entry, not in rows. A clean pass gets an entry too,
    so nobody repeats it.
-7. **Report.** Use the format below. Commit only when Marcus says so.
+7. **Report.** Use the format below. Commit the fix list and ledger and push to `origin` under the
+   standing commit grant (`.claude/CLAUDE.md`).
 
 ## Agent contract
 

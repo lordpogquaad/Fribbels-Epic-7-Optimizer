@@ -80,4 +80,5 @@ is one of each, grouped by area (Repo, Backend, Frontend, Scanner, UI), because 
 Check the fix list when starting work, and move a finished row to the ledger with its evidence.
 Copilot-era files in `.github/` stay until `R8` removes them; do not build on them.
 
-Commit and push only when Marcus says so. This repo is not covered by the standing commit grant.
+This repo is covered by the standing commit + push grant (global `rules/repo-commands.md`, since
+2026-11-10): commit verified work and push it to `origin` without asking. Never push to `upstream`.
