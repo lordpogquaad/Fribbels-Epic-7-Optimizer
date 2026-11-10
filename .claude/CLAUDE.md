@@ -3,7 +3,7 @@
 Electron desktop gear optimizer for Epic Seven. jQuery renderer bundled by webpack 5, Java/Maven
 optimizer backend shipped as a jar, Python scanner/importer helpers. Fork of Fribbels' optimizer.
 
-Global working preferences apply (`~/.claude/CLAUDE.md`, `~/.claude/rules/`). This file holds only
+Global working preferences apply (`$CLAUDE_CONFIG_DIR/CLAUDE.md`, `$CLAUDE_CONFIG_DIR/rules/`). This file holds only
 what is specific to this repo.
 
 ## Memory
@@ -71,7 +71,7 @@ jar's timestamp.
 - `plansDirectory` in `.claude/settings.json` must stay a project-relative path (`./.claude/plans`): an
   absolute or out-of-root value falls back to the default.
 - `node -e` with backslashes and MSYS `/f/...` paths to native binaries are machine-wide traps:
-  `~/.claude/rules/shell-escapes.md`.
+  `$CLAUDE_CONFIG_DIR/rules/shell-escapes.md`.
 
 ## Current state
 
