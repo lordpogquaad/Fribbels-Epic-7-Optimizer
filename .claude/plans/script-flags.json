@@ -255,23 +255,29 @@
           "tool": "lint-ps.mjs",
           "bakedArgs": [],
           "cwd": "..",
-          "parser": "hand-rolled",
-          "strict": null,
+          "parser": "util-parseArgs",
+          "strict": false,
           "flags": [
             {
               "name": "json",
               "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
               "inHeader": true,
               "inCode": true
             },
             {
               "name": "no-cache",
               "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
               "inHeader": true,
               "inCode": true
             }
           ],
-          "positionals": null,
+          "positionals": true,
           "env": [],
           "forwardsArgv": true,
           "usage": {
@@ -283,10 +289,7 @@
               }
             ]
           },
-          "scanned": [
-            "$CLAUDE_CONFIG_DIR/tools/tools/lint-ps.mjs",
-            "$CLAUDE_CONFIG_DIR/tools/tools/lib/lint-ps-cache.mjs"
-          ]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/lint-ps.mjs"]
         }
       ]
     },
@@ -304,35 +307,47 @@
           "tool": "check-yaml.mjs",
           "bakedArgs": [".claude/agents", ".claude/skills"],
           "cwd": "..",
-          "parser": "hand-rolled",
-          "strict": null,
+          "parser": "util-parseArgs",
+          "strict": false,
           "flags": [
             {
-              "name": "tracked",
+              "name": "json",
               "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
               "inHeader": true,
               "inCode": true
             },
             {
-              "name": "json",
+              "name": "tracked",
               "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
               "inHeader": true,
               "inCode": true
             },
             {
               "name": "no-cache",
               "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
               "inHeader": true,
               "inCode": true
             },
             {
               "name": "exclude",
               "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": true,
               "inHeader": true,
               "inCode": true
             }
           ],
-          "positionals": null,
+          "positionals": true,
           "env": [],
           "forwardsArgv": true,
           "usage": {
@@ -349,10 +364,7 @@
               }
             ]
           },
-          "scanned": [
-            "$CLAUDE_CONFIG_DIR/tools/tools/check-yaml.mjs",
-            "$CLAUDE_CONFIG_DIR/tools/tools/lib/check-yaml-cache.mjs"
-          ]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/check-yaml.mjs"]
         },
         {
           "kind": "config-tool",
@@ -433,6 +445,18 @@
               "inCode": true
             },
             {
+              "name": "fix",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "dry-run",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
               "name": "inventory",
               "type": "string",
               "inHeader": true,
@@ -454,8 +478,10 @@
             "forms": [
               {
                 "requires": [],
-                "depends": {},
-                "mentions": ["--inventory", "--json"]
+                "depends": {
+                  "--dry-run": ["--fix"]
+                },
+                "mentions": ["--dry-run", "--fix", "--inventory", "--json"]
               }
             ]
           },
