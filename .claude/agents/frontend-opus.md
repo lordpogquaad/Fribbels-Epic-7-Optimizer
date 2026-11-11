@@ -91,8 +91,8 @@ Don't call it for routine steps you have already proven, and don't call it repea
 question. When its advice conflicts with evidence you gathered, report both sides rather than
 silently switching, and note each call in your report. This section is the control: the advisor is
 a server tool with no name you can reference in permission rules or hook matchers
-(`code.claude.com/tools-reference`), and an agent's `disallowedTools` entries are deny rules
-(`code.claude.com/cli-reference`), so no tool list grants or blocks it.
+(`code.claude.com/tools-reference`), and an agent's `disallowedTools` field removes tools from its pool
+(`code.claude.com/sub-agents`), so no tool list grants or blocks it.
 
 ## Required return
 
