@@ -15,13 +15,13 @@
         }
       },
       "tokens": {
-        "name": "backend-sonnet",
         "title": "Backend sonnet",
-        "opener": "Sonnet · requests `medium`, for routine bounded work in this section. A unit that needs more goes to the Opus twin rather than raising this agent.",
+        "tier": "Sonnet",
+        "opener": ", for routine bounded work in this section. A unit that needs more goes to the Opus twin rather than raising this agent.",
         "dispatch": "Java, Maven or `pom.xml` work, optimizer search or damage-model changes, backend bugs and JDK or Java dependency updates.",
         "twin": "backend-opus",
         "delete_tail": " The gate's `mvn clean` of `target/` is the one exception.",
-        "advisor_when": "before changing search logic or the damage model, and when a result differs from the old jar with no clear cause."
+        "advisor_when": "before changing search logic or the damage model, and when a result differs from the old jar with no clear cause"
       },
       "blocks": {
         "role": "You own Java and Maven backend work in the Pog E7 Optimizer: `3. Backend/1. Source/` (`1. Java/`, `pom.xml`), `3. Backend/2. Apache Maven/`, `1. Master/3. Jar/` and `1. Master/2. PS1/build_backend.ps1`: the optimizer engine, HTTP handlers, request and response models, the database layer, the Maven build and the GPU path.",
@@ -45,13 +45,13 @@
         }
       },
       "tokens": {
-        "name": "backend-opus",
         "title": "Backend opus",
-        "opener": "Opus · requests `high`, because a miss here silently changes optimizer results or the damage model.",
+        "tier": "Opus",
+        "opener": ", because a miss here silently changes optimizer results or the damage model.",
         "dispatch": "Java, Maven or `pom.xml` work, optimizer search or damage-model changes, backend bugs and JDK or Java dependency updates.",
         "twin": "backend-sonnet",
         "delete_tail": " The gate's `mvn clean` of `target/` is the one exception.",
-        "advisor_when": "before changing search logic or the damage model, and when a result differs from the old jar with no clear cause."
+        "advisor_when": "before changing search logic or the damage model, and when a result differs from the old jar with no clear cause"
       },
       "blocks": {
         "role": "You own Java and Maven backend work in the Pog E7 Optimizer: `3. Backend/1. Source/` (`1. Java/`, `pom.xml`), `3. Backend/2. Apache Maven/`, `1. Master/3. Jar/` and `1. Master/2. PS1/build_backend.ps1`: the optimizer engine, HTTP handlers, request and response models, the database layer, the Maven build and the GPU path.",
@@ -75,13 +75,13 @@
         }
       },
       "tokens": {
-        "name": "frontend-sonnet",
         "title": "Frontend sonnet",
-        "opener": "Sonnet · requests `medium`, for routine bounded work in this section. A unit that needs more goes to the Opus twin rather than raising this agent.",
+        "tier": "Sonnet",
+        "opener": ", for routine bounded work in this section. A unit that needs more goes to the Opus twin rather than raising this agent.",
         "dispatch": "renderer JavaScript or TypeScript, webpack, ESLint or `tsconfig` work, package updates, and bugs in the tabs.",
         "twin": "frontend-opus",
         "delete_tail": "",
-        "advisor_when": "before a change that crosses tabs or alters shared services, and when a build or runtime failure resists a first fix."
+        "advisor_when": "before a change that crosses tabs or alters shared services, and when a build or runtime failure resists a first fix"
       },
       "blocks": {
         "role": "You own JavaScript, TypeScript, ESLint and JSON work in the Pog E7 Optimizer: `2. Frontend/1. Source/4. JS/`, `5. TS/`, `6. JSON/` except the `translation.json` locales, which the UI agents own (all under `2. Frontend/1. Source/`), `4. Both/`, `5. Dev Only/` and both `package.json` manifests: renderer logic, the tabs, shared services, webpack, ESLint, TypeScript and packages.",
@@ -105,13 +105,13 @@
         }
       },
       "tokens": {
-        "name": "frontend-opus",
         "title": "Frontend opus",
-        "opener": "Opus · requests `high`, because this work crosses tabs and shared services, where a miss ships quietly.",
+        "tier": "Opus",
+        "opener": ", because this work crosses tabs and shared services, where a miss ships quietly.",
         "dispatch": "renderer JavaScript or TypeScript, webpack, ESLint or `tsconfig` work, package updates, and bugs in the tabs.",
         "twin": "frontend-sonnet",
         "delete_tail": "",
-        "advisor_when": "before a change that crosses tabs or alters shared services, and when a build or runtime failure resists a first fix."
+        "advisor_when": "before a change that crosses tabs or alters shared services, and when a build or runtime failure resists a first fix"
       },
       "blocks": {
         "role": "You own JavaScript, TypeScript, ESLint and JSON work in the Pog E7 Optimizer: `2. Frontend/1. Source/4. JS/`, `5. TS/`, `6. JSON/` except the `translation.json` locales, which the UI agents own (all under `2. Frontend/1. Source/`), `4. Both/`, `5. Dev Only/` and both `package.json` manifests: renderer logic, the tabs, shared services, webpack, ESLint, TypeScript and packages.",
@@ -135,13 +135,13 @@
         }
       },
       "tokens": {
-        "name": "scanner-sonnet",
         "title": "Scanner sonnet",
-        "opener": "Sonnet · requests `medium`, for routine bounded work in this section. A unit that needs more goes to the Opus twin rather than raising this agent.",
+        "tier": "Sonnet",
+        "opener": ", for routine bounded work in this section. A unit that needs more goes to the Opus twin rather than raising this agent.",
         "dispatch": "gear or hero scan failures, missing or wrong imported data, Python changes and scapy or Npcap issues.",
         "twin": "scanner-opus",
         "delete_tail": "",
-        "advisor_when": "before changing how scan data is decoded or merged, and when imported data disagrees with the game with no clear cause."
+        "advisor_when": "before changing how scan data is decoded or merged, and when imported data disagrees with the game with no clear cause"
       },
       "blocks": {
         "role": "You own Python scanner and importer work in the Pog E7 Optimizer: `2. Frontend/1. Source/7. PY/` and its caller `2. Frontend/1. Source/4. JS/4. Importer Tab/1. Scanner/`: packet capture, the scan flow, unit and item conversion, and the import path into the backend.",
@@ -165,13 +165,13 @@
         }
       },
       "tokens": {
-        "name": "scanner-opus",
         "title": "Scanner opus",
-        "opener": "Opus · requests `high`, because a miss here silently loses or corrupts imported account data.",
+        "tier": "Opus",
+        "opener": ", because a miss here silently loses or corrupts imported account data.",
         "dispatch": "gear or hero scan failures, missing or wrong imported data, Python changes and scapy or Npcap issues.",
         "twin": "scanner-sonnet",
         "delete_tail": "",
-        "advisor_when": "before changing how scan data is decoded or merged, and when imported data disagrees with the game with no clear cause."
+        "advisor_when": "before changing how scan data is decoded or merged, and when imported data disagrees with the game with no clear cause"
       },
       "blocks": {
         "role": "You own Python scanner and importer work in the Pog E7 Optimizer: `2. Frontend/1. Source/7. PY/` and its caller `2. Frontend/1. Source/4. JS/4. Importer Tab/1. Scanner/`: packet capture, the scan flow, unit and item conversion, and the import path into the backend.",
@@ -195,13 +195,13 @@
         }
       },
       "tokens": {
-        "name": "ui-sonnet",
         "title": "Ui sonnet",
-        "opener": "Sonnet · requests `medium`, for routine bounded work in this section. A unit that needs more goes to the Opus twin rather than raising this agent.",
+        "tier": "Sonnet",
+        "opener": ", for routine bounded work in this section. A unit that needs more goes to the Opus twin rather than raising this agent.",
         "dispatch": "layout, styling, dark mode, icon or asset work, and visual bugs in any tab.",
         "twin": "ui-opus",
         "delete_tail": "",
-        "advisor_when": "before a layout change that touches several tabs, and when a visual bug has no clear cause in the styles you read."
+        "advisor_when": "before a layout change that touches several tabs, and when a visual bug has no clear cause in the styles you read"
       },
       "blocks": {
         "role": "You own UI design work in the Pog E7 Optimizer: `2. Frontend/1. Source/1. HTML/app.html`, `2. CSS/`, `3. ASSETS/` and the `translation.json` locales: layout, styling, dark mode, icons and the visual side of the tabs.",
@@ -225,13 +225,13 @@
         }
       },
       "tokens": {
-        "name": "ui-opus",
         "title": "Ui opus",
-        "opener": "Opus · requests `medium`: layout across tabs needs Opus judgment, but a visual miss is caught when Marcus looks at it.",
+        "tier": "Opus",
+        "opener": ": layout across tabs needs Opus judgment, but a visual miss is caught when Marcus looks at it.",
         "dispatch": "layout, styling, dark mode, icon or asset work, and visual bugs in any tab.",
         "twin": "ui-sonnet",
         "delete_tail": "",
-        "advisor_when": "before a layout change that touches several tabs, and when a visual bug has no clear cause in the styles you read."
+        "advisor_when": "before a layout change that touches several tabs, and when a visual bug has no clear cause in the styles you read"
       },
       "blocks": {
         "role": "You own UI design work in the Pog E7 Optimizer: `2. Frontend/1. Source/1. HTML/app.html`, `2. CSS/`, `3. ASSETS/` and the `translation.json` locales: layout, styling, dark mode, icons and the visual side of the tabs.",

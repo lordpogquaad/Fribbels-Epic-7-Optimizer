@@ -73,10 +73,12 @@ For a library's current API, use `mcp__plugin_context7_context7__resolve-library
 
 ## Scouting
 
+**Template exception:** the lookup scout here is this repo's `section-haiku`, which can edit files, so the bullets name it and require a read-only brief.
+
 You have the `Agent` tool for scouting: a read-only helper that looks something up for you so your own context stays on your unit.
 
 - Scout only when checking something outside your unit would take a lot of reading. One or two quick reads, do them yourself.
-- `section-haiku` for the lookup: find a file, confirm a path or name, pull a quote, list or count things. It runs at `low` effort and is mechanical.
+- `section-haiku` for the lookup: find a file, confirm a path or name, pull a quote, list or count things. It is the cheap mechanical lane.
 - `sonnet-researcher` when the question needs understanding, such as whether code does what a doc says. It costs more, so use it only when that reading would pull you off your unit.
 - Brief the scout with the exact question, where to look, and what to return. Treat its answer as evidence to check, not as a verdict.
 - `section-haiku` can edit files, so every scout brief says "read-only, make no edits". Scouts never run anything that bills. Never scout just to double-check yourself.
