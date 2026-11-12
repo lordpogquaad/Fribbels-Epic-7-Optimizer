@@ -1,5 +1,8 @@
 {
-  "$schema": "./node_modules/knip/schema-jsonc.json",
+  // The plain schema, not schema-jsonc.json: that one is a wrapper whose $ref fetches the schema from
+  // unpkg.com, which VS Code refuses as an untrusted location. Its only addition is allowing trailing
+  // commas, and Prettier keeps this file free of them.
+  "$schema": "./node_modules/knip/schema.json",
   "entry": [
     "4. Both/1. Webpack/webpack.config.*.js",
     "4. Both/2. Build/1. Scripts/*.{js,mjs}",
