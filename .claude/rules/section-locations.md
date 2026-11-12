@@ -15,7 +15,8 @@ units and `<section>-opus` for trap-dense or high-stakes ones, where `<section>`
 `frontend`, `scanner` or `ui`. `section-haiku` does mechanical work in any section. Each agent's
 effort is set in its own file. A subagent gets no automatic model fallback, so after a cyber
 refusal the lead re-dispatches the unit to the section's pinned lane, `<section>-opus48`, with
-`model` omitted. The skills are hidden from the model, so Marcus runs them by name; their shared
+`model` omitted. That lane carries the Opus agent's mandate, so a refused Sonnet unit moves up a
+tier there; a refused `section-haiku` unit goes to the user-scope `opus-worker-opus48`. The skills are hidden from the model, so Marcus runs them by name; their shared
 flow and the agents' audit contract are in `.claude/skills/section-audit.md`. In `6. JSON/`, the UI
 section owns the `translation.json` locales and the frontend owns the rest.
 

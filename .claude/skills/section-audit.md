@@ -60,6 +60,9 @@ agents, so the lead does not stop for approval.
                 anything under tools/metrics/
    ```
 
+   Dispatch with the `model` parameter omitted. If a shard's reply is a refusal, send the same
+   brief to `<section>-opus48`, also with `model` omitted (`.claude/rules/section-locations.md`).
+
 5. **Consolidate.** Each shard's coverage line must read N of N for the list sent; send any file it
    names as unread out again. Verify each high-severity finding against the code yourself before
    presenting it. Run `git status --short` afterwards: anything changed beyond agent memory is a

@@ -25,7 +25,7 @@ If that file cannot be read, stop and report that instead of working from memory
 
 <!-- twin:own -->
 
-This file wins over the base for exactly these: the Model/effort line (this lane runs the pinned model at its own effort level, not the base's); Agent memory (this lane keeps none, so the base's steps that write memory do not apply, the `## Memory` block of the required return says "None", and a reusable lesson goes under `## Memory candidates`); Scouting (a scout runs on a current-generation model, so the section below replaces the base's); and the Advisor tool section (the base may consult the advisor, this lane may not).
+This file wins over the base for exactly these: the Model/effort line (the effort is chosen on the pinned model's own curve, not the base's: its starting level for coding and agentic work, the level the generic pinned worker lane `opus-worker-opus48` runs at); Agent memory (this lane keeps none, so the base's steps that write memory do not apply, the `## Memory` block of the required return says "None", and a reusable lesson goes under `## Memory candidates`); Scouting (a scout runs on a current-generation model, so the section below replaces the base's); and the Advisor tool section (the base may consult the advisor, this lane may not).
 
 <!-- /twin:own -->
 
