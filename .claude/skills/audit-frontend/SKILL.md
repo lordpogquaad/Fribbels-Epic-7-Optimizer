@@ -32,7 +32,7 @@ These write only ignored output.
 - `yarn lint:dead` and `yarn lint:deps-graph`: exit 1 means findings; read the output to confirm the
   tool finished.
 - `yarn lint:dupes`: exit 0 includes clones, so read its `Found N clones` line.
-- `node "$CLAUDE_CONFIG_DIR/tools/tools/diag-scan.mjs" <files>`: the local Sonar engine, JS and TS
+- `node "$CLAUDE_CONFIG_DIR/tools/tools/diag-tools/diag-scan.mjs" <files>`: the local Sonar engine, JS and TS
   only, when a file needs a second opinion. Exit 1 means findings, and exit 2 means not scanned.
 
 ## What the agents check

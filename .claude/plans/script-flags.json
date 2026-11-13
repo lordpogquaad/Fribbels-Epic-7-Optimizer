@@ -364,7 +364,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/check-yaml.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/lint-tools/check-yaml.mjs"]
         },
         {
           "kind": "config-tool",
@@ -545,7 +545,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/lint-hooks.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/hook-tools/js-hooks/lint-hooks.mjs"]
         }
       ]
     },
