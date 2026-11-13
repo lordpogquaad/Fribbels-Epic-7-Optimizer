@@ -428,7 +428,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/audit-agent-frontmatter.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/agent-tools/audit-agent-frontmatter.mjs"]
         },
         {
           "kind": "config-tool",
@@ -470,6 +470,7 @@
             "SKILL_AUDIT_MCP_MIRROR",
             "SKILL_AUDIT_MCP_ROSTER",
             "SKILL_AUDIT_PLUGINS_FILE",
+            "SKILL_AUDIT_SETTINGS_MIRROR",
             "SKILL_AUDIT_SIBLING_ROOTS",
             "SKILL_AUDIT_SYNCED_ROOT",
             "SKILL_AUDIT_USER_ROOT"
@@ -485,7 +486,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/audit-skill-wiring.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/skill-tools/audit-skill-wiring.mjs"]
         }
       ]
     },
@@ -734,7 +735,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/diag-scan-repo.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/diag-tools/diag-scan-repo.mjs"]
         }
       ]
     },
@@ -799,7 +800,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-flags.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-tools/script-flags.mjs"]
         }
       ]
     },
@@ -864,7 +865,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-flags.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-tools/script-flags.mjs"]
         }
       ]
     },
@@ -938,7 +939,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-aliases.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-tools/script-aliases.mjs"]
         }
       ]
     },
@@ -1012,7 +1013,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-aliases.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-tools/script-aliases.mjs"]
         }
       ]
     },
