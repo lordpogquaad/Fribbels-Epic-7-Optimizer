@@ -289,7 +289,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/lint-ps.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/lint-tools/lint-ps.mjs"]
         }
       ]
     },
@@ -607,7 +607,7 @@
               }
             ]
           },
-          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/lint-strict-report.mjs"]
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/lint-tools/lint-strict-report.mjs"]
         }
       ]
     },
