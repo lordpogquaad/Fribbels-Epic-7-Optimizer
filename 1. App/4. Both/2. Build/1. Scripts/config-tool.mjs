@@ -6,10 +6,10 @@ import { spawnSync } from 'node:child_process';
 // Runs one shared claude-config tool (`<config repo>/tools/tools/<tool.mjs>`) for a package.json
 // script. A tool is named by its bare file name: it is looked up at `tools/tools/<tool>` first, then
 // in the `<topic>-tools/` folders and each topic's own sub-folders (two levels and no deeper; `lib`,
-// `node_modules`, `common` and dot folders are skipped at both), and exactly one match wins;
+// `node_modules`, `common-tools` and dot folders are skipped at both), and exactly one match wins;
 // `<topic>-tools/<tool>` or `<topic>-tools/<sub>/<tool>` is honoured when that file exists, and two
 // folders holding the same name is an error that lists them. The
-// same rule is `tools/tools/common/find-tool.mjs` in the config repo; this copy cannot import it
+// same rule is `tools/tools/common-tools/find-tool.mjs` in the config repo; this copy cannot import it
 // before it has found the repo, so change both together. Yarn's shell expands `$CLAUDE_CONFIG_DIR` in a script, but npm on Windows runs scripts
 // through cmd.exe, which does not, and VS Code's NPM Scripts view picks npm here because the
 // workspace root has no yarn.lock. Resolving the path in Node works under both. The same shim lives
@@ -30,7 +30,7 @@ function resolveConfigRoot() {
   }
 }
 
-const SKIPPED = new Set(['lib', 'node_modules', 'common']);
+const SKIPPED = new Set(['lib', 'node_modules', 'common-tools']);
 const isFile = (p) => fs.existsSync(p) && fs.statSync(p).isFile();
 
 /** Names of the folders directly under `dir` that may hold tools, sorted. */
