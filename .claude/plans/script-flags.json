@@ -550,6 +550,186 @@
       ]
     },
     {
+      "name": "hooks:lint:json",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" lint-hooks.mjs --dir ../.claude/hooks --json",
+      "run": "yarn hooks:lint:json <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "lint-hooks.mjs",
+          "bakedArgs": ["--dir", "../.claude/hooks", "--json"],
+          "cwd": ".",
+          "parser": "hand-rolled",
+          "strict": true,
+          "flags": [
+            {
+              "name": "dir",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "user",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "inventory",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "json",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "no-inventory",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": null,
+          "env": ["CLAUDE_CONFIG_DIR", "HOME", "LINT_HOOKS_ROOT", "USERPROFILE"],
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--dir", "--inventory", "--json", "--no-inventory", "--user"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/hook-tools/lint-hooks.mjs"]
+        }
+      ],
+      "alias": true
+    },
+    {
+      "name": "hooks:lint:no-inventory",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" lint-hooks.mjs --dir ../.claude/hooks --no-inventory",
+      "run": "yarn hooks:lint:no-inventory <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "lint-hooks.mjs",
+          "bakedArgs": ["--dir", "../.claude/hooks", "--no-inventory"],
+          "cwd": ".",
+          "parser": "hand-rolled",
+          "strict": true,
+          "flags": [
+            {
+              "name": "dir",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "user",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "inventory",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "json",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "no-inventory",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": null,
+          "env": ["CLAUDE_CONFIG_DIR", "HOME", "LINT_HOOKS_ROOT", "USERPROFILE"],
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--dir", "--inventory", "--json", "--no-inventory", "--user"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/hook-tools/lint-hooks.mjs"]
+        }
+      ],
+      "alias": true
+    },
+    {
+      "name": "hooks:lint:user",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" lint-hooks.mjs --dir ../.claude/hooks --user",
+      "run": "yarn hooks:lint:user <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "lint-hooks.mjs",
+          "bakedArgs": ["--dir", "../.claude/hooks", "--user"],
+          "cwd": ".",
+          "parser": "hand-rolled",
+          "strict": true,
+          "flags": [
+            {
+              "name": "dir",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "user",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "inventory",
+              "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "json",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "no-inventory",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": null,
+          "env": ["CLAUDE_CONFIG_DIR", "HOME", "LINT_HOOKS_ROOT", "USERPROFILE"],
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--dir", "--inventory", "--json", "--no-inventory", "--user"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/hook-tools/lint-hooks.mjs"]
+        }
+      ],
+      "alias": true
+    },
+    {
       "name": "lint:strict:report",
       "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" lint-strict-report.mjs --repo . --out \"../.claude/plans/LINT-STRICT-REPORT.md\"",
       "run": "yarn lint:strict:report <flags>",
@@ -738,6 +918,278 @@
           "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/diag-tools/diag-scan-repo.mjs"]
         }
       ]
+    },
+    {
+      "name": "sonar:report:no-server",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" diag-scan-repo.mjs --repo .. --report --out \"../.claude/plans/SONAR-REPORT.md\" --no-server",
+      "run": "yarn sonar:report:no-server <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "diag-scan-repo.mjs",
+          "bakedArgs": [
+            "--repo",
+            "..",
+            "--report",
+            "--out",
+            "../.claude/plans/SONAR-REPORT.md",
+            "--no-server"
+          ],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "path",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "batch",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "out",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "render",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "ignore",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "no-server",
+              "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "profile",
+              "type": "string",
+              "short": null,
+              "default": "auto",
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "program",
+              "type": "string",
+              "short": null,
+              "default": "orphan",
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "problems",
+              "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "report",
+              "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--batch", "--out", "--path", "--repo"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/diag-tools/diag-scan-repo.mjs"]
+        }
+      ],
+      "alias": true
+    },
+    {
+      "name": "sonar:report:problems",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" diag-scan-repo.mjs --repo .. --report --out \"../.claude/plans/SONAR-REPORT.md\" --problems",
+      "run": "yarn sonar:report:problems <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "diag-scan-repo.mjs",
+          "bakedArgs": [
+            "--repo",
+            "..",
+            "--report",
+            "--out",
+            "../.claude/plans/SONAR-REPORT.md",
+            "--problems"
+          ],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "path",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "batch",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "out",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "render",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "ignore",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "no-server",
+              "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "profile",
+              "type": "string",
+              "short": null,
+              "default": "auto",
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "program",
+              "type": "string",
+              "short": null,
+              "default": "orphan",
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "problems",
+              "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "report",
+              "type": "boolean",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": [],
+                "depends": {},
+                "mentions": ["--batch", "--out", "--path", "--repo"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/diag-tools/diag-scan-repo.mjs"]
+        }
+      ],
+      "alias": true
     },
     {
       "name": "scripts:flags",
