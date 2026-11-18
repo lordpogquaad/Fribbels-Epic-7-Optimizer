@@ -275,6 +275,12 @@
               "multiple": false,
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": true,
@@ -345,6 +351,12 @@
               "multiple": true,
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": true,
@@ -374,12 +386,6 @@
           "parser": "hand-rolled",
           "strict": null,
           "flags": [
-            {
-              "name": "help",
-              "type": "boolean",
-              "inHeader": true,
-              "inCode": true
-            },
             {
               "name": "write-roster",
               "type": "boolean",
@@ -415,6 +421,12 @@
               "type": "boolean",
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": null,
@@ -425,6 +437,16 @@
                 "requires": [],
                 "depends": {},
                 "mentions": ["--help", "--inventory", "--json", "--orphans"]
+              },
+              {
+                "requires": ["--fix"],
+                "depends": {},
+                "mentions": ["--dry-run", "--fix", "--inventory", "--orphans"]
+              },
+              {
+                "requires": ["--write-roster"],
+                "depends": {},
+                "mentions": ["--write-roster"]
               }
             ]
           },
@@ -459,6 +481,12 @@
             {
               "name": "inventory",
               "type": "string",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
               "inHeader": true,
               "inCode": true
             }
@@ -532,6 +560,12 @@
               "type": "boolean",
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": null,
@@ -588,6 +622,12 @@
             },
             {
               "name": "no-inventory",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "help",
               "type": "boolean",
               "inHeader": true,
               "inCode": true
@@ -651,6 +691,12 @@
               "type": "boolean",
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": null,
@@ -711,6 +757,12 @@
               "type": "boolean",
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": null,
@@ -766,6 +818,12 @@
               "short": null,
               "default": null,
               "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
               "inHeader": true,
               "inCode": true
             }
@@ -902,6 +960,12 @@
               "multiple": false,
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": true,
@@ -911,7 +975,23 @@
               {
                 "requires": [],
                 "depends": {},
-                "mentions": ["--batch", "--out", "--path", "--repo"]
+                "mentions": [
+                  "--batch",
+                  "--ignore",
+                  "--no-server",
+                  "--out",
+                  "--path",
+                  "--problems",
+                  "--profile",
+                  "--program",
+                  "--repo",
+                  "--report"
+                ]
+              },
+              {
+                "requires": ["--render", "<scan.json>"],
+                "depends": {},
+                "mentions": ["--ignore", "--out", "--problems", "--render", "--report"]
               }
             ]
           },
@@ -1037,6 +1117,12 @@
               "multiple": false,
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": true,
@@ -1046,7 +1132,23 @@
               {
                 "requires": [],
                 "depends": {},
-                "mentions": ["--batch", "--out", "--path", "--repo"]
+                "mentions": [
+                  "--batch",
+                  "--ignore",
+                  "--no-server",
+                  "--out",
+                  "--path",
+                  "--problems",
+                  "--profile",
+                  "--program",
+                  "--repo",
+                  "--report"
+                ]
+              },
+              {
+                "requires": ["--render", "<scan.json>"],
+                "depends": {},
+                "mentions": ["--ignore", "--out", "--problems", "--render", "--report"]
               }
             ]
           },
@@ -1173,6 +1275,12 @@
               "multiple": false,
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": true,
@@ -1182,7 +1290,23 @@
               {
                 "requires": [],
                 "depends": {},
-                "mentions": ["--batch", "--out", "--path", "--repo"]
+                "mentions": [
+                  "--batch",
+                  "--ignore",
+                  "--no-server",
+                  "--out",
+                  "--path",
+                  "--problems",
+                  "--profile",
+                  "--program",
+                  "--repo",
+                  "--report"
+                ]
+              },
+              {
+                "requires": ["--render", "<scan.json>"],
+                "depends": {},
+                "mentions": ["--ignore", "--out", "--problems", "--render", "--report"]
               }
             ]
           },
@@ -1378,6 +1502,12 @@
               "multiple": false,
               "inHeader": true,
               "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
             }
           ],
           "positionals": true,
@@ -1450,6 +1580,12 @@
               "short": null,
               "default": false,
               "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
               "inHeader": true,
               "inCode": true
             }
