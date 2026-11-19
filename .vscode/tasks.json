@@ -107,6 +107,38 @@
         }
       }
     },
+    // This repo's Claude setup (.claude/ agents, skills, hooks, rules, settings.json, CLAUDE.md): the config
+    // repo's lint-setup tool with --root, reached through config-tool.mjs. `--root ..` resolves against the
+    // cwd `1. App`. --min-level warning hides the user-scope info notes a project run also prints. Bad
+    // frontmatter keys show as agents/UNKNOWN_KEY or skills/UNKNOWN_KEY. A few seconds; not on folder open.
+    {
+      "label": "Claude setup: problems",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "4. Both/2. Build/1. Scripts/config-tool.mjs",
+        "lint-setup.mjs",
+        "--root",
+        "..",
+        "--min-level",
+        "warning"
+      ],
+      "options": { "cwd": "${workspaceFolder}/1. App" },
+      "presentation": { "reveal": "silent", "clear": true },
+      "problemMatcher": {
+        "owner": "lint-setup",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+): (error|warning|info) (\\S+) (.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      }
+    },
     // Sonar findings for every file, not only open ones. Renders the last report that `yarn sonar:report`
     // (or the scan task below) wrote, through the shared diag-scan-repo tool (config-tool.mjs finds the
     // config repo). Line shape: `<abs path>:<line>:<col>: <level> <rule> <message>`. Quick, no scan; with no
