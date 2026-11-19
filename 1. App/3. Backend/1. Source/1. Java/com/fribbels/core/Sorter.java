@@ -110,7 +110,8 @@ public class Sorter {
                 // Final Speed = spd / (1 - crp); monotonic in spd, so spd order suffices.
                 return Comparator.comparingInt(HeroStats::getSpd);
             case SETS:
-                // Lexicographic on the per-set piece counts (null first); the grid shows these as set icons.
+                // Lexicographic on the per-set piece counts (null first); the grid shows these
+                // as set icons.
                 return Comparator.comparing(HeroStats::getSets, Arrays::compare);
             case SPDEFF:
                 return Comparator.<HeroStats>comparingDouble(h -> h.getSpd() + h.getEff() * spdEffWeight);

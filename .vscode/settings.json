@@ -1,8 +1,10 @@
 {
-  "eslint.workingDirectories": ["1. App"],
+  "eslint.workingDirectories": [
+    "1. App"
+  ],
   "sonarlint.connectedMode.project": {
-    "connectionId": "lordpogquaad",
-    "projectKey": "lordpogquaad_Fribbels-Epic-7-Optimizer"
+    "projectKey": "lordpogquaad_Fribbels-Epic-7-Optimizer",
+    "connectionId": "lordpogquaad"
   },
   "files.watcherExclude": {
     "**/1. App/release/**": true,
@@ -25,7 +27,9 @@
     "**/.ruff_cache": true
   },
   // The Python Environments extension rejects this key at the user/profile level; it belongs here.
-  "python-envs.workspaceSearchPaths": [".venv"],
+  "python-envs.workspaceSearchPaths": [
+    ".venv"
+  ],
   "python-envs.pythonProjects": [
     {
       "path": ".",

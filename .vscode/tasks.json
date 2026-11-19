@@ -10,10 +10,17 @@
       "label": "Lint: ESLint (yarn lint)",
       "type": "shell",
       "command": "yarn",
-      "args": ["lint"],
-      "options": { "cwd": "${workspaceFolder}/1. App" },
+      "args": [
+        "lint"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/1. App"
+      },
       "group": "test",
-      "presentation": { "reveal": "silent", "clear": true },
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      },
       "problemMatcher": "$eslint-stylish"
     },
     // `yarn typecheck` is tsc7 (TypeScript 7 native). --pretty false gives `file(line,col): error TSn: msg`,
@@ -22,10 +29,19 @@
       "label": "Typecheck: tsc7 (yarn typecheck)",
       "type": "shell",
       "command": "yarn",
-      "args": ["typecheck", "--pretty", "false"],
-      "options": { "cwd": "${workspaceFolder}/1. App" },
+      "args": [
+        "typecheck",
+        "--pretty",
+        "false"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/1. App"
+      },
       "group": "build",
-      "presentation": { "reveal": "silent", "clear": true },
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      },
       "problemMatcher": "$tsc"
     },
     // `yarn lint:py` is `python -m ruff check .. --exit-zero`. Concise output is `path:line:col: CODE message`, paths
@@ -34,15 +50,27 @@
       "label": "Lint: ruff (yarn lint:py)",
       "type": "shell",
       "command": "yarn",
-      "args": ["lint:py", "--output-format", "concise"],
-      "options": { "cwd": "${workspaceFolder}/1. App" },
+      "args": [
+        "lint:py",
+        "--output-format",
+        "concise"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/1. App"
+      },
       "group": "test",
-      "presentation": { "reveal": "silent", "clear": true },
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      },
       "problemMatcher": {
         "owner": "ruff",
         "source": "ruff",
         "severity": "warning",
-        "fileLocation": ["relative", "${workspaceFolder}/1. App"],
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/1. App"
+        ],
         "pattern": {
           "regexp": "^(.+?):(\\d+):(\\d+): ([A-Z]+\\d+) (?:\\[\\*\\] )?(.*)$",
           "file": 1,
@@ -59,14 +87,25 @@
       "label": "Typecheck: mypy (yarn lint:py:types)",
       "type": "shell",
       "command": "yarn",
-      "args": ["lint:py:types", "--show-column-numbers"],
-      "options": { "cwd": "${workspaceFolder}/1. App" },
+      "args": [
+        "lint:py:types",
+        "--show-column-numbers"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/1. App"
+      },
       "group": "test",
-      "presentation": { "reveal": "silent", "clear": true },
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      },
       "problemMatcher": {
         "owner": "mypy",
         "source": "mypy",
-        "fileLocation": ["autoDetect", "${workspaceFolder}/1. App"],
+        "fileLocation": [
+          "autoDetect",
+          "${workspaceFolder}/1. App"
+        ],
         "pattern": {
           "regexp": "^(.+?):(\\d+):(\\d+): (error|warning): (.*?)(?:  \\[([\\w-]+)\\])?$",
           "file": 1,
@@ -86,13 +125,21 @@
       "label": "Java: compile (mvn compile)",
       "type": "shell",
       "command": "${workspaceFolder}/1. App/3. Backend/2. Apache Maven/apache-maven-3.10.0/bin/mvn.cmd",
-      "args": ["-B", "compile"],
+      "args": [
+        "-B",
+        "compile"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/1. App/3. Backend/1. Source",
-        "env": { "JAVA_HOME": "C:\\Program Files\\Java\\latest\\jdk-27" }
+        "env": {
+          "JAVA_HOME": "C:\\Program Files\\Java\\latest\\jdk-27"
+        }
       },
       "group": "build",
-      "presentation": { "reveal": "silent", "clear": true },
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      },
       "problemMatcher": {
         "owner": "maven-javac",
         "source": "javac",
@@ -123,8 +170,13 @@
         "--min-level",
         "warning"
       ],
-      "options": { "cwd": "${workspaceFolder}/1. App" },
-      "presentation": { "reveal": "silent", "clear": true },
+      "options": {
+        "cwd": "${workspaceFolder}/1. App"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      },
       "problemMatcher": {
         "owner": "lint-setup",
         "fileLocation": "absolute",
@@ -154,7 +206,10 @@
         "${workspaceFolder}/.claude/plans/SONAR-REPORT.json",
         "--problems"
       ],
-      "presentation": { "reveal": "silent", "clear": true },
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      },
       "problemMatcher": {
         "owner": "diag-scan-repo",
         "fileLocation": "absolute",
@@ -185,7 +240,10 @@
         "${workspaceFolder}/.claude/plans/SONAR-REPORT.md",
         "--problems"
       ],
-      "presentation": { "reveal": "always", "clear": true },
+      "presentation": {
+        "reveal": "always",
+        "clear": true
+      },
       "problemMatcher": {
         "owner": "diag-scan-repo",
         "fileLocation": "absolute",

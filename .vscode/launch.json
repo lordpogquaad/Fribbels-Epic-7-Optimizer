@@ -1,42 +1,42 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Electron: Main",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/1. App",
-            "runtimeExecutable": "${workspaceFolder}/1. App/node_modules/.bin/electron",
-            "windows": {
-                "runtimeExecutable": "${workspaceFolder}/1. App/node_modules/.bin/electron.cmd"
-            },
-            "args": [
-                ".",
-                "--remote-debugging-port=9222"
-            ],
-            "env": {
-                "START_HOT": "1",
-                "NODE_ENV": "development",
-                "ELECTRON_RUN_AS_NODE": null
-            },
-            "outputCapture": "std"
-        },
-        {
-            "name": "Electron: Renderer",
-            "type": "chrome",
-            "request": "attach",
-            "port": 9222,
-            "webRoot": "${workspaceFolder}/1. App/2. Frontend/1. Source",
-            "timeout": 30000
-        }
-    ],
-    "compounds": [
-        {
-            "name": "Electron: Full App",
-            "configurations": [
-                "Electron: Main",
-                "Electron: Renderer"
-            ]
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Electron: Main",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/1. App",
+      "runtimeExecutable": "${workspaceFolder}/1. App/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/1. App/node_modules/.bin/electron.cmd"
+      },
+      "args": [
+        ".",
+        "--remote-debugging-port=9222"
+      ],
+      "env": {
+        "START_HOT": "1",
+        "NODE_ENV": "development",
+        "ELECTRON_RUN_AS_NODE": null
+      },
+      "outputCapture": "std"
+    },
+    {
+      "name": "Electron: Renderer",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}/1. App/2. Frontend/1. Source",
+      "timeout": 30000
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Electron: Full App",
+      "configurations": [
+        "Electron: Main",
+        "Electron: Renderer"
+      ]
+    }
+  ]
 }
