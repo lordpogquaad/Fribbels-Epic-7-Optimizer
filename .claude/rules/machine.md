@@ -5,16 +5,16 @@ machine-wide paths (Node, Git, Python, the config dir) and how to update them; t
 what is specific to this repo. Paths as last derived on 2026-11-05: re-run the last column before
 relying on one for anything version-sensitive.
 
-| What                | Where                                                                                      | Re-derive with                                  |
-| ------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------- |
-| Repo root           | `F:/Epic Seven Screenshots Only/New folder/Gear simulator files/Fribbels-Epic-7-Optimizer` | `git rev-parse --show-toplevel`                 |
-| JDK for the backend | `C:/Program Files/Java/latest/jdk-27`, a junction the installer repoints                   | `$env:JAVA_HOME` line in `lint_java.ps1`        |
-| Maven               | `1. App/3. Backend/2. Apache Maven/apache-maven-3.10.0/bin/mvn.cmd`                        | `$mvnExe` line in `lint_java.ps1`               |
-| Maven repository    | `C:/Users/Marcus/.m2/repository`                                                           | `ls -d` on the path                             |
-| Yarn                | Launcher in `F:/VSCode-Data/npm-global`; `packageManager` in `1. App/package.json` pins it | `where.exe yarn`; that key                      |
-| Scanner capture     | Npcap at `C:/Windows/System32/Npcap`, plus `scapy` in the global Python                    | `ls -d` on the path; `python -m pip show scapy` |
-| Python lint         | `ruff`, in the global Python, config `ruff.toml` at the repo root                          | `python -m ruff --version`                      |
-| Runtime log         | `1. App/5. Dev Only/logs/latest.log`, plus rotations                                       | project memory `runtime-log-file`               |
+| What                | Where                                                                                      | Re-derive with                                     |
+| ------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| Repo root           | `F:/Epic Seven Screenshots Only/New folder/Gear simulator files/Fribbels-Epic-7-Optimizer` | `git rev-parse --show-toplevel`                    |
+| JDK for the backend | `C:/Program Files/Java/latest/jdk-27`, a junction the installer repoints                   | `$env:JAVA_HOME` line in `lint_java.ps1`           |
+| Maven               | `1. App/3. Backend/2. Apache Maven/apache-maven-3.10.0/bin/mvn.cmd`                        | `$mvnExe` line in `lint_java.ps1`; `where.exe mvn` |
+| Maven repository    | `C:/Users/Marcus/.m2/repository`                                                           | `ls -d` on the path                                |
+| Yarn                | Launcher in `F:/VSCode-Data/npm-global`; `packageManager` in `1. App/package.json` pins it | `where.exe yarn`; that key                         |
+| Scanner capture     | Npcap at `C:/Windows/System32/Npcap`, plus `scapy` in the global Python                    | `ls -d` on the path; `python -m pip show scapy`    |
+| Python lint         | `ruff`, in the global Python, config `ruff.toml` at the repo root                          | `python -m ruff --version`                         |
+| Runtime log         | `1. App/5. Dev Only/logs/latest.log`, plus rotations                                       | project memory `runtime-log-file`                  |
 
 ## VS Code profile
 
@@ -37,6 +37,7 @@ Extensions are on or off per profile, not per repo. This repo's `.vscode/` (trac
   shift SpotBugs counts (430 against 427 on the same source, 2026-10-31), so compare a count only
   straight after `mvn clean test`; `touch` does not force a recompile.
 - Run one `mvn` at a time: concurrent runs collide in `target/`.
-- `mvn` is not on `PATH`. Use the Maven path above, or the repo scripts, which set it themselves.
+- The Maven `bin` folder above is on the user `PATH` (added 2026-11-18), so `mvn` resolves in a shell
+  started after that; the repo scripts still call it by path and set `JAVA_HOME` themselves.
 - Maven plugins and JaCoCo-style agents must support the JDK above, which is newer than many tools
   test against: run one before relying on it.
