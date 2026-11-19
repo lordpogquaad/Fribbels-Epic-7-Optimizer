@@ -7,14 +7,22 @@
   "files.watcherExclude": {
     "**/1. App/release/**": true,
     "**/8. DIST/**": true,
-    "**/5. Dev Only/logs/**": true
+    "**/5. Dev Only/logs/**": true,
+    "**/3. Backend/1. Source/target/**": true,
+    "**/1. HTML/assets/**": true,
+    "**/.mypy_cache/**": true,
+    "**/.ruff_cache/**": true,
+    "**/.remember/**": true,
+    "**/trashcan/**": true
   },
   "search.exclude": {
     "**/1. App/release": true,
     "**/8. DIST": true,
     "**/5. Dev Only/logs": true,
     "**/3. Backend/1. Source/target": true,
-    "**/1. HTML/assets": true
+    "**/1. HTML/assets": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true
   },
   "python-envs.pythonProjects": [
     {
