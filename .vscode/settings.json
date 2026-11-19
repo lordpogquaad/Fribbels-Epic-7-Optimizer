@@ -24,6 +24,8 @@
     "**/.mypy_cache": true,
     "**/.ruff_cache": true
   },
+  // The Python Environments extension rejects this key at the user/profile level; it belongs here.
+  "python-envs.workspaceSearchPaths": [".venv"],
   "python-envs.pythonProjects": [
     {
       "path": ".",
