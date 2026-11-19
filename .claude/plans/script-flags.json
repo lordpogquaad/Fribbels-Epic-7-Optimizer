@@ -1751,25 +1751,27 @@
     },
     {
       "name": "lint:py",
-      "command": "ruff check .. --exit-zero",
+      "command": "python -m ruff check .. --exit-zero",
       "run": "yarn lint:py",
       "steps": [
         {
           "kind": "external",
-          "bin": "ruff",
-          "args": ["check", "..", "--exit-zero"]
+          "bin": "python",
+          "args": ["-m", "ruff", "check", "..", "--exit-zero"]
         }
       ]
     },
     {
       "name": "lint:py:types",
-      "command": "mypy \"2. Frontend/1. Source/7. PY/1. Scanner/1. Core/scanner.py\" --ignore-missing-imports",
+      "command": "python -m mypy \"2. Frontend/1. Source/7. PY/1. Scanner/1. Core/scanner.py\" --ignore-missing-imports",
       "run": "yarn lint:py:types",
       "steps": [
         {
           "kind": "external",
-          "bin": "mypy",
+          "bin": "python",
           "args": [
+            "-m",
+            "mypy",
             "2. Frontend/1. Source/7. PY/1. Scanner/1. Core/scanner.py",
             "--ignore-missing-imports"
           ]
