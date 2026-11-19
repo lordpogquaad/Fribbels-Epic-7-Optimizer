@@ -188,7 +188,7 @@
     "css-minimizer-webpack-plugin": "^8.0.0",
     "dependency-cruiser": "^18.8.0",
     "detect-port": "^2.1.0",
-    "electron": "^45.2.3",
+    "electron": "^45.3.4",
     "electron-builder": "^26.18.1",
     "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
