@@ -34,9 +34,11 @@ binary `eng.traineddata`. This section is small, so one shard usually fits.
   success, and a capture that never ends.
 - **Decoding path:** every scan depends on the remote endpoint, so check what happens when it fails,
   times out or returns partial data.
-- **Import:** items or heroes lost between the scan and the database, including the Optimizer filter
-  that skips unknown names with no message, and naming by code. That code is in
-  `4. Importer Tab/2. Importer/`, outside this scope, so trace into it and report what you find.
+- **Import:** items or heroes lost between the scan and the database. Naming by code and the logged
+  drops are in `scanner.js` (`convertUnits`, `heroNameForCode`), in scope: check that the counts it
+  logs add up. The Optimizer filter that skips unknown names with no message is in
+  `4. Importer Tab/2. Importer/importer.js`, outside this scope, so trace into it and report what you
+  find.
 - **Process boundary:** how the JS caller starts the Python process, passes its output and handles its
   exit code, stderr and a crash.
 

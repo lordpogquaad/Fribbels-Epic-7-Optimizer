@@ -16,5 +16,5 @@ Possible next Skills wrap the real command surface so they cannot be run in the 
 `/build-backend` (→ `1. Master/2. PS1/build_backend.ps1`).
 
 Keep Skill bodies short — Fable 5 is measured to degrade under over-prescriptive Skills
-(`~/.claude/memory/fable-5-behavior-notes.md`). Never instruct hidden-reasoning echo
-(`~/.claude/rules/no-reasoning-echo-instructions.md`).
+(`$CLAUDE_CONFIG_DIR/memory/fable-5-behavior-notes.md`). Never instruct hidden-reasoning echo
+(`$CLAUDE_CONFIG_DIR/rules/no-reasoning-echo-instructions.md`).

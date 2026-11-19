@@ -29,7 +29,7 @@ it would report as never copied.
 
 - `yarn lint:styles`: Stylelint. Exit 2 means findings.
 - `node "../.claude/skills/audit-ui/scripts/ui-drift.mjs"`: read-only, and it compares names only.
-  The script is `.claude/skills/audit-ui/scripts/ui-drift.mjs` from the repo root. It lists asset names found only in the build copy or only in the source, and translation keys missing
+  The script is `.claude/skills/audit-ui/scripts/ui-drift.mjs` from the repo root. It lists asset names (under `3. ASSETS/1. PNG` only; ICO and ICNS are not compared) found only in the build copy or only in the source, and translation keys missing
   from or extra in a locale, up to ten of each. Exit 1 means a check could not run.
 
 ## What the agents check

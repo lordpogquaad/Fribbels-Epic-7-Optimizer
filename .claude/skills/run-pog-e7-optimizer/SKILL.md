@@ -14,7 +14,8 @@ All paths are relative to the repo root; open Claude Code there (`.claude/CLAUDE
 
 ## Prerequisites
 
-Windows, Node 22+ (the driver uses the global `WebSocket` and `fetch`), `JAVA_HOME` pointing at JDK 27
+Windows, Node 26+ (`engines` in `1. App/package.json`; the driver itself needs only 22+ for the global
+`WebSocket` and `fetch`), `JAVA_HOME` pointing at JDK 27
 (`.claude/rules/machine.md`), the outer deps installed (`yarn install` in `1. App/`) and the renderer
 deps installed (`install_frontend.ps1`).
 

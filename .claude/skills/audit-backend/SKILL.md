@@ -32,7 +32,8 @@ Both write only to the ignored `3. Backend/1. Source/target/`.
   `3. Backend/1. Source/target/spotbugsXml.xml`, and filter out `PA_PUBLIC_PRIMITIVE_ATTRIBUTE`, which
   is the Gson models. Exit 1 means Maven could not run.
 - `yarn coverage:java`: JaCoCo, for the coverage gaps. `yarn outdated:java`: newer Maven packages.
-  Both exit 0 when they ran, and both write only under `target/` or to the console.
+  Both exit 0 when they ran, and both write only under `target/` or to the console; `coverage:java`
+  also exits 1 on a failing test, so read the console for which.
 - The Maven tests, using the Maven path and `JAVA_HOME` that `lint_java.ps1` sets, from
   `3. Backend/1. Source/`:
 

@@ -29,8 +29,9 @@ These write only ignored output.
 
 - Gates, exit 0 means clean: `yarn lint`, `yarn typecheck`, `yarn build`.
 - `yarn lint:strict`: exit 0 includes findings, so count them.
-- `yarn lint:dead` and `yarn lint:deps-graph`: exit 1 means findings; read the output to confirm the
-  tool finished.
+- `yarn lint:dead`: exit 1 means findings. `yarn lint:deps-graph`: the exit code is the number of
+  error-severity violations, so any non-zero code is findings. Read the output to confirm the tool
+  finished.
 - `yarn lint:dupes`: exit 0 includes clones, so read its `Found N clones` line.
 - `node "$CLAUDE_CONFIG_DIR/tools/tools/diag-tools/diag-scan.mjs" <files>`: the local Sonar engine, JS and TS
   only, when a file needs a second opinion. Exit 1 means findings, and exit 2 means not scanned.
