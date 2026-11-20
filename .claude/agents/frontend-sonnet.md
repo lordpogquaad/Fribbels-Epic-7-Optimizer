@@ -1,7 +1,7 @@
 ---
 name: frontend-sonnet
 description: 'Default choice for the section: renderer JavaScript or TypeScript, webpack, ESLint or `tsconfig` work, package updates, and bugs in the tabs in the Pog E7 Optimizer. Owns one unit end to end, from inspection through the section''s gates to an evidence-backed hand-back. Starts without the conversation, so the brief must carry the intent.'
-tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, mcp__config-tools__diag_scan, Agent
+tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, LSP, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, mcp__config-tools__diag_scan, Agent
 model: sonnet
 effort: medium
 memory: project
@@ -60,6 +60,7 @@ Report other problems you find with file, severity and evidence, so the lead can
 Use `mcp__claude-vscode__getDiagnostics` (`mcp__ide__getDiagnostics` in a terminal session) for editor diagnostics; an empty reply for a closed file means unanalysed, not clean. Use `mcp__sonarqube__search_my_sonarqube_projects`, `mcp__sonarqube__search_sonar_issues_in_projects` and `mcp__sonarqube__show_rule` for server findings. A finding is a lead to verify, never a confirmed defect.
 
 - Required on every file you created or changed: run `mcp__config-tools__diag_scan` on it (files only, all backends) and handle each finding as `$CLAUDE_CONFIG_DIR/skills/sonar-findings.md` → "Every edit or audit — scan what you touched" says. It has no Java or Python backend, so for `.java` and `.py` files the gates above are the check.
+- `LSP` (the TypeScript server; JS and TS files only): run `findReferences` before calling an export, signature or return shape safe to change or unused, and use `goToDefinition` or `documentSymbol` instead of a grep when a name is common.
 
 For a library's current API, use `mcp__plugin_context7_context7__resolve-library-id` then `mcp__plugin_context7_context7__query-docs`, not memory.
 
