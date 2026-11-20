@@ -49,12 +49,13 @@
       }
     ]
   },
+  "enabledPlugins": {
+    "jdtls-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
+  },
   "plansDirectory": "./.claude/plans",
   "autoMemoryEnabled": true,
   "autoMemoryDirectory": "F:/VSCode-Data/.claude/Project-Memory/Fribbels Epic 7 Optimizer",
   "verbose": true,
-  "autoCompactEnabled": true,
-  "enabledPlugins": {
-    "jdtls-lsp@claude-plugins-official": true
-  }
+  "autoCompactEnabled": true
 }

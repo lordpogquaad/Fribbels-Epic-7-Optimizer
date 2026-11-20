@@ -1,16 +1,9 @@
 {
   "tools": {
-    "dirs": [
-      ".claude/hooks/",
-      ".claude/skills/"
-    ],
+    "dirs": [".claude/hooks/", ".claude/skills/"],
     "testDir": ".claude/hooks-test"
   },
   "rules": {
-    "alwaysLoadedTopicRules": [
-      "README.md",
-      "section-locations.md",
-      "machine.md"
-    ]
+    "alwaysLoadedTopicRules": ["README.md", "section-locations.md", "machine.md"]
   }
 }
