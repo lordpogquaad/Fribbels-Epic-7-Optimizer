@@ -31,8 +31,11 @@ Extensions are on or off per profile, not per repo. This repo's `.vscode/` (trac
 
 - This machine has no OpenCL, so GPU kernels cannot run here and every search uses the CPU loop. A
   GPU change is never verified by a local run.
-- The Java language server shares `target/` with Maven, so with VS Code open `mvn test` can print
-  "Nothing to compile" and test the language server's classes. To prove a change compiles under
+- VS Code's Java language server builds into the same `target/` as Maven, so with VS Code open
+  `mvn test` can print "Nothing to compile" and test the language server's classes. Claude's
+  jdtls (the project-scoped `jdtls-lsp` plugin, started by `jdtls.cmd` in the npm-global folder)
+  runs with autobuild off so it never writes there; before it did, the two servers locked each
+  other's class files (2026-11-20). To prove a change compiles under
   javac without `clean`, compile to a scratch folder (project memory `java-build`). Its classes also
   shift SpotBugs counts (430 against 427 on the same source, 2026-10-31), so compare a count only
   straight after `mvn clean test`; `touch` does not force a recompile.
