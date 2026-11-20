@@ -1,7 +1,7 @@
 ---
 name: scanner-sonnet
 description: 'Default choice for the section: gear or hero scan failures, missing or wrong imported data, Python changes and scapy or Npcap issues in the Pog E7 Optimizer. Owns one unit end to end, from inspection through the section''s gates to an evidence-backed hand-back. Starts without the conversation, so the brief must carry the intent.'
-tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, Agent
+tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, Agent, mcp__config-tools__diag_scan
 model: sonnet
 effort: medium
 memory: project
@@ -60,6 +60,8 @@ Wrap a command that may run long in `timeout <seconds> <command>`. A run you mus
 Report other problems you find with file, severity and evidence, so the lead can file them in `.claude/plans/FIX LIST.md`. Do not edit the fix list or ledger unless the brief says so.
 
 Use `mcp__claude-vscode__getDiagnostics` (`mcp__ide__getDiagnostics` in a terminal session) for editor diagnostics; an empty reply for a closed file means unanalysed, not clean. Use `mcp__sonarqube__search_my_sonarqube_projects`, `mcp__sonarqube__search_sonar_issues_in_projects` and `mcp__sonarqube__show_rule` for server findings. A finding is a lead to verify, never a confirmed defect.
+
+- Required on every file you created or changed: run `mcp__config-tools__diag_scan` on it (files only, all backends) and handle each finding as `$CLAUDE_CONFIG_DIR/skills/sonar-findings.md` → "Every edit or audit — scan what you touched" says. It has no Java or Python backend, so for `.java` and `.py` files the gates above are the check.
 
 For a library's current API, use `mcp__plugin_context7_context7__resolve-library-id` then `mcp__plugin_context7_context7__query-docs`, not memory.
 
