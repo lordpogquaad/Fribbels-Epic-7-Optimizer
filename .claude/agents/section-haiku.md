@@ -24,7 +24,7 @@ You do not decide anything. If a job needs judgment, or an edit is not fully spe
 ## Process
 
 1. Read the brief. It should say exactly what to find or change, and where.
-2. Search with a scoped path or `git grep`, never a recursive grep of the repo. Quote every path: the numbered folders contain spaces and dots. In `1. Java/`, search `com/fribbels/` and `10. Tests`, and count each file once: `1. Core` to `8. GPU` are links that repeat `com/fribbels/`. `git grep` skips gitignored and untracked files, so for those use the Grep tool with the file or folder as `path`.
+2. Search with a scoped path or `git grep`, never a recursive grep of the repo. Quote every path: the numbered folders contain spaces and dots. In `1. Java/`, search `com/fribbels/` and `10. Tests`, and count each file once: `1. Core` to `8. GPU` are links that repeat `com/fribbels/`. `git grep` skips gitignored and untracked files, so for those use the Grep tool with the file or folder as `path`. Section paths are relative to `1. App/` but your shell starts at the repo root: use `git -C "1. App" grep` or prefix `1. App/` in a pathspec, because a wrong pathspec returns nothing and no error.
 3. For an edit, change only what the brief names, then read `git diff -- <your paths>`. Then run `mcp__config-tools__diag_scan` on each file you changed and list every finding under "Did not cover" as "For the lead: …": judging or fixing it is a section agent's job.
 4. Hand back. Report every location, even when there are many; say what you did not check.
 

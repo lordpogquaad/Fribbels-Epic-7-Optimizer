@@ -4,6 +4,10 @@ Dated record of findings and finished work, newest first, with the evidence behi
 `[Repo]`, `[Backend]`, `[Frontend]`, `[Scanner]`, `[UI]`. Open work lives in
 [FIX LIST.md](FIX LIST.md). Entries from 2026-06 and earlier were moved here unchanged from the old change logs on 2026-10-30. They were confirmed applied at the time, and Java fixes needed a JAR rebuild unless noted.
 
+## 2026-11-20
+
+- `[Repo]` **Agent audit (`/audit-agents deep fix`, 2026-11-20): three fact fixes in the section agents.** Shards P1 (backend, scanner, section-haiku) and P2 (frontend, ui) verified 13 of 13 project agents; Gates 1-4 RC 0 before and after. Fixed in the template and `members.json`, then re-rendered: the `diag_scan` line named a Java/Python gap for every section, but `diag_scan` also returns exit 2 for `.html`, `.css` and `.json` (P2 probed one of each), so a per-member `{{scan_gap}}` token now names each section's own unscanned types; the frontend traps cited `overhaul-plan-2026-08.md` for `npmMinimalAgeGate`, which that memory never mentions, now `.claude/rules/deps.md`. `section-haiku.md`: section paths are relative to `1. App/` while the shell starts at the root, and a root pathspec returned RC 1 with no output (P1 ran it), so the step now says so. Proposals: R60; the OCR data file: R61. LSP: pyright answers; jdtls waits on a window reload (a cached "not found" from before `jdtls.cmd` existed).
+
 ## 2026-11-19
 
 - `[Backend]` **Maven pins moved (Marcus's go, 2026-11-19).** `pom.xml`: `commons-lang3` 3.21.0 → 3.22.0, `versions-maven-plugin` 2.25.1 → 2.25.2. `build_backend.ps1`: the first run failed in `maven-clean-plugin` (could not delete `target\classes\com\fribbels`, the Java language server's first build after a VS Code restart); the rerun was `BUILD SUCCESS`, 160 tests, 0 failures, `backend.jar` rewritten 2026-11-19 09:18. `yarn outdated:java` RC 0: no newer dependencies or plugins, JUnit milestone no longer listed. Also on this machine: pip `regex` 2026.11.19; `pip check` shows only the known `langsmith` → `zstandard` gap.

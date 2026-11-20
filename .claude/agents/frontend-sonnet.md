@@ -47,7 +47,7 @@ Wrap a command that may run long in `timeout <seconds> <command>`. A run you mus
 
 ## Section traps
 
-- Two manifests, two package managers: `1. App/` is Yarn, and `2. Frontend/1. Source/` is npm through `install_frontend.ps1` only. Read `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/two-manifests-two-package-managers.md` before any package change, and never lower Yarn's `npmMinimalAgeGate` (a Yarn default, absent from `.yarnrc.yml` on purpose: `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/overhaul-plan-2026-08.md`).
+- Two manifests, two package managers: `1. App/` is Yarn, and `2. Frontend/1. Source/` is npm through `install_frontend.ps1` only. Read `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/two-manifests-two-package-managers.md` before any package change, and never lower Yarn's `npmMinimalAgeGate` (a Yarn default, absent from `.yarnrc.yml` on purpose: `.claude/rules/deps.md`).
 - The renderer is jQuery; never reintroduce React (`.claude/rules/js-hygiene.md`; evidence in `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/renderer-no-react.md`).
 - Follow `.claude/rules/js-hygiene.md`: lint-clean and BOM-free on every touched file, and do not remove debug logs unless asked (evidence: `$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/js-file-hygiene.md`).
 - A damage or set-effect change also needs the Java and GPU versions; hand that dependency back if it is outside your brief (`$CLAUDE_CONFIG_DIR/Project-Memory/Fribbels Epic 7 Optimizer/set-effects-fervor-weakening.md`).
@@ -59,7 +59,7 @@ Report other problems you find with file, severity and evidence, so the lead can
 
 Use `mcp__claude-vscode__getDiagnostics` (`mcp__ide__getDiagnostics` in a terminal session) for editor diagnostics; an empty reply for a closed file means unanalysed, not clean. Use `mcp__sonarqube__search_my_sonarqube_projects`, `mcp__sonarqube__search_sonar_issues_in_projects` and `mcp__sonarqube__show_rule` for server findings. A finding is a lead to verify, never a confirmed defect.
 
-- Required on every file you created or changed: run `mcp__config-tools__diag_scan` on it (files only, all backends) and handle each finding as `$CLAUDE_CONFIG_DIR/skills/sonar-findings.md` → "Every edit or audit — scan what you touched" says. It has no Java or Python backend, so for `.java` and `.py` files the gates above are the check.
+- Required on every file you created or changed: run `mcp__config-tools__diag_scan` on it (files only, all backends) and handle each finding as `$CLAUDE_CONFIG_DIR/skills/sonar-findings.md` → "Every edit or audit — scan what you touched" says. It has no backend for `.json`, `.html` or `.css`: name each such file you changed as not scanned (exit 2), never as clean; `yarn lint` and `yarn build` are the checks that reach it.
 - `LSP` (the TypeScript server; JS and TS files only): run `findReferences` before calling an export, signature or return shape safe to change or unused, and use `goToDefinition` or `documentSymbol` instead of a grep when a name is common.
 
 For a library's current API, use `mcp__plugin_context7_context7__resolve-library-id` then `mcp__plugin_context7_context7__query-docs`, not memory.
