@@ -76,7 +76,9 @@ jar's timestamp.
 ## Current state
 
 Open work is in `.claude/plans/FIX LIST.md`, and finished work is in `.claude/plans/LEDGER.md`. There
-is one of each, grouped by area (Repo, Backend, Frontend, Scanner, UI), because work crosses areas.
+is one of each for the whole repo, because work crosses areas: the fix list is grouped by area, and the
+ledger is dated newest first, each entry tagged with its area (`[Repo]`, `[Backend]`, `[Frontend]`,
+`[Scanner]`, `[UI]`).
 Check the fix list when starting work, and move a finished row to the ledger with its evidence.
 Copilot-era files in `.github/` stay until `R8` removes them; do not build on them.
 
