@@ -1,7 +1,8 @@
 {
   "$schema": "file:///F:/VSCode-Data/.claude/tools/docs/settings-tools/claude-code-settings.editor.schema.json",
   "env": {
-    "CLAUDE_PROJECT_DIR": "F:/Epic Seven Screenshots Only/New folder/Gear simulator files/Fribbels-Epic-7-Optimizer"
+    "CLAUDE_PROJECT_DIR": "F:/Epic Seven Screenshots Only/New folder/Gear simulator files/Fribbels-Epic-7-Optimizer",
+    "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD": "1"
   },
   "permissions": {
     "allow": [
@@ -49,6 +50,9 @@
       }
     ]
   },
+  "additionalDirectories": [
+    "F:\\VSCode-Data\\.claude"
+  ],
   "enabledPlugins": {
     "jdtls-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true
