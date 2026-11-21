@@ -32,7 +32,10 @@
       "PowerShell(mvn --version)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "F:\\VSCode-Data\\.claude"
+    ]
   },
   "hooks": {
     "PreToolUse": [
@@ -50,9 +53,6 @@
       }
     ]
   },
-  "additionalDirectories": [
-    "F:\\VSCode-Data\\.claude"
-  ],
   "enabledPlugins": {
     "jdtls-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true
