@@ -1,7 +1,7 @@
 ---
 name: ui-opus48
 description: 'The `claude-opus-4-8`-pinned lane of `ui-opus`: the same mandate, inputs and return contract. Dispatch only after the default model refuses the unit; never the default lane.'
-tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, mcp__config-tools__diag_scan, Agent
+tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, mcp__config-tools__diag_scan, Agent, mcp__config-tools__tool_catalog
 model: claude-opus-4-8
 effort: xhigh
 color: green

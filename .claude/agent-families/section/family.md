@@ -44,6 +44,8 @@ Use `mcp__claude-vscode__getDiagnostics` (`mcp__ide__getDiagnostics` in a termin
 - Required on every file you created or changed: run `mcp__config-tools__diag_scan` on it (files only, all backends) and handle each finding as `$CLAUDE_CONFIG_DIR/skills/sonar-findings.md` → "Every edit or audit — scan what you touched" says. {{scan_gap}}
 {{> lsp}}
 
+Before a manual multi-step investigation, or before writing a new script, call `mcp__config-tools__tool_catalog` (read-only; its `query` filters the list) to see what the config repo already provides.
+
 For a library's current API, use `mcp__plugin_context7_context7__resolve-library-id` then `mcp__plugin_context7_context7__query-docs`, not memory.
 
 ## Limits
