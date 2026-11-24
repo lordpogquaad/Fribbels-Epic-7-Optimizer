@@ -2,11 +2,14 @@
 paths:
   - "1. App/2. Frontend/1. Source/4. JS/**"
   - "1. App/2. Frontend/1. Source/5. TS/**"
+  - "1. App/package.json"
+  - "1. App/2. Frontend/1. Source/package.json"
 ---
 
 # JS and TS file hygiene
 
-**Fires when:** editing a renderer JS or TS file.
+**Fires when:** editing a renderer JS or TS file, or either manifest (where only the last bullet,
+the stack rule, applies).
 
 These checks are part of finishing the edit. Each one guards a mistake that passed lint here and
 reached a user or a later pass.

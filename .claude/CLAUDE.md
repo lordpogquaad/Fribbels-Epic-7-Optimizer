@@ -3,14 +3,7 @@
 Electron desktop gear optimizer for Epic Seven. jQuery renderer bundled by webpack 5, Java/Maven
 optimizer backend shipped as a jar, Python scanner/importer helpers. Fork of Fribbels' optimizer.
 
-Global working preferences apply (`$CLAUDE_CONFIG_DIR/CLAUDE.md`, `$CLAUDE_CONFIG_DIR/rules/`). This file holds only
-what is specific to this repo.
-
-## Memory
-
-Project memory lives outside this repo, in the folder `autoMemoryDirectory` in
-`.claude/settings.json` names (the config dir's `Project-Memory/Fribbels Epic 7 Optimizer/`). Claude
-Code loads its `MEMORY.md` index as auto memory; read the relevant body on demand.
+Global working preferences apply (`$CLAUDE_CONFIG_DIR/CLAUDE.md`, `$CLAUDE_CONFIG_DIR/rules/`); this file holds only repo-specific facts.
 
 ## Layout (numbered folders — quote every path; they contain spaces and dots)
 
@@ -18,19 +11,19 @@ Code loads its `MEMORY.md` index as auto memory; read the relevant body on deman
 1. App/                       Electron app root — open Claude Code at the REPO root, not here
   package.json                build/tooling manifest — Yarn 4
   1. Master/1. BAT/start-dev.bat        dev launcher
-  1. Master/2. PS1/install_frontend.ps1 installs the renderer manifest with npm (only way)
+  1. Master/2. PS1/install_frontend.ps1 installs the renderer manifest with npm (the only full install)
   1. Master/2. PS1/build_backend.ps1    Maven build → 1. Master/3. Jar/backend.jar
   2. Frontend/1. Source/      renderer: 1. HTML  2. CSS  3. ASSETS  4. JS  5. TS  6. JSON  7. PY  8. DIST
     package.json              runtime manifest — npm, no lockfile by design
   3. Backend/1. Source/       Java sources + pom.xml
   4. Both/1. Webpack/         webpack configs (base, main.prod, renderer.dev, renderer.prod)
-  4. Both/2. Build/1. Scripts/  CopyAssets, CheckPortInUse, CheckNativeDep, CheckYarn, regen-installed-transitives
+  4. Both/2. Build/1. Scripts/  build, check, report and regen scripts; config-tool.mjs runs a config-repo tool
   5. Dev Only/                main.dev.js, the dev main-process entry
 2. Personal/                  gitignored
 ```
 
 Two manifests, two package managers — why and how: project memory `two-manifests-two-package-managers`.
-A PreToolUse hook (`hooks/guard-package-root.mjs`) denies npm package changes in this repo, except npm with both installer flags in the renderer tree, and denies yarn package changes in the renderer tree.
+A PreToolUse hook (`hooks/guard-package-root.mjs`) denies npm package changes in this repo, except in the renderer tree when npm carries both `--ignore-scripts` and `--legacy-peer-deps`, and denies yarn package changes in the renderer tree.
 
 ## Commands (run from `1. App/` unless noted)
 
@@ -55,8 +48,7 @@ pwsh -File "1. Master/2. PS1/build_backend.ps1"      backend jar
 ```
 
 Acceptance gate before claiming a JS/config change works: `yarn lint` → `yarn typecheck` → `yarn build`.
-Backend changes: `build_backend.ps1` must produce a fresh `backend.jar`. Check the `SUCCESS` line and the
-jar's timestamp.
+Backend changes: `build_backend.ps1` must produce a fresh `backend.jar`; check the `SUCCESS` line and the jar's timestamp.
 
 ## Windows/session traps
 
@@ -75,12 +67,17 @@ jar's timestamp.
 
 ## Current state
 
-Open work is in `.claude/plans/FIX LIST.md`, and finished work is in `.claude/plans/LEDGER.md`. There
-is one of each for the whole repo, because work crosses areas: the fix list is grouped by area, and the
-ledger is dated newest first, each entry tagged with its area (`[Repo]`, `[Backend]`, `[Frontend]`,
-`[Scanner]`, `[UI]`).
+Open work is in `.claude/plans/FIX LIST.md`, finished work in `.claude/plans/LEDGER.md`: one of each for the
+whole repo, because work crosses areas. The fix list is grouped by area; the ledger is dated newest first,
+each entry tagged with its area (`[Repo]`, `[Backend]`, `[Frontend]`, `[Scanner]`, `[UI]`).
 Check the fix list when starting work, and move a finished row to the ledger with its evidence.
-Copilot-era files in `.github/` stay until `R8` removes them; do not build on them.
+Copilot-era files in `.github/` stay until fix-list row `R8` removes them; do not build on them.
 
 This repo is covered by the standing commit + push grant (global `rules/repo-commands.md`, since
 2026-11-10): commit verified work and push it to `origin` without asking. Never push to `upstream`.
+
+## Memory
+
+Project memory lives outside this repo, in the folder `autoMemoryDirectory` in `.claude/settings.json` names
+(the config dir's `Project-Memory/Fribbels Epic 7 Optimizer/`). Claude Code loads its `MEMORY.md` index as
+auto memory; read the relevant body on demand.
