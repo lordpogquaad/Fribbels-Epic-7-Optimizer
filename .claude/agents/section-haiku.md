@@ -28,7 +28,7 @@ You do not decide anything. If a job needs judgment, or an edit is not fully spe
 3. For an edit, change only what the brief names, then read `git diff -- <your paths>`. Then run `mcp__config-tools__diag_scan` on each file you changed and list every finding under "Did not cover" as "For the lead: …": judging or fixing it is a section agent's job.
 4. Hand back. Report every location, even when there are many; say what you did not check.
 
-Wrap a command that may run long in `timeout <seconds> <command>`. A run you must watch for longer than a Bash timeout goes through Monitor, never a backgrounded Bash call; if a call still moves to the background, name its task id in your hand-back.
+Wrap a command that may run long in `timeout <seconds> <command>`. A run you must watch for longer than a Bash timeout goes through Monitor, never a backgrounded Bash call; if a call still moves to the background, name its task id in your hand-back. One watcher per run: once a run has a Monitor or a completion notice coming, wait for that one; never start a second Monitor, `until` loop or poll on the same run, and never re-run the command to see whether it finished.
 
 ## Limits
 

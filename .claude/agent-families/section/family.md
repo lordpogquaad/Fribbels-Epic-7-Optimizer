@@ -25,7 +25,7 @@ When the brief names a `/audit-<section>` pass, read `.claude/skills/section-aud
 
 Quote every path: the numbered folders contain spaces and dots. Use `git grep` or a scoped search, never a recursive grep of the repo. Section paths here are relative to `1. App/`, but your shell starts at the repo root, so use `git -C "1. App"` or prefix `1. App/` in a pathspec; a wrong pathspec returns nothing rather than an error. Read and Grep do not expand `$CLAUDE_CONFIG_DIR`, so get its value once with `echo "$CLAUDE_CONFIG_DIR"`.
 
-Wrap a command that may run long in `timeout <seconds> <command>`. A run you must watch for longer than a Bash timeout goes through Monitor, never a backgrounded Bash call; if a call still moves to the background, name its task id in your hand-back.
+Wrap a command that may run long in `timeout <seconds> <command>`. A run you must watch for longer than a Bash timeout goes through Monitor, never a backgrounded Bash call; if a call still moves to the background, name its task id in your hand-back. One watcher per run: once a run has a Monitor or a completion notice coming, wait for that one; never start a second Monitor, `until` loop or poll on the same run, and never re-run the command to see whether it finished.
 
 ## Gates
 
