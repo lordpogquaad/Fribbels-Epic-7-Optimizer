@@ -494,6 +494,7 @@
           "positionals": null,
           "env": [
             "SKILL_AUDIT_BUILTIN_ROSTER",
+            "SKILL_AUDIT_CROSS_REPO_ROOT",
             "SKILL_AUDIT_HOMES_CONFIG",
             "SKILL_AUDIT_MCP_MIRROR",
             "SKILL_AUDIT_MCP_ROSTER",
@@ -1504,6 +1505,15 @@
               "inCode": true
             },
             {
+              "name": "quiet",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
               "name": "help",
               "type": "boolean",
               "inHeader": true,
@@ -1517,13 +1527,103 @@
               {
                 "requires": ["--flags", "--repo", "<dir>", "<script-flags.json>"],
                 "depends": {},
-                "mentions": ["--check", "--flags", "--manifest", "--repo", "--skip"]
+                "mentions": ["--check", "--flags", "--manifest", "--quiet", "--repo", "--skip"]
               }
             ]
           },
           "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-tools/script-aliases.mjs"]
         }
       ]
+    },
+    {
+      "name": "scripts:aliases:quiet",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" script-aliases.mjs --repo . --flags \"../.claude/plans/script-flags.json\" --quiet",
+      "run": "yarn scripts:aliases:quiet <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "script-aliases.mjs",
+          "bakedArgs": ["--repo", ".", "--flags", "../.claude/plans/script-flags.json", "--quiet"],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "flags",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "manifest",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "skip",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": true,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "check",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "quiet",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": ["--flags", "--repo", "<dir>", "<script-flags.json>"],
+                "depends": {},
+                "mentions": ["--check", "--flags", "--manifest", "--quiet", "--repo", "--skip"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-tools/script-aliases.mjs"]
+        }
+      ],
+      "alias": true
     },
     {
       "name": "scripts:aliases:check",
@@ -1584,6 +1684,15 @@
               "inCode": true
             },
             {
+              "name": "quiet",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
               "name": "help",
               "type": "boolean",
               "inHeader": true,
@@ -1597,13 +1706,110 @@
               {
                 "requires": ["--flags", "--repo", "<dir>", "<script-flags.json>"],
                 "depends": {},
-                "mentions": ["--check", "--flags", "--manifest", "--repo", "--skip"]
+                "mentions": ["--check", "--flags", "--manifest", "--quiet", "--repo", "--skip"]
               }
             ]
           },
           "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-tools/script-aliases.mjs"]
         }
       ]
+    },
+    {
+      "name": "scripts:aliases:check:quiet",
+      "command": "node \"4. Both/2. Build/1. Scripts/config-tool.mjs\" script-aliases.mjs --repo . --flags \"../.claude/plans/script-flags.json\" --check --quiet",
+      "run": "yarn scripts:aliases:check:quiet <flags>",
+      "steps": [
+        {
+          "kind": "config-tool",
+          "tool": "script-aliases.mjs",
+          "bakedArgs": [
+            "--repo",
+            ".",
+            "--flags",
+            "../.claude/plans/script-flags.json",
+            "--check",
+            "--quiet"
+          ],
+          "cwd": ".",
+          "parser": "util-parseArgs",
+          "strict": true,
+          "flags": [
+            {
+              "name": "repo",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "flags",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "manifest",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "skip",
+              "type": "string",
+              "short": null,
+              "default": null,
+              "multiple": true,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "check",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "quiet",
+              "type": "boolean",
+              "short": null,
+              "default": false,
+              "multiple": false,
+              "inHeader": true,
+              "inCode": true
+            },
+            {
+              "name": "help",
+              "type": "boolean",
+              "inHeader": true,
+              "inCode": true
+            }
+          ],
+          "positionals": true,
+          "env": [],
+          "usage": {
+            "forms": [
+              {
+                "requires": ["--flags", "--repo", "<dir>", "<script-flags.json>"],
+                "depends": {},
+                "mentions": ["--check", "--flags", "--manifest", "--quiet", "--repo", "--skip"]
+              }
+            ]
+          },
+          "scanned": ["$CLAUDE_CONFIG_DIR/tools/tools/script-tools/script-aliases.mjs"]
+        }
+      ],
+      "alias": true
     },
     {
       "name": "lint:fix",
