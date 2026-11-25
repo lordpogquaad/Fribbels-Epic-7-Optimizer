@@ -124,7 +124,7 @@
     {
       "label": "Java: compile (mvn compile)",
       "type": "shell",
-      "command": "${workspaceFolder}/1. App/3. Backend/2. Apache Maven/apache-maven-3.10.0/bin/mvn.cmd",
+      "command": "${workspaceFolder}/1. App/3. Backend/2. Apache Maven/apache-maven-3.10.2/bin/mvn.cmd",
       "args": [
         "-B",
         "compile"

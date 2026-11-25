@@ -2,8 +2,8 @@ $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
 $backendRoot = "$root\..\..\3. Backend"
 $mvnDir = "$backendRoot\2. Apache Maven"
-$mvnZip = "$backendRoot\2. Apache Maven\apache-maven-3.10.0-bin.zip"
-$mvnExe = "$mvnDir\apache-maven-3.10.0\bin\mvn.cmd"
+$mvnZip = "$backendRoot\2. Apache Maven\apache-maven-3.10.2-bin.zip"
+$mvnExe = "$mvnDir\apache-maven-3.10.2\bin\mvn.cmd"
 # Junction the Oracle installer repoints at each 27.x patch, so patch updates need no edit here.
 $env:JAVA_HOME = "C:\Program Files\Java\latest\jdk-27"
 
@@ -14,9 +14,9 @@ if (!(Test-Path $env:JAVA_HOME)) {
 
 # Download Maven if not already present
 if (!(Test-Path $mvnExe)) {
-    Write-Host "Downloading Maven 3.10.0..."
+    Write-Host "Downloading Maven 3.10.2..."
     New-Item -ItemType Directory -Force -Path "$backendRoot\2. Apache Maven" | Out-Null
-    Invoke-WebRequest -Uri "https://archive.apache.org/dist/maven/maven-3/3.10.0/binaries/apache-maven-3.10.0-bin.zip" -OutFile $mvnZip
+    Invoke-WebRequest -Uri "https://archive.apache.org/dist/maven/maven-3/3.10.2/binaries/apache-maven-3.10.2-bin.zip" -OutFile $mvnZip
     Write-Host "Extracting Maven..."
     Expand-Archive -Path $mvnZip -DestinationPath $mvnDir -Force
     Remove-Item $mvnZip

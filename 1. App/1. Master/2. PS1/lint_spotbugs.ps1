@@ -3,7 +3,7 @@
 # the backend pom.xml with failOnError=false. Report: 3. Backend/1. Source/target/spotbugsXml.xml
 $ErrorActionPreference = "Stop"
 $backendRoot = "$PSScriptRoot\..\..\3. Backend"
-$mvnExe = "$backendRoot\2. Apache Maven\apache-maven-3.10.0\bin\mvn.cmd"
+$mvnExe = "$backendRoot\2. Apache Maven\apache-maven-3.10.2\bin\mvn.cmd"
 $env:JAVA_HOME = "C:\Program Files\Java\latest\jdk-27"
 
 if (!(Test-Path $env:JAVA_HOME)) { Write-Error "JAVA_HOME not found: $env:JAVA_HOME"; exit 1 }

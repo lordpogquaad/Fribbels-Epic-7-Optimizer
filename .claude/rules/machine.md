@@ -9,7 +9,7 @@ relying on one for anything version-sensitive.
 | ------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
 | Repo root           | `F:/Epic Seven Screenshots Only/New folder/Gear simulator files/Fribbels-Epic-7-Optimizer` | `git rev-parse --show-toplevel`                                  |
 | JDK for the backend | `C:/Program Files/Java/latest/jdk-27`, a junction the installer repoints                   | `$env:JAVA_HOME` line in `1. App/1. Master/2. PS1/lint_java.ps1` |
-| Maven               | `1. App/3. Backend/2. Apache Maven/apache-maven-3.10.0/bin/mvn.cmd`                        | `$mvnExe` line in that script; `where.exe mvn`                   |
+| Maven               | `1. App/3. Backend/2. Apache Maven/apache-maven-3.10.2/bin/mvn.cmd`                        | `$mvnExe` line in that script; `where.exe mvn`                   |
 | Maven repository    | `C:/Users/Marcus/.m2/repository`                                                           | `ls -d` on the path                                              |
 | Yarn                | Launcher in `F:/VSCode-Data/npm-global`; `packageManager` in `1. App/package.json` pins it | `where.exe yarn`; that key                                       |
 | Scanner capture     | Npcap at `C:/Windows/System32/Npcap`, plus `scapy` in the global Python                    | `ls -d` on the path; `python -m pip show scapy`                  |
