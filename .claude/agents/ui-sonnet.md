@@ -1,7 +1,7 @@
 ---
 name: ui-sonnet
 description: 'Default choice for the section: layout, styling, dark mode, icon or asset work, and visual bugs in any tab in the Pog E7 Optimizer. Owns one unit end to end, from inspection through the section''s gates to an evidence-backed hand-back. Starts without the conversation, so the brief must carry the intent.'
-tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, mcp__config-tools__diag_scan, mcp__config-tools__tool_catalog, Agent
+tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, mcp__config-tools__diag_scan, mcp__config-tools__tool_catalog, Agent, Skill, mcp__config-tools__lint_prompt_md
 model: sonnet
 effort: medium
 memory: project

@@ -1,7 +1,7 @@
 ---
 name: backend-opus48
 description: 'The `claude-opus-4-8`-pinned lane of `backend-opus`: the same mandate, inputs and return contract. Dispatch only after the default model refuses the unit; never the default lane.'
-tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, LSP, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, Agent, mcp__config-tools__diag_scan, mcp__config-tools__tool_catalog
+tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, LSP, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, Agent, mcp__config-tools__diag_scan, mcp__config-tools__tool_catalog, Skill, mcp__config-tools__lint_prompt_md
 model: claude-opus-4-8
 effort: xhigh
 color: blue

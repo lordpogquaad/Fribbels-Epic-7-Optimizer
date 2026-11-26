@@ -1,7 +1,7 @@
 ---
 name: scanner-opus
 description: 'Use for trap-dense or high-stakes units; routine work goes to the Sonnet twin: gear or hero scan failures, missing or wrong imported data, Python changes and scapy or Npcap issues in the Pog E7 Optimizer. Owns one unit end to end, from inspection through the section''s gates to an evidence-backed hand-back. Starts without the conversation, so the brief must carry the intent.'
-tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, LSP, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, Agent, mcp__config-tools__diag_scan, mcp__config-tools__tool_catalog
+tools: Read, Grep, Glob, Bash, Write, Edit, Monitor, LSP, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs, mcp__claude-vscode__getDiagnostics, mcp__ide__getDiagnostics, mcp__sonarqube__search_sonar_issues_in_projects, mcp__sonarqube__show_rule, mcp__sonarqube__search_my_sonarqube_projects, Agent, mcp__config-tools__diag_scan, mcp__config-tools__tool_catalog, Skill, mcp__config-tools__lint_prompt_md
 model: opus
 effort: high
 memory: project
