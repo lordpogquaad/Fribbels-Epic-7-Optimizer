@@ -134,14 +134,15 @@ Python, scapy and Npcap were current and running on 2026-10-30.
 
 ## Tests
 
-| ID  | Status | Item                                                                                                                                                                                                            |
-| --- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| T1  | next   | Add a JS test setup: pick the runner (`node --test` needs no new package), add a `test` script, and add a `test` step to the acceptance gate                                                                    |
-| T2  | next   | First JS tests on pure logic where a miss gives wrong numbers silently: `fribbelsPriorityFilter.js` damage, `convertUnits`, the item locator sort, `scoreAllItems` in `gearScorer.js`, the reforge value tables |
-| T3  | later  | Python tests for the scanner, starting from a saved export with personal data removed                                                                                                                           |
-| T4  | later  | ESLint block for test files in `eslint.config.mjs`, once test files exist                                                                                                                                       |
-| T5  | later  | Add test ownership to the section agents, `section-locations.md` and the `/audit-*` skills                                                                                                                      |
-| T6  | later  | `GsonBoundFieldsTest` still lists its classes by hand, so a new request class is not covered. EFF has no pre-filter test; CR, CD and SPD do                                                                     |
+| ID  | Status | Item                                                                                                                                                                                                                                  |
+| --- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T1  | next   | Add a JS test setup: pick the runner (`node --test` needs no new package), add a `test` script, and add a `test` step to the acceptance gate                                                                                          |
+| T2  | next   | First JS tests on pure logic where a miss gives wrong numbers silently: `fribbelsPriorityFilter.js` damage, `convertUnits`, the item locator sort, `scoreAllItems` in `gearScorer.js`, the reforge value tables                       |
+| T3  | later  | Python tests for the scanner, starting from a saved export with personal data removed                                                                                                                                                 |
+| T4  | later  | ESLint block for test files in `eslint.config.mjs`, once test files exist                                                                                                                                                             |
+| T5  | later  | Add test ownership to the section agents, `section-locations.md` and the `/audit-*` skills                                                                                                                                            |
+| T6  | later  | `GsonBoundFieldsTest` still lists its classes by hand, so a new request class is not covered. EFF has no pre-filter test; CR, CD and SPD do                                                                                           |
+| T7  | later  | PMD 7.30.0's new `ControlFlowInTest` rule reports 15 places in the Java tests (`SorterTest`, `HeroDbTest`, `FilterSortRaceTest` and others; `yarn lint:java`): judge each, then fix the test or exclude the rule in `pmd-ruleset.xml` |
 
 ## UI
 

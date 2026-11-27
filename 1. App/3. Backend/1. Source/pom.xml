@@ -135,7 +135,7 @@
             </plugin>
             <!-- Report-only static analysis (yarn lint:java). No executions: it is bound to no phase, so
                  build_backend.ps1 never runs it. The plugin's bundled PMD (7.17) cannot parse Java 27, so
-                 the net.sourceforge.pmd artifacts are overridden to 7.29.0, which can. -->
+                 the net.sourceforge.pmd artifacts are overridden to 7.30.0, which can. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -168,22 +168,22 @@
                     <dependency>
                         <groupId>net.sourceforge.pmd</groupId>
                         <artifactId>pmd-core</artifactId>
-                        <version>7.29.0</version>
+                        <version>7.30.0</version>
                     </dependency>
                     <dependency>
                         <groupId>net.sourceforge.pmd</groupId>
                         <artifactId>pmd-java</artifactId>
-                        <version>7.29.0</version>
+                        <version>7.30.0</version>
                     </dependency>
                     <dependency>
                         <groupId>net.sourceforge.pmd</groupId>
                         <artifactId>pmd-javascript</artifactId>
-                        <version>7.29.0</version>
+                        <version>7.30.0</version>
                     </dependency>
                     <dependency>
                         <groupId>net.sourceforge.pmd</groupId>
                         <artifactId>pmd-jsp</artifactId>
-                        <version>7.29.0</version>
+                        <version>7.30.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
