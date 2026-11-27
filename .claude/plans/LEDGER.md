@@ -4,6 +4,10 @@ Dated record of findings and finished work, newest first, with the evidence behi
 `[Repo]`, `[Backend]`, `[Frontend]`, `[Scanner]`, `[UI]`. Open work lives in
 [FIX LIST.md](FIX LIST.md). Entries from 2026-06 and earlier were moved here unchanged from the old change logs on 2026-10-30. They were confirmed applied at the time, and Java fixes needed a JAR rebuild unless noted.
 
+## 2026-11-27
+
+- `[Scanner]` **Python target 3.14 → 3.15, and the stale lint caches cleared (Marcus asked, 2026-11-27).** The machine runs Python 3.15.2. `ruff.toml` `target-version` is now `py315` (and its pyupgrade comment says 3.15); `1. App/sonar-project.properties` `sonar.python.version` follows it, as its comment requires. `yarn lint:py` (ruff 0.17.6) exits 0 with the same 3 findings as under `py314`, and `yarn lint:py:types` reports no issues. Removed, all gitignored and rebuilt on the next run: `.ruff_cache/` (only the 0.17.3 and 0.17.5 folders, neither the installed version), the repo-root `.mypy_cache/` (a 3.14-only cache last written 2026-08-28; mypy runs from `1. App/` now) and `1. App/.mypy_cache/3.14/`. The next runs recreated `.ruff_cache/` at the root and kept `1. App/.mypy_cache/3.15/`.
+
 ## 2026-11-25
 
 - `[Backend]` **Maven 3.10.0 → 3.10.2 and `versions-maven-plugin` 2.25.3 (Marcus asked, 2026-11-25).** 3.10.2 is the newest 3.x (Maven Central metadata; 4.0.0 is still `rc-7`). The `apache-maven-3.10.2-bin.zip` from `archive.apache.org` matched Apache's published SHA-512 and was extracted beside 3.10.0 (the folder is untracked; 3.10.0 is left for Marcus to delete); `mvn -v` reports 3.10.2 on JDK 27.0.1.1. Repointed: `build_backend.ps1` (path, zip, message, download URL), `coverage_java.ps1`, `lint_java.ps1`, `lint_spotbugs.ps1`, `outdated_java.ps1`, `.vscode/tasks.json`, the `.claude/rules/machine.md` Maven row, and the user `PATH` entry. `yarn outdated:java` (RC 0) named only `versions-maven-plugin` 2.25.2 → 2.25.3. Gate: `build_backend.ps1` exit 0, 160 tests, 0 failures, `BUILD SUCCESS`, `backend.jar` written 02:29.
