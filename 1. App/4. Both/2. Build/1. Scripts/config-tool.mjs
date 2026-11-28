@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 // script. A tool is named by its bare file name: it is looked up at `tools/tools/<tool>` first, then
 // in the `<topic>-tools/` folders and each topic's own sub-folders (two levels and no deeper; `lib`,
 // `node_modules`, `common-tools` and dot folders are skipped at both), and exactly one match wins;
-// `<topic>-tools/<tool>` or `<topic>-tools/<sub>/<tool>` is honoured when that file exists, and two
+// `<topic>-tools/<tool>` or `<topic>-tools/<sub>/<tool>` is honoured when that file exists (never through a skipped folder: `common-tools/x.mjs` is not found), and two
 // folders holding the same name is an error that lists them. The
 // same rule is `tools/tools/common-tools/find-tool.mjs` in the config repo; this copy cannot import it
 // before it has found the repo, so change both together. Yarn's shell expands `$CLAUDE_CONFIG_DIR` in a script, but npm on Windows runs scripts
@@ -56,8 +56,12 @@ function findTool(configRoot, name) {
   const topLevel = path.join(toolsDir, base);
   if (!base || base === '.' || base === '..') return { error: `${topLevel} not found` };
   const folders = parts.slice(0, -1);
+  const dotsOrLibrary = folders.some((s) => SKIPPED.has(s) || s.startsWith('.'));
   const direct =
-    folders.length >= 1 && folders.length <= 2 && !folders.some((s) => s === '.' || s === '..');
+    folders.length >= 1 &&
+    folders.length <= 2 &&
+    !folders.some((s) => s === '.' || s === '..') &&
+    !dotsOrLibrary;
   if (direct && isFile(path.join(toolsDir, ...folders, base))) {
     return { script: path.join(toolsDir, ...folders, base) };
   }
