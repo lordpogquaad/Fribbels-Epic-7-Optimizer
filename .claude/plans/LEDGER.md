@@ -4,6 +4,10 @@ Dated record of findings and finished work, newest first, with the evidence behi
 `[Repo]`, `[Backend]`, `[Frontend]`, `[Scanner]`, `[UI]`. Open work lives in
 [FIX LIST.md](FIX LIST.md). Entries from 2026-06 and earlier were moved here unchanged from the old change logs on 2026-10-30. They were confirmed applied at the time, and Java fixes needed a JAR rebuild unless noted.
 
+## 2026-11-28
+
+- `[Repo]` **`config-tool.mjs` never runs a library through the direct form (config repo's `common-tools` audit, Marcus said "apply all proposals", 2026-11-28): commit `ff9b6de`.** `node config-tool.mjs common-tools/config-root.mjs` used to find the config repo's library module, run it and exit 0 with no output. A name through `lib`, `node_modules`, `common-tools` or a dot folder is now "not found" (RC 2), the same guard as the config repo's `find-tool.mjs` (its commit `8fa5b64d`; `config-tool-shims.test.js` there pins the copy). Checked: the library path exits 2, `hook-tools/hook-coverage.mjs --help` still runs (RC 0), `yarn prettier --check` on the file RC 0, `yarn lint` RC 0.
+
 ## 2026-11-27
 
 - `[Backend]` **PMD 7.29.0 → 7.30.0 (the machine audit's proposal; Marcus approved, 2026-11-27).** The four `net.sourceforge.pmd` overrides of `maven-pmd-plugin` in `pom.xml` and the comment above them now say 7.30.0. `yarn lint:java` before and after: RC 0 and `BUILD SUCCESS` both times, `PMD version: 7.30.0` on JDK 27, 251 → 265 distinct findings. The change is 15 hits of the new `ControlFlowInTest` rule (fix-list row `T7`) and one `UnusedAssignment` on `OptimizationRequestHandler` `cachedKernel` that 7.30.0 no longer reports. The plugin is bound to no phase, so `backend.jar` is unaffected and was not rebuilt.
